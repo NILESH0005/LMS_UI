@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+      .no-scrollbar::-webkit-scrollbar {
+          /* display: none; */
+          scrollbar-width: 5px;  /* Firefox */
+      }
+      .no-scrollbar {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: 5px;  /* Firefox */
+          /* scrollbar-width: none;  Firefox */
+    }
+    .two-h-screen{
+        height: 150vh;
+    }
+  }
