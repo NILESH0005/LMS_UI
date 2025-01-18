@@ -6,6 +6,9 @@ const Discussions = () => {
   const { fetchData } = useContext(ApiContext); // Assuming you're using ApiContext
   const [discussions, setDiscussions] = useState([]);
   const [users, setUsers] = useState([]); // State for users
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
   const [loading, setLoading] = useState(false); // Add loading state
 
   useEffect(() => {
@@ -82,6 +85,25 @@ const Discussions = () => {
     }
   };
 
+  const handleDeleteUser = async () => {
+    const endpoint = "/user/deleteUser";
+    const method = "POST";
+    const headers = { 'Content-Type': 'application/json' };
+
+    try {
+      const result = await fetchData(endpoint, method, {}, headers);
+      if (result?.success) {
+        setUsers(users.filter((user) => user.UserID !== selectedUserId));
+        setShowModal(false);
+      } else {
+        setError(result?.message || 'Failed to delete user');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setError('Failed to delete user');
+    }
+  };
+
   // Handle discussion rejection
   const handleReject = async (discussionId) => {
     const endpoint = `discussion/reject`; // Adjust your API endpoint
@@ -136,15 +158,15 @@ const Discussions = () => {
             Review and manage discussions in the DGX community.
           </p>
         </caption>
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <thead className="text-xs text-gray-700 uppercase bg-DGXgreen text-white dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" className="px-6 py-3">User ID</th>
-            <th scope="col" className="px-6 py-3">Discussion ID</th>
-            <th scope="col" className="px-6 py-3">Title</th>
-            <th scope="col" className="px-6 py-3">Content</th>
-            <th scope="col" className="px-6 py-3">Likes</th>
-            <th scope="col" className="px-6 py-3">Comments</th>
-            <th scope="col" className="px-6 py-3">Actions</th>
+            <th scope="col" className="border px-6 py-3">User ID</th>
+            <th scope="col" className="border px-6 py-3">Discussion ID</th>
+            <th scope="col" className="border px-6 py-3">Title</th>
+            <th scope="col" className="border px-6 py-3">Content</th>
+            <th scope="col" className="border px-6 py-3">Likes</th>
+            <th scope="col" className="border px-6 py-3">Comments</th>
+            <th scope="col" className="border px-6 py-3">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -159,34 +181,68 @@ const Discussions = () => {
                   {/* Display user ID from the discussions data */}
                   {discussion.UserID}
                 </th>
-                <td className="px-6 py-4">{discussion.DiscussionID}</td>
-                <td className="px-6 py-4">{discussion.Title}</td>
-                <td className="px-6 py-4">{discussion.Content.substring(0, 50)}...</td>
-                <td className="px-6 py-4">{discussion.likeCount}</td>
-                <td className="px-6 py-4">{discussion.comment.length}</td>
-                <td className="px-6 py-4 text-right">
+                <td className="border px-6 py-4">{discussion.DiscussionID}</td>
+                <td className="border px-6 py-4">{discussion.Title}</td>
+                <td className="border px-6 py-4">{discussion.Content.substring(0, 50)}...</td>
+                <td className="border px-6 py-4">{discussion.likeCount}</td>
+                <td className="border px-6 py-4">{discussion.comment.length}</td>
+                <td className="border px-6 py-4 text-right">
                   {!discussion.approved && (
                     <>
-                      <button
+                      {/* <button
                         onClick={() => handleApprove(discussion.DiscussionID)}
-                        className="mr-2 font-medium text-green-600 dark:text-green-500 hover:underline"
+                        className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                       >
                         Approve
-                      </button>
-                      <button
+                      </button> */}
+                      {/* <button
                         onClick={() => handleReject(discussion.DiscussionID)}
-                        className="mr-2 font-medium text-yellow-600 dark:text-yellow-500 hover:underline"
+                        className="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900"
                       >
                         Reject
+                      </button> */}
+                      <button
+                        onClick={() => {
+                          setModalType('delete');
+                          // setSelectedUserId(user.UserID);
+                          setShowModal(true);
+                        }}
+                        className="text-white bg-red-700 hover:bg-red-800 focus:outline-none
+                     focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm 
+                     px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700
+                      dark:focus:ring-red-900"
+                      >
+                        Delete
                       </button>
+
                     </>
                   )}
-                  <button
-                    onClick={() => handleDelete(discussion.DiscussionID)}
-                    className="font-medium text-red-600 dark:text-red-500 hover:underline"
-                  >
-                    Delete
-                  </button>
+
+                  {showModal && modalType === 'delete' && (
+                    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 z-50">
+                      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+                        <h3 className="text-xl font-semibold mb-4">Confirm Delete</h3>
+                        <p>Are you sure you want to delete this Event?</p>
+                        <div className="flex justify-between mt-4">
+                          <button
+                            type="button"
+                            onClick={() => setShowModal(false)}
+                            className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleDeleteUser}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                 </td>
               </tr>
             ))

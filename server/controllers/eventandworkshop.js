@@ -266,19 +266,8 @@ export const updateEvent = async (req, res) => {
         }
 
         // Update event details
-        const updateEventQuery = `
-          UPDATE Community_Event 
-          SET 
-            EventTitle = ?, 
-            StartDate = ?, 
-            EndDate = ?, 
-            EventType = ?, 
-            Category = ?, 
-            Venue = ?, 
-            Host = ?, 
-            RegistrationLink = ?, 
-            EventImage = ?, 
-            EventDescription = ? 
+        const updateEventQuery = `UPDATE Community_Event 
+          SET EventTitle = ?, StartDate = ?, EndDate = ?, EventType = ?, Category = ?, Venue = ?, Host = ?, RegistrationLink = ?, EventImage = ?, EventDescription = ? 
           WHERE EventID = ?;
         `;
 
@@ -327,3 +316,5 @@ export const updateEvent = async (req, res) => {
     });
   }
 };
+
+

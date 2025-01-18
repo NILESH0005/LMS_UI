@@ -334,16 +334,17 @@ const UserProfile = () => {
             {activeTab === 'profile' && (
               <div className="flex flex-col w-full 2xl:w-3/3 ">
                 <div className="flex bg-DGXwhite rounded-lg shadow-xl p-2 md:p-4 border border-DGXgreen ">
-                  {/* <div className="flex-1">
-                    <h4 className="text-xl text-[#111827] font-bold">About</h4>
-                    <p className="mt-2 text-DGXgray">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt voluptates obcaecati numquam error et ut fugiat asperiores. Sunt nulla ad incidunt laboriosam, laudantium est unde natus cum numquam, neque facere. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, magni odio magnam commodi sunt ipsum eum! Voluptas eveniet aperiam at maxime, iste id dicta autem odio laudantium eligendi commodi distinctio!</p>
-                  </div> */}
-                  {/* <div className="flex items-end mt-4">
-                    <h1>Comming Soon.......</h1>
-                    <span className="badge">Achievements</span>
-                    <span className="badge">Badge 2</span>
-                  </div> */}
+                    {/* <div className="flex-1">
+                      <h4 className="text-xl text-[#111827] font-bold">About</h4>
+                      <p className="mt-2 text-DGXgray">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt voluptates obcaecati numquam error et ut fugiat asperiores. Sunt nulla ad incidunt laboriosam, laudantium est unde natus cum numquam, neque facere. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, magni odio magnam commodi sunt ipsum eum! Voluptas eveniet aperiam at maxime, iste id dicta autem odio laudantium eligendi commodi distinctio!</p>
+                    </div> */}
+                    {/* <div className="flex items-end mt-4">
+                      <h1>Comming Soon.......</h1>
+                      <span className="badge">Achievements</span>
+                      <span className="badge">Badge 2</span>
+                    </div> */}
                 </div>
+                {/* yhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*/}
                 <div className="flex-1/2 bg-DGXwhite rounded-lg shadow-xl mt-4 p-2 md:p-8 border border-DGXgreen">
                   <h4 className="text-xl text-[#111827] font-bold">Statistics</h4>
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
@@ -452,17 +453,6 @@ const UserProfile = () => {
                       </>
                     ))
                   }
-                  <div className='post shadow-xl rounded-md p-2'>
-                    <a href="#" className="m-2 shadow-xl flex flex-col md:flex-row bg-white border border-DGXgreen rounded-lg hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-                      <div className="w-full md:w-1/4">
-                        <img className="object-cover w-full h-96 md:h-auto md:rounded-none rounded-t-lg md:rounded-s-lg" src="https://vojislavd.com/ta-template-demo/assets/img/profile.jpg" alt="" />
-                      </div>
-                      <div className="w-full md:w-3/4 flex flex-col justify-between p-4 leading-normal">
-                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
-                        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                      </div>
-                    </a>
-                  </div>
                 </div>
               </div>
             )}

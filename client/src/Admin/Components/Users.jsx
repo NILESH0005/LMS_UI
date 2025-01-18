@@ -6,6 +6,9 @@ const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [newUser, setNewUser] = useState({
     Name: '',
@@ -66,6 +69,25 @@ const AdminUsers = () => {
       setError('Failed to add user');
     }
   };
+
+  const handleDeleteUser = async () => {
+    const endpoint = "/user/deleteUser";
+    const method = "POST";
+    const headers = { 'Content-Type': 'application/json' };
+
+    try {
+      const result = await fetchData(endpoint, method, {}, headers);
+      if (result?.success) {
+        setUsers(users.filter((user) => user.UserID !== selectedUserId));
+        setShowModal(false);
+      } else {
+        setError(result?.message || 'Failed to delete user');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setError('Failed to delete user');
+    }
+  };
   
 
   // Handle form input changes for new user
@@ -99,14 +121,14 @@ const AdminUsers = () => {
           Admin - Manage Users
           <p className="mt-1 text-sm font-normal text-gray-500">Browse and manage DGX community users.</p>
         </caption>
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+        <thead className="text-xs text-gray-700 uppercase bg-DGXgreen text-white">
           <tr>
-            <th scope="col" className="px-6 py-3">User ID</th>
-            <th scope="col" className="px-6 py-3">Name</th>
-            <th scope="col" className="px-6 py-3">Email</th>
-            <th scope="col" className="px-6 py-3">College Name</th>
-            <th scope="col" className="px-6 py-3">Designation</th>
-            <th scope="col" className="px-6 py-3"><span className="sr-only">Delete</span></th>
+            <th scope="col" className="border px-6 py-3">User ID</th>
+            <th scope="col" className="border px-6 py-3">Name</th>
+            <th scope="col" className="border px-6 py-3">Email</th>
+            <th scope="col" className="border px-6 py-3">College Name</th>
+            <th scope="col" className="border px-6 py-3">Designation</th>
+            <th scope="col" className="border px-6 py-3"><span className="sr-only">Delete</span></th>
           </tr>
         </thead>
         <tbody>
@@ -115,14 +137,18 @@ const AdminUsers = () => {
               <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                 {user.UserID}
               </th>
-              <td className="px-6 py-4">{user.Name}</td>
-              <td className="px-6 py-4">{user.EmailId}</td>
-              <td className="px-6 py-4">{user.CollegeName}</td>
-              <td className="px-6 py-4">{user.Designation}</td>
-              <td className="px-6 py-4 text-right">
-                <button
-                  onClick={() => handleDelete(user.UserID)}
-                  className="font-medium text-red-600 dark:text-red-500 hover:underline"
+              <td className="border px-6 py-4">{user.Name}</td>
+              <td className="border px-6 py-4">{user.EmailId}</td>
+              <td className="border px-6 py-4">{user.CollegeName}</td>
+              <td className="border px-6 py-4">{user.Designation}</td>
+              <td className="border px-6 py-4 text-right">
+              <button
+                  onClick={() => {
+                    setModalType('delete');
+                    setSelectedUserId(user.UserID);
+                    setShowModal(true);
+                  }}
+                  className="bg-red-500 text-white px-4 py-1 rounded-lg"
                 >
                   Delete
                 </button>
@@ -202,6 +228,30 @@ const AdminUsers = () => {
           </div>
         </div>
       )}
+         {showModal && modalType === 'delete' && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-xl font-semibold mb-4">Confirm Delete</h3>
+            <p>Are you sure you want to delete this user?</p>
+            <div className="flex justify-between mt-4">
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteUser}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}  
     </div>
   );
 };

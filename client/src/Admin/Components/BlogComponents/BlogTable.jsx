@@ -16,7 +16,7 @@ const BlogTable = ({ blogs }) => {
   return (
     <div><table className="min-w-full table-auto border-collapse">
       <thead>
-        <tr className="bg-gray-200">
+        <tr className="bg-DGXgreen text-white">
           {/* <th className="border px-4 py-2">ID</th> */}
           <th className="border px-4 py-2">Title</th>
           <th className="border px-4 py-2">Category</th>

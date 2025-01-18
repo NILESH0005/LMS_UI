@@ -18,7 +18,10 @@ const EventTable = () => {
   const { fetchData, userToken } = useContext(ApiContext);
   const [events, setEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
   const [newEvent, setNewEvent] = useState({
+
     title: '',
     start: '',
     end: '',
@@ -31,6 +34,28 @@ const EventTable = () => {
     registerLink: '', // Add registerLink to state
   });
 
+  const handleEditEvent = (event) => {
+    setNewEvent({
+      title: event.EventTitle || '',
+      start: moment(event.StartDate).format('YYYY-MM-DD') || '',
+      end: moment(event.EndDate).format('YYYY-MM-DD') || '',
+      category: event.Category || 'Select one',
+      companyCategory: event.CompanyCategory || 'Select one',
+      poster: event.EventImage || null,
+      venue: event.Venue || '',
+      description: event.EventDescription || '',
+      host: event.Host || '',
+      registerLink: event.RegistrationLink || '',
+    });
+    setModalType('edit'); // Set modal type to "edit"
+    setIsModalOpen(true); // Open the modal
+  };
+
+  const handleAddEvent = () => {
+    resetForm(); // Clear the form
+    setModalType('add'); // Set modal type to "add"
+    setIsModalOpen(true); // Open the modal
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -89,6 +114,25 @@ const EventTable = () => {
         setNewEvent({ ...newEvent, poster: reader.result });
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    const endpoint = "/user/deleteUser";
+    const method = "POST";
+    const headers = { 'Content-Type': 'application/json' };
+
+    try {
+      const result = await fetchData(endpoint, method, {}, headers);
+      if (result?.success) {
+        setUsers(users.filter((user) => user.UserID !== selectedUserId));
+        setShowModal(false);
+      } else {
+        setError(result?.message || 'Failed to delete user');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setError('Failed to delete user');
     }
   };
 
@@ -232,7 +276,7 @@ const EventTable = () => {
       <div className="mb-5">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-DGXgreen text-white p-2 rounded"
+          className="bg-DGXblue hover:bg-DGXgreen text-white p-2 rounded"
         >
           Add Event
         </button>
@@ -242,29 +286,36 @@ const EventTable = () => {
         <table className="table-fixed border bottom-2 w-full mt-4">
           <thead className='bg-DGXgreen text-white'>
             <tr >
-              <th className="px-4 py-2 w-2/6">Title</th>
-              <th className="px-4 py-2">Start Date</th>
-              <th className="px-4 py-2">End Date</th>
-              <th className="px-4 py-2">Category</th>
-              <th className="px-4 py-2">Venue</th>
-              <th className="px-4 py-2">Actions</th>
+              <th className="border px-4 py-2 ">Title</th>
+              <th className="border px-4 py-2">Start Date</th>
+              <th className="border px-4 py-2">End Date</th>
+              <th className="border px-4 py-2">Category</th>
+              <th className="border px-4 py-2">Venue</th>
+              <th className="border px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {events.map((event, index) => (
               <tr className='text-center' key={index}>
-                <td className="px-4 py-2 w-2/6 bg-DGXgreen/15">
+                <td className="border px-4 py-2 w-2/6">
                   {event.EventTitle.length > 50 ? `${event.EventTitle.slice(0, 50)}...` : event.EventTitle}
                 </td>
 
-                <td className="px-4 py-2">{new Date(event.StartDate).toLocaleDateString()}</td>
-                <td className="px-4 py-2 bg-DGXgreen/15">{new Date(event.EndDate).toLocaleDateString()}</td>
-                <td className="px-4 py-2">{event.Category === 'giEvent' ? 'Global Infoventures Event' : event.Category === 'nvidiaEvent' ? 'NVIDIA Event' : 'Other Event'}</td>
-                <td className="px-4 py-2 bg-DGXgreen/15">{event.Venue}</td>
-                <td className="px-4 py-2">
+                <td className="border px-4 py-2">{new Date(event.StartDate).toLocaleDateString()}</td>
+                <td className="border px-4 py-2">{new Date(event.EndDate).toLocaleDateString()}</td>
+                <td className="border px-4 py-2">{event.Category === 'giEvent' ? 'Global Infoventures Event' : event.Category === 'nvidiaEvent' ? 'NVIDIA Event' : 'Other Event'}</td>
+                <td className="border px-4 py-2">{event.Venue}</td>
+                <td className="border px-4 py-2">
                   {/* Add actions like Edit or Delete */}
-                  <button className='font-medium hover:text-DGXgreen' onClick={() => handleEditEvent(event)}>Edit</button>
-                  <button className='ml-2 text-red-500 font-medium' onClick={() => handleDeleteEvent(event)}>Delete</button>
+                  <button className='font-medium hover:text-DGXblue bg-DGXgreen text-white px-6 py-1 rounded-lg' onClick={() => handleEditEvent(event)}>Edit</button>
+                  <button className='font-medium hover:text-DGXblue bg-red-500 text-white px-4 py-1 rounded-lg'
+                    onClick={() => {
+                      setModalType('delete');
+                      // setSelectedUserId(user.UserID);
+                      setShowModal(true);
+                    }}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -427,6 +478,30 @@ const EventTable = () => {
                 className="bg-DGXgreen text-white p-2 rounded"
               >
                 Add Event
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showModal && modalType === 'delete' && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-xl font-semibold mb-4">Confirm Delete</h3>
+            <p>Are you sure you want to delete this Event?</p>
+            <div className="flex justify-between mt-4">
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteUser}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+              >
+                Delete
               </button>
             </div>
           </div>
