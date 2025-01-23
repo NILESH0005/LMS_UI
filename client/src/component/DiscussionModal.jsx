@@ -191,8 +191,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
       }
     }
   };
-
-
   // const handleAddLike = async (id, userLike) => {
   //   // console.log(id, userLike)
 
@@ -228,13 +226,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
   //   }
   // };
   // const handleAddLike = () => setLikeCount(likeCount + 1);
-
-
-
-
-
-
-
   return (
     <div>
       {/* Background Overlay */}
@@ -348,7 +339,13 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                       placeholder="Add a comment..."
                     />
                     <button
-                      onClick={() => handleAddComment(discussion.DiscussionID)}
+                      onClick={() => {
+                        if (newComment.trim() === "") {
+                          alert("Comment cannot be empty!");
+                          return;
+                        }
+                        handleAddComment(discussion.DiscussionID);
+                      }}
                       className="flex-shrink-0 w-2/5 lg:w-1/5 bg-DGXgreen hover:bg-DGXblue rounded xs:text-sm md:text-base text-white text-xl p-2"
                     >
                       Add Comment
@@ -399,7 +396,13 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                             placeholder="Reply to this comment..."
                           />
                           <button
-                            onClick={() => handleAddReply(index, replyTexts[index], comment.DiscussionID)}
+                            onClick={() => {
+                              if (!replyTexts[index] || replyTexts[index].trim() === "") {
+                                alert("Reply cannot be empty!");
+                                return;
+                              }
+                              handleAddReply(index, replyTexts[index], comment.DiscussionID);
+                            }}
                             className="w-1/3 sm:w-1/3 md:w-auto my-2 bg-DGXgreen hover:bg-DGXblue rounded text-white text-xl p-2 xs:text-sm"
                           >
                             Add Reply
@@ -419,6 +422,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
     </div>
   );
 };
-``;
+;
 
 export default DiscussionModal;

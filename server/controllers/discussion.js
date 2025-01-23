@@ -216,17 +216,12 @@ export const getdiscussion = async (req, res) => {
 
 
 export const searchdiscussion = async (req, res) => {
-    let success = false;
-
-    // Capture search term from request body
+    let success = false;    
     const { searchTerm, userId } = req.body;
 
     if (!searchTerm || searchTerm.trim() === "") {
         return res.status(400).json({ success: false, message: "Search term is required." });
     }
-
-    // console.log("Search Term:", searchTerm, "User ID:", userId);
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const warningMessage = "Data is not in the right format";
@@ -292,7 +287,7 @@ export const searchdiscussion = async (req, res) => {
                     }
 
                     if (commentResult.length > 0) {
-                        // Process comments (same logic as before)
+    
                     }
 
                     updatedDiscussions.push({

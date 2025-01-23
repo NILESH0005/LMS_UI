@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import UserProfileChart from './UserProfileChart';
-import { FaFacebook, FaTwitter, FaLinkedin, FaGithub, FaEdit, FaUsers, FaPoll } from 'react-icons/fa';
+import { FaArrowRight, FaEdit, FaUsers, FaPoll, FaTrash } from 'react-icons/fa';
+// import { FaEdit } from "react-icons/fa";
 import { GoCommentDiscussion } from "react-icons/go";
 import { FaArrowTrendDown, FaArrowTrendUp, FaEllipsisVertical, FaPersonWalkingDashedLineArrowRight } from "react-icons/fa6";
 import { images } from '../../public/index.js';
@@ -334,11 +335,11 @@ const UserProfile = () => {
             {activeTab === 'profile' && (
               <div className="flex flex-col w-full 2xl:w-3/3 ">
                 <div className="flex bg-DGXwhite rounded-lg shadow-xl p-2 md:p-4 border border-DGXgreen ">
-                    {/* <div className="flex-1">
+                  {/* <div className="flex-1">
                       <h4 className="text-xl text-[#111827] font-bold">About</h4>
                       <p className="mt-2 text-DGXgray">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt voluptates obcaecati numquam error et ut fugiat asperiores. Sunt nulla ad incidunt laboriosam, laudantium est unde natus cum numquam, neque facere. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, magni odio magnam commodi sunt ipsum eum! Voluptas eveniet aperiam at maxime, iste id dicta autem odio laudantium eligendi commodi distinctio!</p>
                     </div> */}
-                    {/* <div className="flex items-end mt-4">
+                  {/* <div className="flex items-end mt-4">
                       <h1>Comming Soon.......</h1>
                       <span className="badge">Achievements</span>
                       <span className="badge">Badge 2</span>
@@ -429,28 +430,34 @@ const UserProfile = () => {
                   </div>
                   {
                     userDisscussions.map((discussion, index) => (
-                      <>
+                      <div key={index} className='post shadow-xl rounded-md p-2'>
+                        <a href="#" className="m-2 shadow-xl flex flex-col md:flex-row bg-white border border-DGXgreen rounded-lg hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+                          <div className="w-full md:w-1/4">
+                            <img className="object-cover w-full h-96 md:h-auto md:rounded-none rounded-t-lg md:rounded-s-lg" src={discussion.Image} alt="" />
+                          </div>
+                          <div className="w-full md:w-3/4 flex flex-col justify-between p-4 leading-normal">
+                            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{discussion.Title}</h5>
+                            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{discussion.Content}</p>
+                            <div className="flex justify-between items-center">
+                              {/* Read More Section */}
+                              <span className="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                                onClick={() => handleClickDiscussion(discussion)}>
+                                Read more
+                                <FaArrowRight className="ml-1 text-blue-600 dark:text-blue-400" />
+                              </span>
 
-                        <div className='post shadow-xl rounded-md p-2'>
-                          <a href="#" className="m-2 shadow-xl flex flex-col md:flex-row bg-white border border-DGXgreen rounded-lg hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-                            <div className="w-full md:w-1/4">
-                              <img className="object-cover w-full h-96 md:h-auto md:rounded-none rounded-t-lg md:rounded-s-lg" src={discussion.Image} alt="" />
-                            </div>
-                            <div className="w-full md:w-3/4 flex flex-col justify-between p-4 leading-normal">
-                              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{discussion.Title}</h5>
-                              <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{discussion.Content}</p>
-                              <div className="ms-0">
-                                <span className="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline" onClick={(e) => { handleClickDiscussion(discussion) }}>
-                                  Read more
-                                  <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                                  </svg>
-                                </span>
+                              {/* Edit & Delete Icons */}
+                              <div className="flex items-center gap-x-4">
+                                <FaEdit className="text-gray-600 hover:text-blue-600 cursor-pointer text-xl transition-transform transform hover:scale-110"
+                                  onClick={() => handleEditDiscussion(discussion)} />
+
+                                <FaTrash className="text-gray-600 hover:text-red-600 cursor-pointer text-xl transition-transform transform hover:scale-110"
+                                  onClick={() => handleDeleteDiscussion(discussion)} />
                               </div>
                             </div>
-                          </a>
-                        </div>
-                      </>
+                          </div>
+                        </a>
+                      </div>
                     ))
                   }
                 </div>
@@ -472,6 +479,7 @@ const UserProfile = () => {
               </div>
             )}
           </div>
+          
         </div>
       </div>
   );

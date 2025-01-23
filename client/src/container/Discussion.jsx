@@ -11,12 +11,14 @@ import Skeleton from 'react-loading-skeleton'; // Import Skeleton
 import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton styles
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { Tooltip } from 'react-tooltip';
 
 const Discussion = () => {
   const { fetchData, userToken, user } = useContext(ApiContext);
   const [demoDiscussions, setDemoDiscussions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [searchQuery, setSearchQuery] = useState("");
 
 
 
@@ -37,7 +39,7 @@ const Discussion = () => {
   const [commentCount, setCommentCount] = useState(0);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  // const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [title, setTitle] = useState('');
@@ -212,28 +214,16 @@ const Discussion = () => {
     { title: "Success Stories with NVIDIA-H100", link: "#", description: "Exchange stories and insights about how the NVIDIA-H100 is being utilized in different industries. Discuss successful projects and explore innovative applications of this powerful GPU." },
     { title: "Future of GPU Technology", link: "#", description: "Speculate on the future of GPU technology and NVIDIA's role in it. What advancements do you anticipate, and how do you see them shaping the tech landscape?" }
   ];
-
-  // const topUsers = [
-  //   { name: "User 1", points: 1200 },
-  //   { name: "User 2", points: 1100 },
-  //   { name: "User 3", points: 1050 },
-  //   { name: "User 4", points: 1020 },
-  //   { name: "User 5", points: 980 }
-  // ];
-
   const toggleNav = () => setIsNavOpen(!isNavOpen);
   const handleLike = () => setLikeCount(likeCount + 1);
-
   const handleComment = (discussion) => {
     setCommentCount(prevCount => prevCount + 1);
     openModal(discussion);
   };
-
   const openModal = (discussion) => {
     setSelectedDiscussion(discussion);
     setModalIsOpen(true);
   };
-
   const closeModal = () => {
     setModalIsOpen(false);
     setIsFormOpen(false);
@@ -258,6 +248,17 @@ const Discussion = () => {
       e.preventDefault();
       setTags(tags + ',' + tagInput.trim());
       setTagInput('');
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    searchDiscussion(e.target.value); // Dynamic search on every keydown
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      searchDiscussion(searchQuery); // Explicit search on Enter
     }
   };
 
@@ -397,16 +398,16 @@ const Discussion = () => {
   };
 
   console.log(demoDiscussions);
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
+  // const handleSearchChange = (e) => {
+  //   setSearchQuery(e.target.value);
+  // };
 
-  const handleKeyDown = async (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault(); // Prevent default form submission
-      await searchDiscussion(searchQuery); // Trigger the search
-    }
-  };
+  // const handleKeyDown = async (e) => {
+  //   if (e.key === 'Enter') {
+  //     e.preventDefault(); // Prevent default form submission
+  //     await searchDiscussion(searchQuery); // Trigger the search
+  //   }
+  // };
 
   return (
     <div>
@@ -424,18 +425,22 @@ const Discussion = () => {
               />
             ) : (
               <div className="relative w-full sm:w-64 mb-2">
-                <input
-                  type="text"
-                  className="w-full py-2 pl-10 pr-4 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-DGXgreen focus:ring-DGXgreen"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={handleSearchChange} // Call this directly without the arrow function
-                  onKeyDown={handleKeyDown}
-                />
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <FaSearch className="text-gray-400" />
-                </div>
+              <input
+                type="text"
+                className="w-full py-2 pl-10 pr-4 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-DGXgreen focus:ring-DGXgreen"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={handleSearchChange} // Trigger search dynamically on keydown
+                onKeyDown={handleKeyDown} // Explicit search on Enter
+                data-tooltip-id="search-tooltip"
+              />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <FaSearch className="text-gray-400" />
               </div>
+              <Tooltip id="search-tooltip" place="top" effect="solid">
+                Press Enter to Search
+              </Tooltip>
+            </div>
             )}
           </div>
 
@@ -613,7 +618,7 @@ const Discussion = () => {
                     className="w-full px-3 py-2 border rounded-lg"
                     value={tagInput}
                     onChange={handleTagInputChange}
-                    onKeyPress={handleTagInputKeyPress}
+                    // onKeyPress={handleTagInputKeyPress}
                     placeholder="Press Enter to add a tag"
                   />
                   <div className="mt-2 flex flex-wrap">
