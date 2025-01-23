@@ -24,12 +24,10 @@ const SIGNATURE = process.env.SIGNATURE;
 
 export const databaseUserVerification = async (req, res) => {
   let success = false;
-
   // Validate request body
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const warningMessage = "The data format is incorrect. Please ensure it meets the required format and try again.";
-
     logWarning(warningMessage); // Log the warning
     res
       .status(400)
@@ -113,7 +111,7 @@ export const databaseUserVerification = async (req, res) => {
                     Best regards,  
                     The DGX Community Team`;
 
-                    const htmlContent = `<!DOCTYPE html>
+                  const htmlContent = `<!DOCTYPE html>
                     <html>
                     <head>
                         <style>
@@ -150,7 +148,7 @@ export const databaseUserVerification = async (req, res) => {
                         </div>
                     </body>
                     </html>`;
-                    
+
                   const mailsent = await mailSender(
                     userEmail,
                     message,
@@ -197,7 +195,7 @@ export const databaseUserVerification = async (req, res) => {
           }
         } else {
           // User not found
-          const warningMessage = 
+          const warningMessage =
             "Access denied. You are not yet a part of this community. Please request a referral from an existing member to join.";
 
           logWarning(warningMessage); // Log the warning
@@ -281,7 +279,7 @@ export const registration = async (req, res) => {
 
         if (existingUsers[0].userEmailCount > 0) {
           // User with this email already exists
-          const warningMessage =  "An account with this email address already exists. Please log in or use a different email to register.";
+          const warningMessage = "An account with this email address already exists. Please log in or use a different email to register.";
 
           logWarning(warningMessage);
           closeConnection();
@@ -362,7 +360,7 @@ export const registration = async (req, res) => {
             }
           } while (!success);
         } else {
-          const warningMessage =  "This referral code has no remaining credits. Please try again with a different referral code.";
+          const warningMessage = "This referral code has no remaining credits. Please try again with a different referral code.";
 
           logWarning(warningMessage);
           closeConnection();
@@ -408,12 +406,11 @@ export const login = async (req, res) => {
   }
 
   const { email, password } = req.body;
-  // console.log(req.body)
 
   try {
     connectToDatabase(async (err, conn) => {
       if (err) {
-        logError(err); // Log the error
+        logError(err);
         return res.status(500).json({
           success: false,
           data: err,
@@ -422,8 +419,7 @@ export const login = async (req, res) => {
       }
 
       try {
-        const query =
-          "SELECT EmailId, Password, FlagPasswordChange, isAdmin FROM Community_User WHERE isnull(delStatus,0) = 0 AND EmailId = ?";
+        const query = "SELECT EmailId, Password, FlagPasswordChange, isAdmin FROM Community_User WHERE isnull(delStatus,0) = 0 AND EmailId = ?";
 
         const result = await queryAsync(conn, query, [email]);
 
@@ -435,23 +431,19 @@ export const login = async (req, res) => {
             .status(200)
             .json({ success: false, data: {}, message: warningMessage });
         }
-        const passwordCompare = await bcrypt.compare(
-          password,
-          result[0].Password
-        );
+        const passwordCompare = await bcrypt.compare(password, result[0].Password);
         if (!passwordCompare) {
           const warningMessage = "Please try to login with correct credentials";
           logWarning(warningMessage);
           closeConnection();
-          return res
-            .status(200)
-            .json({ success: false, data: {}, message: warningMessage });
+          return res.status(200).json({ success: false, data: {}, message: warningMessage });
         }
 
         const data = {
           user: {
             id: result[0].EmailId,
             isAdmin: result[0].isAdmin,
+            uniqueId: result[0].UserID
           },
         };
         const authtoken = jwt.sign(data, JWT_SECRET);
@@ -488,77 +480,6 @@ export const login = async (req, res) => {
     });
   }
 };
-
-// export const login = async (req, res) => {
-//   let success = false;
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) {
-//     const warningMessage = "The data format is incorrect. Please ensure it meets the required format and try again.";
-
-//     logWarning(warningMessage);
-//     return res.status(400).json({ success, data: errors.array(), message: warningMessage });
-//   }
-
-//   const { email, password } = req.body;
-//   console.log(req.body);
-
-//   try {
-//     connectToDatabase(async (err, conn) => {
-//       if (err) {
-//         logError(err);
-//         return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
-//       }
-
-//       try {
-//         const query = "SELECT EmailId, Password, FlagPasswordChange, IsAdmin FROM Community_User WHERE isnull(delStatus,0) = 0 AND EmailId = ?";
-//         const result = await queryAsync(conn, query, [email]);
-
-//         if (result.length === 0) {
-//           const warningMessage = "Please try to login with correct credentials";
-//           logWarning(warningMessage);
-//           closeConnection();
-//           return res.status(200).json({ success: false, data: {}, message: warningMessage });
-//         }
-
-//         const passwordCompare = await bcrypt.compare(password, result[0].Password);
-//         if (!passwordCompare) {
-//           const warningMessage = "Please try to login with correct credentials";
-//           logWarning(warningMessage);
-//           closeConnection();
-//           return res.status(200).json({ success: false, data: {}, message: warningMessage });
-//         }
-
-//         const data = {
-//           user: {
-//             id: result[0].EmailId,
-//             isAdmin: result[0].IsAdmin === 1  // Check if the user is an admin
-//           }
-//         };
-//         const authtoken = jwt.sign(data, JWT_SECRET);
-//         success = true;
-//         const infoMessage = result[0].IsAdmin === 1 ? "Admin login successful" : "User login successful";
-//         console.log("i am admin");
-//         logInfo(infoMessage);
-//         closeConnection();
-
-//         return res.status(200).json({
-//           success: true,
-//           data: { authtoken, flag: result[0].FlagPasswordChange, isAdmin: result[0].IsAdmin === 1 },
-//           message: infoMessage
-//         });
-
-//       } catch (queryErr) {
-//         logError(queryErr);
-//         closeConnection();
-//         return res.status(500).json({ success: false, data: queryErr, message: 'Something went wrong please try again' });
-//       }
-//     });
-//   } catch (error) {
-//     logError(error);
-//     closeConnection();
-//     return res.status(500).json({ success: false, data: {}, message: 'Something went wrong please try again' });
-//   }
-// };
 
 //Route 3) To change the password of the user
 
@@ -884,7 +805,7 @@ export const sendInvite = async (req, res) => {
           const email = await encrypt(req.body.email);
           const refercode = await encrypt(rows[0].ReferalNumber);
 
-          const registrationLink = `${baseLink}Register/?email=${email}&refercode=${refercode}`;
+          const registrationLink = `${baseLink}Register?email=${email}&refercode=${refercode}`;
 
           const message = `Welcome to the DGX Community!
 
@@ -1028,7 +949,7 @@ export const passwordRecovery = async (req, res) => {
               req.body.email,
             ]);
 
-            const registrationLink = `${baseLink}ResetPassword/?email=${email}&signature=${signature}`;
+            const registrationLink = `${baseLink}ResetPassword?email=${email}&signature=${signature}`;
 
             const message = `Hello,
 
@@ -1051,7 +972,7 @@ export const passwordRecovery = async (req, res) => {
                       .button {
                           display: inline-block;
                           padding: 10px 15px;
-                          background-color: #0056b3;
+                          background-color:rgb(154, 188, 224);
                           color: white;
                           text-decoration: none;
                           border-radius: 5px;
@@ -1233,6 +1154,77 @@ export const resetPassword = async (req, res) => {
       success: false,
       data: Err,
       message: "Something went wrong please try again",
+    });
+  }
+};
+
+export const deleteUser = (req, res) => {
+  let success = false;
+  const { userId } = req.body;
+  const adminName = req.user?.id;
+  try {
+    connectToDatabase(async (err, conn) => {
+      if (err) {
+        logError(err);
+        return res.status(500).json({
+          success: false,
+          data: err,
+          message: "Database connection error.",
+        });
+      }
+      try {
+        const checkQuery = `SELECT * FROM Community_User WHERE UserID = ? AND (delStatus IS NULL OR delStatus = 0)`;
+        const result = await queryAsync(conn, checkQuery, [userId]);
+        if (result.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found or already deleted.",
+          });
+        } else {
+          try {
+            const updateQuery = `UPDATE Community_User SET delStatus = 1, delOnDt = GETDATE(), AuthDel = ? OUTPUT inserted.UserID, inserted.delStatus, inserted.delOnDt, inserted.AuthDel WHERE UserID = ? AND (delStatus IS NULL OR delStatus = 0)`;
+            const rows = await queryAsync(conn, updateQuery, [adminName, userId]);
+            if (rows.length > 0) {
+              success = true;
+              logInfo("User deleted successfully");
+              return res.status(200).json({
+                success,
+                data: {
+                  userId: rows[0].UserID,
+                  AuthDel: rows[0].AuthDel,
+                  delOnDt: rows[0].delOnDt,
+                  delStatus: rows[0].delStatus
+                },
+                message: "User deleted successfully.",
+              });
+            } else {
+              logWarning("Failed to delete the user.");
+              return res.status(404).json({
+                rows,
+                success: false,
+                message: "Failed to delete the user.",
+              });
+            }
+          } catch (error) {
+            logError(updateErr);
+            return res.status(500).json({
+              success: false,
+              data: updateErr,
+              message: "Error updating user deletion.",
+            });
+          }
+        }
+      } catch (error) {
+        return res.status(404).json({
+          success: false,
+          message: "Error Finding User's data!",
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(404).json({
+      success: false,
+      message: "Unable to connect to the database!",
     });
   }
 };
