@@ -60,30 +60,7 @@ const Discussions = () => {
     fetchDiscussions();
   }, [fetchData]);
 
-  // Handle discussion approval
-  const handleApprove = async (discussionId) => {
-    const endpoint = `discussion/approve`; // Adjust your API endpoint
-    const method = 'POST';
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    const body = { discussionId };
-
-    try {
-      const result = await fetchData(endpoint, method, body, headers);
-      if (result.success) {
-        // Update local state to reflect the change
-        setDiscussions(discussions.map(discussion =>
-          discussion.DiscussionID === discussionId ? { ...discussion, approved: true } : discussion
-        ));
-        toast.success('Discussion approved successfully');
-      } else {
-        throw new Error(result.message || 'Failed to approve discussion');
-      }
-    } catch (error) {
-      toast.error(`Error approving discussion: ${error.message}`);
-    }
-  };
+  
 
   const handleDeleteUser = async () => {
     const endpoint = "/user/deleteUser";
@@ -103,54 +80,7 @@ const Discussions = () => {
       setError('Failed to delete user');
     }
   };
-
-  // Handle discussion rejection
-  const handleReject = async (discussionId) => {
-    const endpoint = `discussion/reject`; // Adjust your API endpoint
-    const method = 'POST';
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    const body = { discussionId };
-
-    try {
-      const result = await fetchData(endpoint, method, body, headers);
-      if (result.success) {
-        // Update local state to reflect the change
-        setDiscussions(discussions.filter(discussion => discussion.DiscussionID !== discussionId));
-        toast.success('Discussion rejected successfully');
-      } else {
-        throw new Error(result.message || 'Failed to reject discussion');
-      }
-    } catch (error) {
-      toast.error(`Error rejecting discussion: ${error.message}`);
-    }
-  };
-
-  // Handle discussion deletion
-  const handleDelete = async (discussionId) => {
-    const endpoint = `discussion/delete`; // Adjust your API endpoint
-    const method = 'DELETE';
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    const body = JSON.stringify({ discussionId });
-
-    try {
-      const result = await fetchData(endpoint, method, body, headers);
-      if (result.success) {
-        setDiscussions(discussions.filter(discussion => discussion.DiscussionID !== discussionId)); // Remove deleted discussion from state
-        toast.success('Discussion deleted successfully');
-      } else {
-        throw new Error(result.message || 'Failed to delete discussion');
-      }
-    } catch (error) {
-      toast.error(`Error deleting discussion: ${error.message}`);
-    }
-  };
-
   
-
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -235,7 +165,7 @@ const Discussions = () => {
                           </button>
                           <button
                             type="button"
-                            onClick={handleDelete}
+                            onClick={handleDeleteUser}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg"
                           >
                             Delete
