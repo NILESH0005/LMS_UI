@@ -3,10 +3,8 @@ export async function queryAsync(conn, query, params) {
         conn.query(query, params, (err, results) => {
             if (err) {
                 console.log(err);
-                
                 return reject(err);
             }
-            // console.log(results)
             resolve(results);
         });
     });
