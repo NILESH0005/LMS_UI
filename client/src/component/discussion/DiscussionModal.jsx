@@ -1,10 +1,9 @@
 import React, { useState, useContext } from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai"
-import ApiContext from '../context/ApiContext.jsx';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import images from "../../public/images.js";
-
+import ApiContext from "../../context/ApiContext.jsx";
+import images, {} from "../../../public/images.js"
 const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
   const [dissComments, setDissComments] = useState([]);
   const [demoDiscussions, setDemoDiscussions] = useState([]);
@@ -13,7 +12,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
   const [replyTexts, setReplyTexts] = useState({});
 
   const { fetchData, userToken, user } = useContext(ApiContext);
-
 
   const [loading, setLoading] = useState(false);
 
@@ -249,7 +247,7 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                     <div className="text-3xl">{discussion.Title}</div>
                     <div className="flex flex-col">
                       <span>{discussion.UserName}</span>
-                      <span>{new Date(discussion.timestamp).toLocaleString()}</span>
+                      <span>{new Date(discussion.timestamp).toLocaleString('en-GB')}</span>
                     </div>
                   </div>
                 </div>
@@ -360,7 +358,7 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                       <li key={index} className="p-2 sm:p-4 border rounded-lg space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-md sm:text-lg font-semibold">{comment.UserName}</span>
-                          <span className="text-xs sm:text-sm text-gray-500">{comment.timestamp}</span>
+                          <span className="text-xs sm:text-sm text-gray-500">{new Date(comment.timestamp).toLocaleDateString('en-GB')}</span>
                         </div>
                         <div className="text-md sm:text-lg">{comment.Comment}</div>
                         {/* <div className="flex items-center gap-2">
@@ -375,7 +373,7 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                               <div key={replyIndex} className="ml-4 p-2 sm:p-4 border-l border-gray-200">
                                 <div className="flex items-center justify-between">
                                   <span className="text-md sm:text-lg font-semibold">{reply.UserName}</span>
-                                  <span className="text-xs sm:text-sm text-gray-500">{reply.timestamp}</span>
+                                  <span className="text-xs sm:text-sm text-gray-500">{new Date(comment.timestamp).toLocaleDateString('en-GB')}</span>
                                 </div>
                                 <div className="text-md sm:text-lg">{reply.Comment}</div>
                                 {/* <div className="flex items-center gap-2">

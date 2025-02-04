@@ -3,16 +3,21 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
+import 'react-loading-skeleton/dist/skeleton.css';
+import "react-toastify/dist/ReactToastify.css";
 import ApiProvider from "./context/ApiProvider.jsx";
+import { ConfirmationModalProvider } from "./context/ConfirmationModalContext.jsx"; // Import the Provider
 
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
-const root = ReactDOM.createRoot(document.getElementById("root")).render(
+root.render(
+  <ConfirmationModalProvider>
   <ApiProvider>
-    {/* <BrowserRouter basename="/DGX_Community/"> */}
     <BrowserRouter>
-      <App />
+       {/* Wrap with the Provider */}
+        <App />
+      
     </BrowserRouter>
   </ApiProvider>
+  </ConfirmationModalProvider>
 );
-root.render(<App />);
-

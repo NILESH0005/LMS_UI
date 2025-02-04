@@ -1,60 +1,46 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { FaSearch, FaComment, FaWindowClose, FaTrophy } from 'react-icons/fa';
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { FaSearch, FaComment, FaTrophy } from 'react-icons/fa';
+import { toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
 import ApiContext from '../context/ApiContext.jsx';
-import DiscussionModal from '../component/DiscussionModal';
-import { compressImage } from '../utils/compressImage.js';
+import DiscussionModal from '../component/discussion/DiscussionModal';
 import { AiFillLike, AiOutlineLike, AiOutlineComment } from "react-icons/ai";
 import { useCallback } from 'react';
-import Skeleton from 'react-loading-skeleton'; // Import Skeleton
-import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton styles
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import Skeleton from 'react-loading-skeleton';
+// import 'react-loading-skeleton/dist/skeleton.css';
 import { Tooltip } from 'react-tooltip';
+import AddDiscussion from '../component/discussion/AddDiscussion.jsx';
 
 const Discussion = () => {
   const { fetchData, userToken, user } = useContext(ApiContext);
   const [demoDiscussions, setDemoDiscussions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [searchQuery, setSearchQuery] = useState("");
-
-
-
-  useEffect(() => {
-    // Simulating data fetching
-    const loadEvents = async () => {
-      setIsLoading(true);
-      // Simulate network delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setIsLoading(false);
-    };
-
-    loadEvents();
-  }, []);
-
-
   const [likeCount, setLikeCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState('all');
   // const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [tags, setTags] = useState('');
-  const [tagInput, setTagInput] = useState('');
-  const [links, setLinks] = useState('');
-  const [linkInput, setLinkInput] = useState('');
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false); 
   const [discussions, setDiscussions] = useState([]);
-  const [privacy, setPrivacy] = useState('private');
+  // const [privacy, setPrivacy] = useState('private');
   const [selectedDiscussion, setSelectedDiscussion] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [communityHighlights, setCommunityHighlights] = useState([])
   const [topUsers, setTopUsers] = useState([])
+  const [loading, setLoading] = useState(false);
+
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      setIsLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setIsLoading(false);
+    };
+    loadEvents();
+  }, []);
 
   const getCommunityHighlights = (discussions) => {
     const sortedDiscussions = discussions.sort((a, b) => b.comment.length - a.comment.length);
@@ -82,68 +68,64 @@ const Discussion = () => {
 
     return usersArray.sort((a, b) => b.count - a.count).slice(0, 5);
   };
-
-  useEffect(() => {
+  const fetchDiscussionData = (userEmail) => {
     try {
-      const fetchDiscussionData = (userEmail) => {
-        try {
-          const body = userEmail ? { user: userEmail } : { user: null };
-          const endpoint = "discussion/getdiscussion";
-          const method = "POST";
-          const headers = {
-            'Content-Type': 'application/json',
-          };
-
-          setLoading(true);
-          fetchData(endpoint, method, body, headers)
-            .then(result => {
-              if (result && result.data) {
-                return result.data;
-              } else {
-                // return
-                throw new Error("Invalid data format");
-              }
-            })
-            .then(data => {
-              if (data && data.updatedDiscussions) {
-                setDemoDiscussions(data.updatedDiscussions);
-                const highlights = getCommunityHighlights(data.updatedDiscussions);
-                setCommunityHighlights(highlights)
-                const users = getTopUsersByDiscussions(data.updatedDiscussions);
-                setTopUsers(users)
-              } else {
-                // return
-                throw new Error("Missing updatedDiscussions in response data");
-              }
-              setLoading(false);
-            })
-            .catch(error => {
-              setLoading(false);
-              toast.error(`Something went wrong: ${error.message}`, {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-              });
-            });
-        } catch (error) {
-          console.log(error)
-        }
+      const body = userEmail ? { user: userEmail } : { user: null };
+      const endpoint = "discussion/getdiscussion";
+      const method = "POST";
+      const headers = {
+        'Content-Type': 'application/json',
       };
-      if (userToken && user) {
-        fetchDiscussionData(user.EmailId);
-      } else {
-        fetchDiscussionData(null);
-      }
+
+      setLoading(true);
+      fetchData(endpoint, method, body, headers)
+        .then(result => {
+          if (result && result.data) {
+            return result.data;
+          } else {
+            // return
+            throw new Error("Invalid data format");
+          }
+        })
+        .then(data => {
+          if (data && data.updatedDiscussions) {
+            setDemoDiscussions(data.updatedDiscussions);
+            const highlights = getCommunityHighlights(data.updatedDiscussions);
+            setCommunityHighlights(highlights)
+            const users = getTopUsersByDiscussions(data.updatedDiscussions);
+            setTopUsers(users)
+          } else {
+            // return
+            throw new Error("Missing updatedDiscussions in response data");
+          }
+          setLoading(false);
+        })
+        .catch(error => {
+          setLoading(false);
+          toast.error(`Something went wrong: ${error.message}`, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        });
     } catch (error) {
       console.log(error)
     }
+  };
+  useEffect(() => {
+      if (userToken && user) {
+        setIsLoggedIn(true);
+        fetchDiscussionData(user.EmailId);
+      } else {
+        setIsLoggedIn(false);
+        fetchDiscussionData(null);
+      }
   }, [user, userToken, fetchData]);
-
 
 
   const searchDiscussion = useCallback(async (searchTerm, userId) => {
@@ -206,14 +188,6 @@ const Discussion = () => {
       }
     }
   };
-
-  const hotTopics = [
-    { title: "NVIDIA Innovations", link: "#", description: "Discover the latest advancements from NVIDIA and how they are shaping the future of technology." },
-    { title: "NVIDIA-H100: Performance Unleashed", link: "#", description: "Discuss the performance of the NVIDIA-H100 GPU. Share your experiences, benchmarks, and use cases to help others understand its capabilities and benefits." },
-    { title: "NVIDIA Ecosystem", link: "#", description: "Engage with other community members to discuss how various NVIDIA tools and platforms integrate with each other. Share tips, tricks, and best practices for maximizing the NVIDIA ecosystem." },
-    { title: "Success Stories with NVIDIA-H100", link: "#", description: "Exchange stories and insights about how the NVIDIA-H100 is being utilized in different industries. Discuss successful projects and explore innovative applications of this powerful GPU." },
-    { title: "Future of GPU Technology", link: "#", description: "Speculate on the future of GPU technology and NVIDIA's role in it. What advancements do you anticipate, and how do you see them shaping the tech landscape?" }
-  ];
   const toggleNav = () => setIsNavOpen(!isNavOpen);
   const handleLike = () => setLikeCount(likeCount + 1);
   const handleComment = (discussion) => {
@@ -229,28 +203,6 @@ const Discussion = () => {
     setIsFormOpen(false);
   };
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  useEffect(() => {
-    if (userToken && user) {
-      setIsLoggedIn(true);
-      console.log(user);
-
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, [user, userToken]);
-
-
-
-  const handleTagInputChange = (e) => setTagInput(e.target.value);
-
-  const handleTagInputKeyPress = (e) => {
-    if (e.key === 'Enter' && tagInput.trim() !== '') {
-      e.preventDefault();
-      setTags(tags + ',' + tagInput.trim());
-      setTagInput('');
-    }
-  };
-
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     searchDiscussion(e.target.value); // Dynamic search on every keydown
@@ -258,162 +210,12 @@ const Discussion = () => {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      searchDiscussion(searchQuery); // Explicit search on Enter
+      searchDiscussion(searchQuery);
     }
   };
-
-  const removeTag = (tagToRemove) => {
-    const tagArray = tags.split(',');
-    const filteredTags = tagArray.filter(tag => tag !== tagToRemove);
-    const newTags = filteredTags.join(',');
-    setTags(newTags);
-  }
-  const handleImageChange = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file) {
-        const compressedFile = await compressImage(file);
-        setSelectedImage(compressedFile);
-      }
-    }
-  };
-
-  const handleLinkInputChange = (e) => setLinkInput(e.target.value);
-
-  const handleLinkInputKeyPress = (e) => {
-    if (e.key === 'Enter' && linkInput.trim() !== '') {
-      e.preventDefault();
-      setLinks(links + ',' + linkInput.trim());
-      setLinkInput('');
-    }
-  };
-
-  const removeLink = (linkToRemove) => {
-    const linkArray = links.split(',');
-    const filteredLinks = linkArray.filter(link => link !== linkToRemove);
-    const newLinks = filteredLinks.join(',');
-    setLinks(newLinks);
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const endpoint = "discussion/discussionpost";
-
-    const method = "POST";
-    const body = {
-      title,
-      content,
-      tags: tags,
-      url: links,
-      image: selectedImage,
-      visibility: privacy
-
-    };
-    const headers = {
-      'Content-Type': 'application/json',
-      'auth-token': userToken
-    };
-    setLoading(true);
-
-    try {
-      const data = await fetchData(endpoint, method, body, headers);
-      // console.l
-      if (!data.success) {
-        setLoading(false);
-        toast.error(`Error in posting discussion try again: ${data.message}`, {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      } else if (data.success) {
-        console.log(data);
-        setLoading(false);
-        if (privacy == "private") {
-          toast.success("Private Discussion Posted Successfully", {
-            position: "center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-        } else {
-          const newDiscussion = {
-            DiscussionID: data.postID,
-            Title: title,
-            Content: content,
-            Tag: tags,
-            ResourceUrl: links,
-            Image: selectedImage,
-            Visibility: privacy,
-            comment: []
-          };
-          setDemoDiscussions([newDiscussion, ...demoDiscussions]);
-          toast.success("Disscussion Post Successfully", {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            style: {
-              backgroundColor: 'green',
-              color: 'white',
-            }
-          });
-        }
-      }
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-
-      toast.error(`On catching error: Something went wrong, try again`, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-    setTitle('');
-    setContent('');
-    setTags('');
-    setLinks('');
-    setSelectedImage(null);
-    setTagInput('');
-    setLinkInput('');
-    setIsFormOpen(false);
-  };
-
-  console.log(demoDiscussions);
-  // const handleSearchChange = (e) => {
-  //   setSearchQuery(e.target.value);
-  // };
-
-  // const handleKeyDown = async (e) => {
-  //   if (e.key === 'Enter') {
-  //     e.preventDefault(); // Prevent default form submission
-  //     await searchDiscussion(searchQuery); // Trigger the search
-  //   }
-  // };
 
   return (
     <div>
-
-      <ToastContainer style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
-
       <header className="flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-DGXblue text-sm py-4">
         <nav className="max-w-[85rem] w-full mx-auto px-4 flex flex-wrap basis-full items-center justify-between " aria-label="Global">
           <div className="sm:order-4 flex items-center w-full sm:w-auto mt-0 sm:mt-0 sm:ml-4 ">
@@ -425,22 +227,22 @@ const Discussion = () => {
               />
             ) : (
               <div className="relative w-full sm:w-64 mb-2">
-              <input
-                type="text"
-                className="w-full py-2 pl-10 pr-4 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-DGXgreen focus:ring-DGXgreen"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={handleSearchChange} // Trigger search dynamically on keydown
-                onKeyDown={handleKeyDown} // Explicit search on Enter
-                data-tooltip-id="search-tooltip"
-              />
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <FaSearch className="text-gray-400" />
+                <input
+                  type="text"
+                  className="w-full py-2 pl-10 pr-4 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-DGXgreen focus:ring-DGXgreen"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={handleSearchChange} // Trigger search dynamically on keydown
+                  onKeyDown={handleKeyDown} // Explicit search on Enter
+                  data-tooltip-id="search-tooltip"
+                />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                  <FaSearch className="text-gray-400" />
+                </div>
+                <Tooltip id="search-tooltip" place="top" effect="solid">
+                  Press Enter to Search
+                </Tooltip>
               </div>
-              <Tooltip id="search-tooltip" place="top" effect="solid">
-                Press Enter to Search
-              </Tooltip>
-            </div>
             )}
           </div>
 
@@ -502,16 +304,15 @@ const Discussion = () => {
 
             <div className="space-y-4">
               {isLoading ? (
-                // Display Skeleton loaders in place of the actual content
+
                 Array.from({ length: 5 }).map((_, index) => (
                   <Skeleton
                     key={index}
-                    height="8.5rem" // Adjust height as needed to mimic the card's height
+                    height="8.5rem"
                     className="w-full bg-gray-300 rounded-lg mb-4"
                   />
                 ))
               ) : (
-                // Display actual content when loading is complete
                 communityHighlights.map((topic) => (
                   <div
                     key={topic.DiscussionID}
@@ -571,147 +372,7 @@ const Discussion = () => {
           {/* All Discussions */}
           <h2 className="sm:text-sm md:text-base lg:text-lg font-bold mb-4">{selectedSection.charAt(0).toUpperCase() + selectedSection.slice(1)} Discussions</h2>
           <div className="flex flex-col space-y-4">
-            {isFormOpen && (
-              <form onSubmit={handleSubmit} className="border border-gray-300 rounded-lg p-4">
-                <h3 className="text-lg font-bold mb-4">Start a New Discussion</h3>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2" htmlFor="title">Title <span className="text-red-500">*</span></label>
-                  <input
-                    id="title"
-                    type="text"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2" htmlFor="content">
-                    Content <span className="text-red-500">*</span>
-                  </label>
-                  <ReactQuill
-                    id="content"
-                    theme="snow"
-                    value={content}
-                    onChange={setContent}
-                    className="border rounded-lg"
-                    modules={{
-                      toolbar: [
-                        [{ header: [1, 2, 3, false] }],
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote", "code-block"],
-                        [{ list: "ordered" }, { list: "bullet" }],
-                        ["link", "formula"],
-                        ["clean"],
-                      ]
-                    }}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Tags
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    value={tagInput}
-                    onChange={handleTagInputChange}
-                    // onKeyPress={handleTagInputKeyPress}
-                    placeholder="Press Enter to add a tag"
-                  />
-                  <div className="mt-2 flex flex-wrap">
-                    {tags.split(',').filter(tag => tag).map((tag, index) => (
-                      <div key={index} className="flex items-center bg-DGXgreen text-white rounded-full px-3 py-1 mr-2 mt-2">
-                        <span>{tag}</span>
-                        <button
-                          type="button"
-                          className="ml-2 focus:outline-none"
-                          onClick={() => removeTag(tag)}
-                        >
-                          <FaWindowClose />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Links
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    value={linkInput}
-                    onChange={handleLinkInputChange}
-                    onKeyPress={handleLinkInputKeyPress}
-                    placeholder="Press Enter to add a link"
-                  />
-                  <div className="mt-2 flex flex-wrap">
-                    {links.split(',').filter(link => link).map((link, index) => (
-                      <div key={index} className="flex items-center bg-DGXgreen text-white rounded-full px-3 py-1 mr-2 mt-2">
-                        <span>{link}</span>
-                        <button
-                          type="button"
-                          className="ml-2 focus:outline-none"
-                          onClick={() => removeLink(link)}
-                        >
-                          <FaWindowClose />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Image
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                  />
-                  {selectedImage && (
-                    <div className="mt-2">
-                      <img src={selectedImage} alt="Selected" className="max-h-40" />
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Privacy
-                  </label>
-                  <select
-                    value={privacy}
-                    onChange={(e) => setPrivacy(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  >
-                    <option value="private">Private</option>
-                    <option value="public">Public</option>
-                  </select>
-                </div>
-
-                <div className="flex justify-end space-x-2">
-                  <button
-                    type="button"
-                    className="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg"
-                    onClick={closeModal}
-                  >
-                    Close
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-DGXgreen text-white py-2 px-4 rounded-lg"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form>
-            )}
+            {isFormOpen && <AddDiscussion closeModal={closeModal} demoDiscussions={demoDiscussions} setDemoDiscussions={setDemoDiscussions}/>}
 
             <div className="two-h-screen scrollbar scrollbar-thin  overflow-y-auto px-6">
               {isLoading ? (
@@ -795,6 +456,7 @@ const Discussion = () => {
                       >
                         <FaComment className="mr-2" /> {discussion.comment.length} Comments
                       </button>
+
                     </div>
                   </div>
                 ))

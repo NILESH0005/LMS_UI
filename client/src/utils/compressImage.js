@@ -17,10 +17,10 @@ export const compressImage = (file) => {
                     const mimeType = compressedFile.type;
                     const base64DataURL = `data:${mimeType};base64,${base64String}`;
                     resolve(base64DataURL);
-                    console.log(base64DataURL)
+                    // console.log(base64DataURL)
                 };
                 reader.onerror = (error) => reject(error);
-                console.log(compressedFile)
+                // console.log(compressedFile)
                 reader.readAsDataURL(compressedFile); // Read as Data URL to get Base64
             })
             .catch((error) => {

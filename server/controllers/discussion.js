@@ -68,13 +68,16 @@ export const discussionpost = async (req, res) => {
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), 0); 
                     `;
                     const discussionPost = await queryAsync(conn, discussionPostQuery, [rows[0].UserID, title, content, image, likes, comment, tags, visibility, threadReference, url, rows[0].Name, 0])
-                    const lastInsertedIdQuerry = `select top 1 DiscussionID from Community_Discussion where ISNULL(delStatus,0)=0 order by DiscussionID desc;`
+                    const lastInsertedIdQuerry = `select top 1 DiscussionID, Visibility from Community_Discussion where ISNULL(delStatus,0)=0 order by DiscussionID desc;`
                     const lastInsertedId = await queryAsync(conn, lastInsertedIdQuerry)
+                    const lstInsertedvisibilityValue = `select ddValue from tblDDReferences where idCode= ? and ISNULL(delStatus,0)=0`
+                    const lstInserterterVal = await queryAsync(conn, lstInsertedvisibilityValue, [lastInsertedId[0].Visibility])
+                    console.log("val",lstInserterterVal[0].ddValue)
                     success = true;
                     closeConnection();
                     const infoMessage = "Disscussion Posted Successfully"
                     logInfo(infoMessage)
-                    res.status(200).json({ success, data: { postId: lastInsertedId[0].DiscussionID }, message: infoMessage });
+                    res.status(200).json({ success, data: { postId: lastInsertedId[0].DiscussionID, visibility:{ value:lstInserterterVal[0].ddValue, id:lastInsertedId[0].Visibility}}, message: infoMessage });
                     return
                 } else {
                     closeConnection();
@@ -129,7 +132,7 @@ export const getdiscussion = async (req, res) => {
                     rows.push({ UserID: null });
                 }
 
-                const discussionGetQuery = `SELECT DiscussionID, UserID, AuthAdd as UserName, Title, Content, Image, Tag, ResourceUrl, AddOnDt as timestamp FROM Community_Discussion WHERE ISNULL(delStatus, 0) = 0 AND Visibility = 'public' AND Reference = 0 ORDER BY AddOnDt DESC`;
+                const discussionGetQuery = `SELECT DiscussionID, UserID, AuthAdd as UserName, Title, Content, Image, Tag, ResourceUrl, AddOnDt as timestamp FROM Community_Discussion WHERE ISNULL(delStatus, 0) = 0 AND Visibility = '2' AND Reference = 0 ORDER BY AddOnDt DESC`;
                 const discussionGet = await queryAsync(conn, discussionGetQuery);
                 // console.log("Discussion Get Result:", discussionGet); // Log discussionGet
 

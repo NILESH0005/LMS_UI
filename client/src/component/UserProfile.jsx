@@ -14,8 +14,9 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import ApiContext from '../context/ApiContext.jsx';
 import { ToastContainer, toast, } from "react-toastify";
-import DiscussionModal from './DiscussionModal.jsx';
+
 import EditProfileModal from './EditProfileModal';
+import DiscussionModal from './discussion/DiscussionModal.jsx';
 
 const UserProfile = () => {
 
@@ -345,7 +346,6 @@ const UserProfile = () => {
                       <span className="badge">Badge 2</span>
                     </div> */}
                 </div>
-                {/* yhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*/}
                 <div className="flex-1/2 bg-DGXwhite rounded-lg shadow-xl mt-4 p-2 md:p-8 border border-DGXgreen">
                   <h4 className="text-xl text-[#111827] font-bold">Statistics</h4>
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">

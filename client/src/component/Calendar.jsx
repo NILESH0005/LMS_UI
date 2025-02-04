@@ -7,9 +7,10 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 // import { images } from '../constant/index.js';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-// import ApiContext from '../context/ApiContext.jsx';
 import ApiContext from '../context/ApiContext.jsx';
 import { compressImage } from '../utils/compressImage.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -18,15 +19,85 @@ const EventTable = () => {
   const { fetchData, userToken } = useContext(ApiContext);
   const [events, setEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
+  const [dropdownData, setDropdownData] = useState({
+    categoryOptions: [],
+    companyCategoryOptions: []
+  });
+  // const [newEventDD, setNewEventDD] = useState({
+  //   category: '',
+  //   companyCategory: ''
+  // });
+
+  useEffect(() => {
+    // Fetch categories first (Privacy, eventType, eventHost)
+    const fetchDropdownValues = async (category) => {
+      try {
+        const response = await fetch(`http://localhost:8000/dropdown/getDropdownValues?category=${category}`);
+        const data = await response.json();
+        return data.success ? data.data : [];
+      } catch (error) {
+        console.error('Error fetching dropdown values:', error);
+        return [];
+      }
+    };
+
+    // Fetch category options for Privacy, eventType, eventHost
+    const fetchCategories = async () => {
+      // const privacyOptions = await fetchDropdownValues('Privacy');
+      const eventTypeOptions = await fetchDropdownValues('eventType');
+      const eventHostOptions = await fetchDropdownValues('eventHost');
+
+      setDropdownData({
+        categoryOptions: eventTypeOptions,
+        companyCategoryOptions: eventHostOptions
+      });
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'categoryId' || name === 'companyCategoryId') {
+      const options = name === 'categoryId' ? dropdownData.categoryOptions : dropdownData.companyCategoryOptions;
+      const selectedOption = options.find(option => option.ddValue === value);
+      console.log("optio conpamny", selectedOption)
+      setNewEvent({ ...newEvent, [name]: selectedOption ? selectedOption.idCode : '' });
+    } else {
+      setNewEvent({ ...newEvent, [name]: value });
+    }
+  };  
+  const handleChanges = (e) => {
+    // console.log("this is category workshop/event", categoryId);
+    const { name, value } = e.target;
+    if (name === 'categoryId' || name === 'companyCategoryId') {
+      // Find the corresponding idCode for the selected ddValue
+      const options = name === 'categoryId' ? dropdownData.categoryOptions : dropdownData.companyCategoryOptions;
+      const selectedOption = options.find(option => option.ddValue === value);
+      console.log("optio conpamny", selectedOption)
+      setNewEvent((prev) => ({
+        ...prev,
+        [name]: selectedOption ? selectedOption.idCode : ''
+      }));
+    } else {
+      setNewEvent((prev) => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const [errors, setErrors] = useState({});
   const [newEvent, setNewEvent] = useState({
 
-    title: '',
+    title: '',  
     start: '',
     end: '',
-    category: 'Select one',
-    companyCategory: 'Select one',
+    categoryId: '',
+    companyCategoryId: '',
     poster: null,
     venue: '',
     description: '',
@@ -34,13 +105,17 @@ const EventTable = () => {
     registerLink: '', // Add registerLink to state
   });
 
+  const handleCloseConfirmationModal = () => {
+    setShowCancelConfirmation(true); // Show the confirmation modal
+  };
+
   const handleEditEvent = (event) => {
     setNewEvent({
       title: event.EventTitle || '',
       start: moment(event.StartDate).format('YYYY-MM-DD') || '',
       end: moment(event.EndDate).format('YYYY-MM-DD') || '',
-      category: event.Category || 'Select one',
-      companyCategory: event.CompanyCategory || 'Select one',
+      category: event.categoryId || 'Select one',
+      companyCategory: event.companyCategoryId|| 'Select one',
       poster: event.EventImage || null,
       venue: event.Venue || '',
       description: event.EventDescription || '',
@@ -59,7 +134,7 @@ const EventTable = () => {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const endpoint = "eventandworkshop/getEvent"; // Adjust the endpoint to your API
+      const endpoint = "eventandworkshop/getEvent";
       const method = "GET";
       const headers = {
         'Content-Type': 'application/json',
@@ -67,14 +142,16 @@ const EventTable = () => {
 
       try {
         const result = await fetchData(endpoint, method, {}, headers);
-        if (result.success) {
+        console.log("event result:",result)
+        if (result.success && Array.isArray(result.data)) {
           setEvents(result.data);
         } else {
-          setError(result.message || 'Failed to fetch event data');
+          console.error("Invalid data format:", result);
+          setEvents([]);
         }
       } catch (error) {
         console.error("Error fetching events:", error);
-        setError('Failed to fetch event data');
+        setEvents([]); // Set events to an empty array if there's an error
       } finally {
         setLoading(false);
       }
@@ -89,7 +166,7 @@ const EventTable = () => {
 
 
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
   const fileInputRef = useRef(null);
 
   // Create refs for input fields
@@ -117,29 +194,26 @@ const EventTable = () => {
     }
   };
 
-  const handleDeleteUser = async () => {
-    const endpoint = "/user/deleteUser";
-    const method = "POST";
-    const headers = { 'Content-Type': 'application/json' };
+  // const handleDeleteUser = async () => {
+  //   const endpoint = "/user/deleteUser";
+  //   const method = "POST";
+  //   const headers = { 'Content-Type': 'application/json' };
 
-    try {
-      const result = await fetchData(endpoint, method, {}, headers);
-      if (result?.success) {
-        setUsers(users.filter((user) => user.UserID !== selectedUserId));
-        setShowModal(false);
-      } else {
-        setError(result?.message || 'Failed to delete user');
-      }
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      setError('Failed to delete user');
-    }
-  };
+  //   try {
+  //     const result = await fetchData(endpoint, method, {}, headers);
+  //     if (result?.success) {
+  //       setUsers(users.filter((user) => user.UserID !== selectedUserId));
+  //       setShowModal(false);
+  //     } else {
+  //       setError(result?.message || 'Failed to delete user');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error deleting user:', error);
+  //     setError('Failed to delete user');
+  //   }
+  // };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewEvent({ ...newEvent, [name]: value });
-  };
+  
 
   const handleDescriptionChange = (value) => {
     setNewEvent({ ...newEvent, description: value });
@@ -159,14 +233,12 @@ const EventTable = () => {
   const handleSubmit = async () => {
     const errors = {};
 
-
-
     // Validate form fields
     if (!newEvent.title) errors.title = 'Event title is required.';
     if (!newEvent.start) errors.start = 'Start date is required.';
-    if (!newEvent.end) errors.end = 'End date is required.';
-    if (newEvent.category === 'Select one') errors.category = 'Please select a category.';
-    if (newEvent.companyCategory === 'Select one') errors.companyCategory = 'Please select a company category.';
+    // if (!newEvent.end) errors.end = 'End date is required.';
+    if (newEvent.categoryId === 'Select one') errors.categoryId = 'Please select a category.';
+    if (newEvent.companyCategoryId === 'Select one') errors.companyCategoryId = 'Please select a company category.';
     if (!newEvent.venue) errors.venue = 'Venue is required.';
     if (!newEvent.description) errors.description = 'Description is required.';
     if (!newEvent.host) errors.host = 'Host is required.';
@@ -199,43 +271,59 @@ const EventTable = () => {
     const method = 'POST';
     const headers = {
       'Content-Type': 'application/json',
-      'auth-token': userToken
+      'auth-token': userToken,
     };
     const body = {
       title: newEvent.title,
       start: newEvent.start,
       end: newEvent.end,
-      category: newEvent.category,
-      companyCategory: newEvent.companyCategory,
+      category: newEvent.categoryId, // Send categoryId
+      companyCategory: newEvent.companyCategoryId,
       venue: newEvent.venue,
       host: newEvent.host,
       registerLink: newEvent.registerLink,
       poster: newEvent.poster, // Ensure you handle the poster appropriately
       description: newEvent.description,
     };
-
+    console.log("body is ", body)
 
     try {
       const data = await fetchData(endpoint, method, body, headers);
+      console.log("data is ", data);
       if (data.success) {
-        setEvents([
-          ...events,
-          {
-            ...newEvent,
-            start: new Date(newEvent.start),
-            end: new Date(newEvent.end),
-          },
-        ]);
-        resetForm();
+        const addedEvent = {
+          EventTitle: newEvent.title,
+          StartDate: newEvent.start,
+          EndDate: newEvent.end,
+          Category: newEvent.categoryId,
+          CompanyCategory: newEvent.companyCategoryId,
+          Venue: newEvent.venue,
+          Host: newEvent.host,
+          RegistrationLink: newEvent.registerLink,
+          EventImage: newEvent.poster,
+          EventDescription: newEvent.description,
+        };
+        console.log("add event", addedEvent);
+        // setEvents([
+        //   ...events,
+        //   {
+        //     ...newEvent,
+        //     start: new Date(newEvent.start),
+        //     end: new Date(newEvent.end),
+        //   },
+        // ]);
+        setEvents([...events, addedEvent]);
+        // resetForm();
         setIsModalOpen(false);
+        toast.success('Event added successfully!'); // Show success toast
         console.log('Event added successfully!', data.message);
       } else {
         console.error(`Server Error: ${data.message}`);
-        alert(`Error: ${data.message}`);
+        toast.error(`Error: ${data.message}`); // Show error toast
       }
     } catch (error) {
       console.error('Error adding event:', error);
-      // alert('An error occurred while adding the event. Please try again.');
+      toast.error('An error occurred while adding the event. Please try again.'); // Show error toast
     }
   };
 
@@ -298,12 +386,14 @@ const EventTable = () => {
             {events.map((event, index) => (
               <tr className='text-center' key={index}>
                 <td className="border px-4 py-2 w-2/6">
-                  {event.EventTitle.length > 50 ? `${event.EventTitle.slice(0, 50)}...` : event.EventTitle}
+                  {event.EventTitle && event.EventTitle.length > 50
+                    ? `${event.EventTitle.slice(0, 50)}...`
+                    : event.EventTitle}
                 </td>
 
                 <td className="border px-4 py-2">{new Date(event.StartDate).toLocaleDateString()}</td>
                 <td className="border px-4 py-2">{new Date(event.EndDate).toLocaleDateString()}</td>
-                <td className="border px-4 py-2">{event.Category === 'giEvent' ? 'Global Infoventures Event' : event.Category === 'nvidiaEvent' ? 'NVIDIA Event' : 'Other Event'}</td>
+                <td className="border px-4 py-2"> {dropdownData.categoryOptions.find(option => option.idCode === event.Category)?.ddValue || 'Unknown'}</td>
                 <td className="border px-4 py-2">{event.Venue}</td>
                 <td className="border px-4 py-2">
                   {/* Add actions like Edit or Delete */}
@@ -337,50 +427,62 @@ const EventTable = () => {
               ref={titleRef}
             />
             {errors.title && <p className="text-red-500 text-sm mb-2">{errors.title}</p>}
-
             <input
-              type="date"
+              type="text"
+              onFocus={(e) => (e.target.type = "date")}
+              onBlur={(e) => (e.target.value === "" ? (e.target.type = "text") : null)}
               name="start"
-              placeholder="Start Date"
               value={newEvent.start}
               onChange={handleChange}
               className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.start ? 'border-red-500' : ''}`}
               ref={startRef}
+              placeholder="Start Date"
+              min={new Date().toISOString().split("T")[0]}
             />
+
             {errors.start && <p className="text-red-500 text-sm mb-2">{errors.start}</p>}
 
             <input
-              type="date"
+              type="text"
+              onFocus={(e) => (e.target.type = "date")}
+              onBlur={(e) => (e.target.value === "" ? (e.target.type = "text") : null)}
               name="end"
-              placeholder="End Date"
               value={newEvent.end}
               onChange={handleChange}
               className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.end ? 'border-red-500' : ''}`}
               ref={endRef}
+              placeholder='End Date'
+              min={newEvent.start}
             />
             {errors.end && <p className="text-red-500 text-sm mb-2">{errors.end}</p>}
 
             <select
-              name="category"
-              value={newEvent.category}
-              onChange={handleChange}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.category ? 'border-red-500' : ''}`}
-              ref={categoryRef}
+              name="categoryId"
+              value={dropdownData.categoryOptions.find(option => option.idCode === newEvent.categoryId)?.ddValue || ''}
+              
+              onChange={handleChanges}
+              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.categoryId ? 'border-red-500' : ''}`}
             >
-              <option value="Select one">Select one</option>
-              <option value="workshop">Workshop</option>
-              <option value="event">Event</option>
+              <option value="">Select one</option>
+              {dropdownData.categoryOptions.map((item) => (
+                <option key={item.idCode} value={item.ddValue}>
+                  {item.ddValue}
+                </option>
+              ))}
             </select>
+
             <select
-              name="companyCategory"
-              value={newEvent.companyCategory}
+              name="companyCategoryId"
+              value={dropdownData.companyCategoryOptions.find(option => option.idCode === newEvent.companyCategoryId)?.ddValue || ''}
               onChange={handleChange}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.companyCategory ? 'border-red-500' : ''}`}
-              ref={companyCategoryRef}
+              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.companyCategoryId ? 'border-red-500' : ''}`}
             >
-              <option value="Select one">Category</option>
-              <option value="giEvent">Global Infoventures Event</option>
-              <option value="nvidiaEvent">NVIDIA Event</option>
+              <option value="">Select one</option>
+              {dropdownData.companyCategoryOptions.map((item) => (
+                <option key={item.idCode} value={item.ddValue}>
+                  {item.ddValue}
+                </option>
+              ))}
             </select>
             {errors.category && <p className="text-red-500 text-sm mb-2">{errors.category}</p>}
 
@@ -389,7 +491,7 @@ const EventTable = () => {
               name="venue"
               placeholder="Venue"
               value={newEvent.venue}
-              onChange={handleChange}
+              onChange={handleChanges}
               className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.venue ? 'border-red-500' : ''}`}
               ref={venueRef}
             />
@@ -434,6 +536,7 @@ const EventTable = () => {
 
             <ReactQuill
               value={newEvent.description}
+              placeholder='Description of the Event'
               onChange={handleDescriptionChange}
               className={`mb-2 ${errors.description ? 'border-red-500' : ''}`}
               ref={descriptionRef}
@@ -464,7 +567,7 @@ const EventTable = () => {
 
             <div className="flex justify-end">
               <button
-                onClick={handleCloseModal}
+                onClick={handleCloseConfirmationModal}
                 className="bg-red-500 text-white p-2 rounded mr-2"
               >
                 Cancel
@@ -507,7 +610,38 @@ const EventTable = () => {
           </div>
         </div>
       )}
-
+      {showCancelConfirmation && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-xl font-semibold mb-4">Confirm Cancel</h3>
+            <p>Are you sure you want to cancel? Any unsaved changes will be lost.</p>
+            <div className="flex justify-between mt-4">
+              <button
+                type="button"
+                onClick={() => setShowCancelConfirmation(false)} // Close the confirmation modal
+                className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
+              >
+                No, Continue Editing
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  resetForm(); // Reset the form
+                  setIsModalOpen(false); // Close the add event modal
+                  setShowCancelConfirmation(false); // Close the confirmation modal
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="container mx-auto mt-10">
+        <ToastContainer /> {/* Add this line */}
+        {/* ... rest of your JSX */}
+      </div>
     </div>
 
   );

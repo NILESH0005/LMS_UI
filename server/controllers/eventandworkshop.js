@@ -73,8 +73,8 @@ export const addEvent = async (req, res) => {
           const insertEventQuery = `
             INSERT INTO Community_Event 
             (EventTitle, StartDate, EndDate, EventType, Category, Venue, Host, RegistrationLink, EventImage, EventDescription, AuthAdd, AddOnDt, delStatus) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), 0);
-          `;
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?);`;
+
 
           console.log(category);
 
@@ -151,7 +151,35 @@ export const getEvent = async (req, res) => {
         return;
       }
       try {
-        const EventWorkshopGetQuery = `SELECT EventID, EventTitle, AuthAdd as UserName, StartDate, EndDate, EventType, Venue, RegistrationLink, EventDescription, Category, AddOnDt as timestamp, EventImage FROM Community_Event WHERE ISNULL(delStatus, 0) = 0  ORDER BY AddOnDt DESC`;
+        // const EventWorkshopGetQuery = `SELECT EventID, EventTitle, AuthAdd as UserName, StartDate, EndDate, EventType, Venue, RegistrationLink, EventDescription, Category, AddOnDt as timestamp, EventImage FROM Community_Event WHERE ISNULL(delStatus, 0) = 0  ORDER BY AddOnDt DESC`;
+        // const EventWorkshopGetQuery = `SELECT EventID, EventTitle, AuthAdd AS UserName, StartDate, EndDate, ddValue AS EventType, Venue, RegistrationLink, EventDescription, ddValue AS Category, AddOnDt AS timestamp,EventImage 
+        // FROM Community_Event LEFT JOIN tblDDReferences ON EventType = idCode AND ddCategory = 'eventType'  
+        // LEFT JOIN tblDDReferences  ON Category = idCode AND ddCategory = 'eventHost'
+        // WHERE ISNULLdelStatus, 0) = 0  
+        // ORDER BYAddOnDt DESC`;
+
+        const EventWorkshopGetQuery = `SELECT 
+    CE.EventID, 
+    CE.EventTitle, 
+    CE.AuthAdd AS UserName, 
+    CE.StartDate, 
+    CE.EndDate, 
+    ET.ddValue AS EventType,  -- Event Type Name
+    CE.Venue, 
+    CE.RegistrationLink, 
+    CE.EventDescription, 
+    C.ddValue AS Category,  -- Category Name
+    CE.AddOnDt AS timestamp,
+    CE.EventImage 
+FROM Community_Event CE
+LEFT JOIN tblDDReferences ET 
+    ON CE.EventType = ET.idCode 
+    AND ET.ddCategory = 'eventType'  
+LEFT JOIN tblDDReferences C 
+    ON CE.Category = C.idCode 
+    AND C.ddCategory = 'eventHost'
+WHERE ISNULL(CE.delStatus, 0) = 0  
+ORDER BY CE.AddOnDt DESC;`
         const EventWorkshopGet = await queryAsync(conn, EventWorkshopGetQuery);
         success = true;
         closeConnection();

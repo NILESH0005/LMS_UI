@@ -11,7 +11,6 @@ import UserProfile from './component/UserProfile.jsx';
 import Discussion from './container/Discussion.jsx';
 import Blog from './container/Blog.jsx';
 import ContactUs from './container/ContactUs.jsx';
-import DiscussionModal from './component/DiscussionModal.jsx';
 import Notfound from './component/Notfound.jsx';
 import ResetPassword from './component/ResetPassword.jsx';
 // import images from './constant/images.js';
@@ -19,7 +18,7 @@ import CommunityGuidelines from './component/CommunityGuidelines.jsx';
 import Resources from './component/Resources.jsx';
 import Footer from './component/Footer.jsx';
 import Survey from './component/Survey.jsx';
-import Quiz from './component/Quiz.jsx';
+// import Quiz from './component/Quiz.jsx';
 import EventWorkshopPage from './container/EventWorkshopPage.jsx';
 // import MyStoryboard from './component/MyStoryboard.jsx';
 // import LoadPage from './component/LoadPage.jsx';
@@ -31,6 +30,9 @@ import AdminDashboard from './Admin/AdminDashboard.jsx';
 import HomeAfterLoginComponent from './component/HomeAfterLoginComponent.jsx';
 // import PostCode from './component/PostCode.jsx';
 import CreateICSFile from './component/CreateICSFile.jsx';
+import ConfirmationModal from './component/ConfirmationModal.jsx';
+import DiscussionModal from './component/discussion/DiscussionModal.jsx';
+import { ToastContainer } from 'react-toastify';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -41,6 +43,7 @@ function App() {
 
   return (
     <>
+    <ToastContainer style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <div className="flex-grow">
@@ -55,13 +58,14 @@ function App() {
             <Route path='/Discussion' element={<Discussion />} />
             <Route path='/ContactUs' element={<ContactUs />} />
             <Route path='/Blog' element={<Blog />} />
-            <Route path='/DiscussionModal' element={<DiscussionModal />} />
+            {/* <Route path='/DiscussionModal' element={<DiscussionModal />} /> */}
             <Route path='/ResetPassword' element={<ResetPassword />} />
             <Route path='/CommunityGuidelines' element={<CommunityGuidelines />} />
             <Route path='/Resources' element={<Resources />} />
             <Route path='/404' element={<Notfound />} />
-            <Route path='/Quiz' element={<Quiz />} />
+            {/* <Route path='/Quiz' element={<Quiz />} /> */}
             <Route path='/Survey' element={<Survey />} />
+            <Route path='/ConfirmationModal' element={<ConfirmationModal/>}/>
             {/* <Route path='/MyStoryboard' element={<MyStoryboard />} /> */}
             <Route path='/EventWorkshopPage' element={<EventWorkshopPage />} />
             <Route path='/EventRegistrationPage' element={<EventRegistrationPage />} />
@@ -78,6 +82,7 @@ function App() {
             <Route path='/AdminDashboard' element={<AdminDashboard />} />
             {/* <Route path='/Admin/Sidebar' element={<Sidebar />} /> */}
             <Route path='/LoadPage' element={<LoadPage />} />
+            
             <Route path='/Calendar' element={<Calendar />} />
             <Route path='/GeneralUserCalendar' element={<GeneralUserCalendar />} />
             {/* <Route path='/BlogManager' element={<BlogManager/>}/> */}

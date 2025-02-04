@@ -18,6 +18,7 @@ const GeneralUserCalendar = ({ events }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log("Updated events list :", events)
     const loadEvents = async () => {
       setIsLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -90,6 +91,13 @@ const GeneralUserCalendar = ({ events }) => {
     });
   };
 
+  const formattedEvents = events.map((event) => ({
+    ...event,
+    StartDate: new Date(event.StartDate),
+    EndDate: new Date(event.EndDate),
+  }));
+
+
   return (
     <div className="container mx-auto mt-10">
       <div className="mb-5">
@@ -103,7 +111,7 @@ const GeneralUserCalendar = ({ events }) => {
       ) : (
         <BigCalendar
           localizer={localizer}
-          events={events}
+          events= {formattedEvents}
           titleAccessor="EventTitle"
           startAccessor="StartDate"
           endAccessor="EndDate"
@@ -130,7 +138,7 @@ const GeneralUserCalendar = ({ events }) => {
             </div>
             <div className="mb-4">
               <strong className="text-xl underline">Category:</strong>
-              <span cla>
+              <span>
                 {selectedEvent.Category === 'giEvent'
                   ? 'Global Infoventures Event'
                   : selectedEvent.Category === 'nvidiaEvent'

@@ -4,6 +4,9 @@ import GeneralUserCalendar from "../component/GeneralUserCalendar.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsUp, faShare } from "@fortawesome/free-solid-svg-icons";
 import ApiContext from "../context/ApiContext.jsx";
+import { momentLocalizer } from "react-big-calendar";
+import moment from 'moment';
+
 
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -12,85 +15,112 @@ import { motion } from 'framer-motion';
 const EventDetailsModal = ({ event, isOpen, onClose }) => {
   if (!isOpen || !event) return null;
 
+  const localizer = momentLocalizer(moment);
+  const downloadICS = () => {
+      if (!event) return;
+  
+      const event = {
+        start: [
+          moment(event.StartDate).year(),
+          moment(event.StartDate).month() + 1,
+          moment(event.StartDate).date(),
+          moment(event.StartDate).hour(),
+          moment(event.StartDate).minute(),
+        ],
+        end: [
+          moment(event.EndDate).year(),
+          moment(event.EndDate).month() + 1,
+          moment(event.EndDate).date(),
+          moment(event.EndDate).hour(),
+          moment(event.EndDate).minute(),
+        ],
+        title: event.EventTitle,
+        description: event.EventDescription,
+        location: event.Venue,
+        organizer: { name: event.Host, email: 'host@example.com' },
+        url: event.RegistrationLink || '',
+      };
+      console.log("event is", event)
+  
+      createEvent(event, (error, value) => {
+        if (error) {
+          console.error('Error creating ICS file:', error);
+          return;
+        }
+  
+        const blob = new Blob([value], { type: 'text/calendar' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${selectedEvent.EventTitle.replace(/ /g, '_')}.ics`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    };
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-DGXwhite max-w-2xl w-full rounded-lg shadow-lg overflow-hidden">
-        <div className="h-full max-h-[90vh] overflow-y-auto p-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">{event.EventTitle}</h2>
-            <button
-              onClick={onClose}
-              className="text-black font-bold text-xl"
-              aria-label="Close modal"
-            >
-              &times;
-            </button>
-          </div>
-          <div className="mt-4">
-            {/* Render HTML content from EventDescription */}
-            <div
-              className="text-gray-700"
-              dangerouslySetInnerHTML={{ __html: event.EventDescription }}
-            ></div>
-          </div>
+    
+    <div id="event-detail" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white rounded-lg shadow-lg p-5 max-w-3xl w-full max-h-[90vh] overflow-y-auto z-50">
+        <h2 className="text-4xl font-bold mb-10 flex justify-center">Event Details</h2>
+        <div className="mb-4">
+          <strong className="text-xl underline">Title:</strong> <span>{event.EventTitle}</span>
+        </div>
+        <div className="mb-4">
+          <strong className="text-xl underline">Date & Time:</strong>{' '}
+          <span>
+            {moment(event.StartDate).format('MMMM D, YYYY h:mm A')} -{' '}
+            {moment(event.EndDate).format('MMMM D, YYYY h:mm A')}
+          </span>
+        </div>
+        <div className="mb-4">
+          <strong className="text-xl underline">Category:</strong>
+          <span>
+            {event.Category === 'giEvent'
+              ? 'Global Infoventures Event'
+              : event.Category === 'nvidiaEvent'
+                ? 'NVIDIA Event'
+                : 'Other Event'}
+          </span>
+        </div>
 
-          <div className="flex justify-between mt-4">
-            <p className="text-sm text-gray-500">
-              <strong>Start Date:</strong> {new Date(event.StartDate).toLocaleString("en-US", {
-                month: "2-digit",
-                day: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false,
-              })}
-            </p>
-            <p className="text-sm text-gray-500">
-              <strong>End Date:</strong> {new Date(event.EndDate).toLocaleString("en-US", {
-                month: "2-digit",
-                day: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false,
-              })}
-            </p>
-
-            <p className="text-sm text-gray-500">
-              <strong>Venue:</strong> {event.Venue}
-            </p>
-          </div>
-          <img
-            src={event.EventImage}
-            alt={`Image for ${event.EventTitle}`}
-            className="w-full h-full object-cover rounded-lg my-4"
-          />
-          <div className="flex justify-center gap-4 mt-4">
-            <button
-              onClick={onClose}
-              className="mt-4 px-4 py-2 bg-DGXgreen text-DGXwhite rounded-md  hover:bg-green-600 transition"
+        <div className="mb-4">
+          <strong className="text-xl underline">Venue:</strong> <span>{event.Venue}</span>
+        </div>
+        <div className="mb-4">
+          <strong className="text-xl underline">Description:</strong>{' '}
+          <div className="mt-4" dangerouslySetInnerHTML={{ __html: event.EventDescription }} />
+        </div>
+        <div className="mb-4">
+          <strong className="text-xl underline">Host:</strong> <span>{event.Host}</span>
+        </div>
+        {event.EventImage && (
+          <img src={event.EventImage} alt="Event Poster" className="mb-4 w-full max-w-3xl object-cover" />
+        )}
+        <div className="flex justify-center gap-4 mt-4">
+          {event.RegistrationLink && (
+            <a
+              href={event.RegistrationLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-DGXblue text-white p-2 rounded"
             >
-              Close
-            </button>
-            <button
-              onClick={onClose}
-              className="mt-4 px-4 py-2 bg-DGXgreen text-DGXwhite rounded-md  hover:bg-green-600 transition"
-            >
-              <a
-                href={event.RegistrationLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Register Here
-              </a>
-            </button>
-          </div>
+              Register Here
+            </a>
+          )}
+          <button onClick={downloadICS} className="bg-DGXgreen text-white p-2 rounded">
+            Download ICS
+          </button>
+          <button
+            onClick={onClose}
+            className="bg-DGXblue text-white p-2 rounded"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
-
   );
 };
 
@@ -206,89 +236,10 @@ const EventWorkshopPage = () => {
 
   return (
     <div className="w-full">
-      <div className="relative isolate overflow-hidden bg-DGXwhite px-6 py-20 text-center sm:px-16 sm:shadow-sm">
-        <div className="relative bg-DGXblue w-full">
-          {/* Content */}
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            className="relative z-10 max-w-7xl mx-auto text-white sm:p-6 md:p-8  p-6 bg-opacity-60 rounded-lg shadow-lg"
-          >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-center">Our Past Events & Workshops</h1>
-            <p className="text-sm sm:text-lg md:text-xl mb-4 sm:mb-6 text-center">
-              Discover the impactful workshops and seminars we've hosted. These events have empowered professionals and enthusiasts, offering deep dives into cutting-edge technologies and practical applications.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-              {events.map((event, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: index * 0.3 }}
-                  className="bg-DGXwhite bg-opacity-90 text-DGXblack rounded-lg shadow-xl flex flex-col sm:flex-row items-center sm:items-start p-4 sm:p-6"
-                >
-                  {/* Event Image */}
-                  <div className="flex w-full md:w-1/2 mb-4 md:mb-0 sm:w-1/3 sm:mb-0">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="rounded-lg object-cover w-full h-48 sm:h-48 md:h-56 lg:h-64"
-                    />
-                  </div>
-
-                  {/* Event Details */}
-                  <div className="flex flex-col sm:pl-4 w-full sm:w-2/3 lg:w-3/4">
-                    <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold mb-2">{event.title}</h2>
-                    <p className="text-xs sm:text-sm md:text-md mb-2">
-                      <strong>Date:</strong> {event.date}
-                    </p>
-                    <p className="text-xs sm:text-sm md:text-md mb-2">
-                      <strong>Location:</strong> {event.location}
-                    </p>
-
-                    {/* More Info Button */}
-                    <button
-                      // onClick={() => handleMoreInfoClick(event)}
-                      className="mt-4 text-DGXblue hover:text-DGXgreen font-semibold text-sm sm:text-base"
-                    >
-                      More Info
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-
-              {/* Modal */}
-              {/* {isModalOpen && selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-lg w-full md:w-[600px] lg:w-[800px]">
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 text-xl font-bold"
-            >
-              &times;
-            </button>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-4">{event.title}</h2>
-            <p className="text-md md:text-lg mb-4">{event.description}</p>
-            <p className="text-sm md:text-md mb-2">
-              <strong>Date:</strong> {event.date}
-            </p>
-            <p className="text-sm md:text-md mb-2">
-              <strong>Location:</strong> {event.location}
-            </p>
-          </div>
-        </div>
-      )} */}
-            </div>
-          </motion.div>
-        </div>
-
+      <div className="relative isolate overflow-hidden bg-DGXwhite px-2 py-20 text-center sm:px-16 sm:shadow-sm">
         <p className="mx-auto max-w-full text-4xl font-bold tracking-tight text-[#111827] mb-10 pt-4">
           Explore Events and Workshops
         </p>
-
-
 
         {/* <div className="mt-6 flex justify-center gap-6">
           <button
@@ -371,6 +322,83 @@ const EventWorkshopPage = () => {
 
       </div>
       <GeneralUserCalendar events={dbevents} />
+
+      <div className="relative bg-DGXblue w-full gap-4">
+          {/* Content */}
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="relative z-10 max-w-7xl mx-auto text-white sm:p-6 md:p-8  p-6 bg-opacity-60 rounded-lg shadow-lg"
+          >
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-center">Our Past Events & Workshops</h1>
+            <p className="text-sm sm:text-lg md:text-xl mb-4 sm:mb-6 text-center">
+              Discover the impactful workshops and seminars we've hosted. These events have empowered professionals and enthusiasts, offering deep dives into cutting-edge technologies and practical applications.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+              {events.map((event, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1, delay: index * 0.3 }}
+                  className="bg-DGXwhite bg-opacity-90 text-DGXblack rounded-lg shadow-xl flex flex-col sm:flex-row items-center sm:items-start p-4 sm:p-6"
+                >
+                  {/* Event Image */}
+                  <div className="flex w-full md:w-1/2 mb-4 md:mb-0 sm:w-1/3 sm:mb-0">
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="rounded-lg object-cover w-full h-48 sm:h-48 md:h-56 lg:h-64"
+                    />
+                  </div>
+
+                  {/* Event Details */}
+                  <div className="flex flex-col sm:pl-4 w-full sm:w-2/3 lg:w-3/4">
+                    <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold mb-2">{event.title}</h2>
+                    <p className="text-xs sm:text-sm md:text-md mb-2">
+                      <strong>Date:</strong> {event.date}
+                    </p>
+                    <p className="text-xs sm:text-sm md:text-md mb-2">
+                      <strong>Location:</strong> {event.location}
+                    </p>
+
+                    {/* More Info Button */}
+                    <button
+                      // onClick={() => handleMoreInfoClick(event)}
+                      className="mt-4 text-DGXblue hover:text-DGXgreen font-semibold text-sm sm:text-base"
+                    >
+                      More Info
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+
+              {/* Modal */}
+              {/* {isModalOpen && selectedEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-8 rounded-lg w-full md:w-[600px] lg:w-[800px]">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-xl font-bold"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl md:text-3xl font-semibold mb-4">{event.title}</h2>
+            <p className="text-md md:text-lg mb-4">{event.description}</p>
+            <p className="text-sm md:text-md mb-2">
+              <strong>Date:</strong> {event.date}
+            </p>
+            <p className="text-sm md:text-md mb-2">
+              <strong>Location:</strong> {event.location}
+            </p>
+          </div>
+        </div>
+      )} */}
+            </div>
+          </motion.div>
+        </div>
       <EventDetailsModal
         event={selectedEvent}
         isOpen={isModalOpen}
