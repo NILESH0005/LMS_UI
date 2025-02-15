@@ -6,6 +6,10 @@ import GuidelineManager from './Components/GuidelineManager';
 import Contact from './Components/Contact';
 import BlogManager from './Components/BlogManager';
 import HomeManager from './Components/HomeManager'; // New import
+import Home from './Components/home';
+
+
+
 
 const AdminDashboard = () => {
   const [activeComp, setActiveComp] = useState('users'); // Default to home_manager
@@ -22,6 +26,8 @@ const AdminDashboard = () => {
         return <BlogManager />;
       case 'guidelines':
         return <GuidelineManager />;
+      case 'Home':
+        return <Home />;
       case 'contact':
         return <Contact />;
       // default:
@@ -86,6 +92,18 @@ const AdminDashboard = () => {
                 Guidelines
               </div>
             </li>
+
+            <li>
+              <div
+                className={`py-2 px-4 cursor-pointer ${
+                  activeComp === 'Home' ? 'bg-gray-700 text-yellow-300' : ''
+                }`}
+                onClick={() => setActiveComp('Home')}
+              >
+                Home page
+              </div>
+            </li>
+
             <li>
               <div
                 className={`py-2 px-4 cursor-pointer ${

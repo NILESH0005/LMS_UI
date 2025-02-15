@@ -33,6 +33,11 @@ import CreateICSFile from './component/CreateICSFile.jsx';
 import ConfirmationModal from './component/ConfirmationModal.jsx';
 import DiscussionModal from './component/discussion/DiscussionModal.jsx';
 import { ToastContainer } from 'react-toastify';
+import ContentSection from './component/ContentSection.jsx';
+import ParallaxSection from './component/ParallaxSection.jsx';
+import NewsSection from './component/NewsSection.jsx';
+import ProjectShowcase from './component/ProjectShowcase.jsx';
+import CommunityHighlights from './component/CommunityHighlights.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -46,7 +51,7 @@ function App() {
     <ToastContainer style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <div className="flex-grow">
+        <div className="flex-grow ">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route exact path="/VerifyEmail" element={<VerifyEmail />} />
@@ -71,10 +76,16 @@ function App() {
             <Route path='/EventRegistrationPage' element={<EventRegistrationPage />} />
             <Route path='/HomeAfterLoginComponent' element={<HomeAfterLoginComponent />} />
             {/* <Route path='/PostCode' element={<PostCode />} /> */}
-            <Route path='/CreateICSFile' element={<CreateICSFile />} />
-         
+            
+            
+            {/* //add path for dynamic  homepage */}
+            <Route path='/ParallaxSection' element={<ParallaxSection />} />
+            <Route path='/ContentSection' element={<ContentSection />} />
+            <Route path='/NewsSection' element={<NewsSection />} />
+            <Route path='/ProjectShowcase' element={<ProjectShowcase />} /> 
+            <Route path='/CommunityHighlights' element={<CommunityHighlights />} />
 
-
+                     
 
 
             {  /*-----------ADMIN----------- */}

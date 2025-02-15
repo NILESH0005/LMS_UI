@@ -9,6 +9,7 @@ import userBlog from './routes/Blog.js';
 import userProfile from './routes/UserProfile.js';
 import dropdownRoutes from './routes/Dropdown.js';
 import { connectToDatabase } from './database/mySql.js'; // Removed unused closeConnection
+import homeRoutes from './routes/Home.js';
 
 dotenv.config(); // Load environment variables
 
@@ -38,6 +39,7 @@ app.use('/eventandworkshop', userEvent);
 app.use('/blog', userBlog);
 app.use('/userprofile', userProfile);
 app.use('/dropdown', dropdownRoutes);
+app.use('/home', homeRoutes); // Added this line
 
 // Connect to database and start server
 connectToDatabase((err) => {
