@@ -3,7 +3,7 @@ import { AiFillLike, AiOutlineLike } from "react-icons/ai"
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ApiContext from "../../context/ApiContext.jsx";
-import images, {} from "../../../public/images.js"
+import images, { } from "../../../public/images.js"
 const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
   const [dissComments, setDissComments] = useState([]);
   const [demoDiscussions, setDemoDiscussions] = useState([]);
@@ -27,8 +27,9 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
         "reference": id,
         "comment": newComment
       };
+      console.log("thsi is body:", body)
       setLoading(true);
-      // console.log(headers, endpoint)
+      console.log(headers, endpoint)
 
       try {
         // console.log("Inside Try");
@@ -128,6 +129,7 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
 
       try {
         const data = await fetchData(endpoint, method, body, headers);
+        // console.log("the ddddaaaattaaa:",data)
 
         if (!data.success) {
           setLoading(false);
@@ -148,8 +150,8 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
           userLike: 0,
           comment: [],
         };
+        // console.log("onjjjj:", newReplyObj)
 
-        // Update the discussion with the new reply
         const updatedDemoDiscussions = demoDiscussions.map((discussionItem) => {
           if (discussionItem.DiscussionID === id) {
             const updatedComments = discussionItem.comment.map((comment, index) => {
@@ -189,41 +191,7 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
       }
     }
   };
-  // const handleAddLike = async (id, userLike) => {
-  //   // console.log(id, userLike)
-
-  //   if (userToken) {
-  //     const endpoint = "discussion/discussionpost";
-  //     const method = "POST";
-  //     const headers = {
-  //       'Content-Type': 'application/json',
-  //       'auth-token': userToken
-  //     };
-  //     const like = userLike == 1 ? 0 : 1
-  //     const body = {
-  //       "reference": id,
-  //       "likes": like
-  //     };
-  //     console.log(body)
-  //     try {
-  //       const data = await fetchData(endpoint, method, body, headers)
-  //       if (!data.success) {
-  //         // console.log(data)
-  //         console.log("Error occured while liking the post")
-  //       } else if (data.success) {
-  //         // console.log(data);
-  //         const updatedData = demoDiscussions.map((item) =>
-  //           item.DiscussionID === id ? { ...item, userLike: like, likeCount: like === 1 ? item.likeCount + 1 : item.likeCount - 1 } : item
-  //         );
-  //         setDemoDiscussions(updatedData)
-  //         console.log(updatedData)
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // };
-  // const handleAddLike = () => setLikeCount(likeCount + 1);
+  
   return (
     <div>
       {/* Background Overlay */}
@@ -247,7 +215,13 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                     <div className="text-3xl">{discussion.Title}</div>
                     <div className="flex flex-col">
                       <span>{discussion.UserName}</span>
-                      <span>{new Date(discussion.timestamp).toLocaleString('en-GB')}</span>
+                      <span>
+                        {new Date(discussion.timestamp).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -355,10 +329,14 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                   </h2>
                   <ul className="space-y-4 overflow-auto flex-grow">
                     {discussion.comment.map((comment, index) => (
-                      <li key={index} className="p-2 sm:p-4 border rounded-lg space-y-2">
+                      <li key={index} className="p-2 sm:p-4 rounded-lg space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-md sm:text-lg font-semibold">{comment.UserName}</span>
-                          <span className="text-xs sm:text-sm text-gray-500">{new Date(comment.timestamp).toLocaleDateString('en-GB')}</span>
+                          <span className="text-xs sm:text-sm text-gray-500">{new Date(discussion.timestamp).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}</span>
                         </div>
                         <div className="text-md sm:text-lg">{comment.Comment}</div>
                         {/* <div className="flex items-center gap-2">
@@ -417,9 +395,12 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
           </div>
         </div>
       )}
+
     </div>
+    
   );
+
 };
-;
+
 
 export default DiscussionModal;

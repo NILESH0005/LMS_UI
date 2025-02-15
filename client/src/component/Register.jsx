@@ -11,7 +11,8 @@ import ApiContext from '../context/ApiContext.jsx';
 import { decrypt } from "../utils/decrypt.js";
 
 const Register = () => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(true);
   const { fetchData } = useContext(ApiContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,6 +26,8 @@ const Register = () => {
 
     if (encryptedEmail && encryptedReferCode) {
       const decryptedEmail = await decrypt(encryptedEmail);
+      console.log("decryptedEmail is", decryptedEmail );
+      
       const decryptedReferCode = await decrypt(encryptedReferCode);
 
       if (decryptedEmail && decryptedReferCode) {
@@ -32,6 +35,7 @@ const Register = () => {
         // console.log(email)
         // console.log(decryptedEmail)
         setReferCode(decryptedReferCode);
+        setEmailLoading(false);
         // console.log(referCode)
         // console.log(decryptedReferCode)
       } else {
@@ -209,7 +213,9 @@ const Register = () => {
     }
 
   };
-
+  if (emailLoading) {
+    return <h1>Loading...</h1>; // Show loading indicator while email is being extracted
+  }
   return (
     loading ? <h1>loading ....</h1> : <div className="my-8">
       <ToastContainer />

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "express-session": "^1.18.1",
+    "moment-timezone": "^0.5.47",
+    "react-big-calendar": "^1.17.1"
+  }
+}

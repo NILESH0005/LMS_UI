@@ -4,13 +4,13 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-// import { createEvent } from 'ics';
+import DetailsEventModal from './eventAndWorkshop/DetailsEventModal'; // Import the new component
 
 const localizer = momentLocalizer(moment);
 
 const eventColors = {
-  giEvent: '#013D54', // DGXblue
-  nvidiaEvent: '#76B900', // DGXgreen
+  "NVIDIA": '#013D54', // DGXblue
+  "Global Infoventures Event": '#76B900', // DGXgreen
 };
 
 const GeneralUserCalendar = ({ events }) => {
@@ -18,18 +18,23 @@ const GeneralUserCalendar = ({ events }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Updated events list :", events)
+    console.log("Updated events list :", events);
     const loadEvents = async () => {
       setIsLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setIsLoading(false);
     };
     loadEvents();
-  }, []);
+  }, [events]);
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
-    document.getElementById('event-detail').scrollIntoView({ behavior: 'smooth' });
+    const eventDetailElement = document.getElementById('event-detail');
+    if (eventDetailElement) {
+      eventDetailElement.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      console.warn("Element with ID 'event-detail' not found");
+    }
   };
 
   const eventStyleGetter = (event) => {
@@ -49,54 +54,18 @@ const GeneralUserCalendar = ({ events }) => {
     };
   };
 
-  const downloadICS = () => {
-    if (!selectedEvent) return;
-
-    const event = {
-      start: [
-        moment(selectedEvent.StartDate).year(),
-        moment(selectedEvent.StartDate).month() + 1,
-        moment(selectedEvent.StartDate).date(),
-        moment(selectedEvent.StartDate).hour(),
-        moment(selectedEvent.StartDate).minute(),
-      ],
-      end: [
-        moment(selectedEvent.EndDate).year(),
-        moment(selectedEvent.EndDate).month() + 1,
-        moment(selectedEvent.EndDate).date(),
-        moment(selectedEvent.EndDate).hour(),
-        moment(selectedEvent.EndDate).minute(),
-      ],
-      title: selectedEvent.EventTitle,
-      description: selectedEvent.EventDescription,
-      location: selectedEvent.Venue,
-      organizer: { name: selectedEvent.Host, email: 'host@example.com' },
-      url: selectedEvent.RegistrationLink || '',
-    };
-
-    createEvent(event, (error, value) => {
-      if (error) {
-        console.error('Error creating ICS file:', error);
-        return;
-      }
-
-      const blob = new Blob([value], { type: 'text/calendar' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${selectedEvent.EventTitle.replace(/ /g, '_')}.ics`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
-  };
-
-  const formattedEvents = events.map((event) => ({
+  const formattedEvents = events?.map(event => ({
     ...event,
-    StartDate: new Date(event.StartDate),
-    EndDate: new Date(event.EndDate),
+    start: new Date(event.StartDate),  // Directly use Date object
+    end: new Date(event.EndDate),
   }));
 
+  const formats = {
+    timeGutterFormat: (date, culture, localizer) =>
+      localizer.format(date, 'HH:mm', culture),  // Ensures correct local time
+    eventTimeRangeFormat: ({ start, end }) =>
+      `${moment(start).format("MMMM D, YYYY h:mm A")} - ${moment(end).format("MMMM D, YYYY h:mm A")}`,
+  };
 
   return (
     <div className="container mx-auto mt-10">
@@ -111,78 +80,24 @@ const GeneralUserCalendar = ({ events }) => {
       ) : (
         <BigCalendar
           localizer={localizer}
-          events= {formattedEvents}
+          events={formattedEvents || []}
+          formats={formats}
+          eventPropGetter={eventStyleGetter}
+          startAccessor="start"
+          endAccessor="end"
           titleAccessor="EventTitle"
-          startAccessor="StartDate"
-          endAccessor="EndDate"
           style={{ height: 600 }}
           className="bg-white rounded-lg border-2 border-DGXgreen shadow-lg p-5 mb-10"
-          eventPropGetter={eventStyleGetter}
           onSelectEvent={handleSelectEvent}
         />
       )}
 
+      {/* Render the EventDetailsModal component */}
       {selectedEvent && (
-        <div id="event-detail" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-5 max-w-3xl w-full max-h-[90vh] overflow-y-auto z-50">
-            <h2 className="text-4xl font-bold mb-10 flex justify-center">Event Details</h2>
-            <div className="mb-4">
-              <strong className="text-xl underline">Title:</strong> <span>{selectedEvent.EventTitle}</span>
-            </div>
-            <div className="mb-4">
-              <strong className="text-xl underline">Date & Time:</strong>{' '}
-              <span>
-                {moment(selectedEvent.StartDate).format('MMMM D, YYYY h:mm A')} -{' '}
-                {moment(selectedEvent.EndDate).format('MMMM D, YYYY h:mm A')}
-              </span>
-            </div>
-            <div className="mb-4">
-              <strong className="text-xl underline">Category:</strong>
-              <span>
-                {selectedEvent.Category === 'giEvent'
-                  ? 'Global Infoventures Event'
-                  : selectedEvent.Category === 'nvidiaEvent'
-                    ? 'NVIDIA Event'
-                    : 'Other Event'}
-              </span>
-            </div>
-
-            <div className="mb-4">
-              <strong className="text-xl underline">Venue:</strong> <span>{selectedEvent.Venue}</span>
-            </div>
-            <div className="mb-4">
-              <strong className="text-xl underline">Description:</strong>{' '}
-              <div className="mt-4" dangerouslySetInnerHTML={{ __html: selectedEvent.EventDescription }} />
-            </div>
-            <div className="mb-4">
-              <strong className="text-xl underline">Host:</strong> <span>{selectedEvent.Host}</span>
-            </div>
-            {selectedEvent.EventImage && (
-              <img src={selectedEvent.EventImage} alt="Event Poster" className="mb-4 w-full max-w-3xl object-cover" />
-            )}
-            <div className="flex justify-center gap-4 mt-4">
-              {selectedEvent.RegistrationLink && (
-                <a
-                  href={selectedEvent.RegistrationLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-DGXblue text-white p-2 rounded"
-                >
-                  Register Here
-                </a>
-              )}
-              <button onClick={downloadICS} className="bg-DGXgreen text-white p-2 rounded">
-                Download ICS
-              </button>
-              <button
-                onClick={() => setSelectedEvent(null)}
-                className="bg-DGXblue text-white p-2 rounded"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+        <DetailsEventModal
+          selectedEvent={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
       )}
     </div>
   );

@@ -12,6 +12,8 @@ const ApiProvider = ({ children }) => {
   const fetchData = async (endpoint, method, body, headers) => {
     try {
       const result = await apiRequest(endpoint, method, body, headers);
+      console.log("fetch Data");
+      
       return result;
     } catch (error) {
       console.error("Error fetching data:", error);

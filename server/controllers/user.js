@@ -1228,3 +1228,95 @@ export const deleteUser = (req, res) => {
     });
   }
 };
+
+
+export const addUser = async (req, res) => {
+  let success = false;
+  // const userId = req.user.id;
+  // console.log(userId)
+
+  // Validate request body
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const warningMessage = "Invalid input format. Please check your details and try again.";
+    logWarning(warningMessage);
+    return res.status(400).json({ success, data: errors.array(), message: warningMessage });
+  }
+
+  const {Name, EmailId, CollegeName, MobileNumber, Category, Designation} = req.body;
+  const referalNumberCount = Category === "F" ? 10 : 2;
+  const FlagPasswordChange = 0;
+
+  try {
+    connectToDatabase(async (err, conn) => {
+      if (err) {
+        logError(err);
+        return res.status(500).json({ success: false, message: "Database connection failed", data: err });
+      }
+
+      try {
+        // Check if the email is already registered
+        const existingUserQuery = `SELECT COUNT(UserID) AS userEmailCount FROM Community_User WHERE ISNULL(delStatus,0)=0 AND EmailId = ?`;
+        const existingUsers = await queryAsync(conn, existingUserQuery, [EmailId]);
+
+        if (existingUsers[0].userEmailCount > 0) {
+          const warningMessage = "User with this email already exists.";
+          logWarning(warningMessage);
+          closeConnection();
+          return res.status(200).json({ success: false, message: warningMessage, data: {} });
+        }
+
+        // Generate a random password
+        const plainPassword = await generatePassword(10);
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(plainPassword, salt);
+
+        // Generate a referral code
+        let referCode;
+        do {
+          referCode = await referCodeGenerator(Name, EmailId, MobileNumber);
+          const checkQuery = `SELECT COUNT(UserID) AS userReferCount FROM Community_User WHERE isnull(delStatus,0) = 0 AND ReferalNumber = ?`;
+          const checkRows = await queryAsync(conn, checkQuery, [referCode]);
+
+          if (checkRows[0].userReferCount === 0) {
+            // Insert new user
+            const insertQuery = `
+               INSERT INTO Community_User 
+              (Name, EmailId, CollegeName, MobileNumber, Category, Designation, ReferalNumberCount, ReferalNumber, Password, FlagPasswordChange, AuthAdd, AddOnDt, delStatus) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?)
+            `;
+            await queryAsync(conn, insertQuery, [
+              Name,
+              EmailId,
+              CollegeName,
+              MobileNumber,
+              Category,
+              Designation,
+              referalNumberCount,
+              referCode,
+              hashedPassword,
+              FlagPasswordChange,
+              Name,
+              0
+            ]);
+
+            success = true;
+            const infoMessage = "User added successfully.";
+            logInfo(`User added: ${EmailId}`);
+            closeConnection();
+            return res.status(200).json({ success, message: infoMessage, data: { EmailId } });
+          }
+        } while (!success);
+      } catch (error) {
+        logError(error);
+        closeConnection();
+        return res.status(500).json({ success: false, message: "Error processing request", data: error });
+      }
+    });
+  } catch (error) {
+    logError(error);
+    return res.status(500).json({ success: false, message: "Internal server error", data: {} });
+  }
+};

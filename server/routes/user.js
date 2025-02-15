@@ -13,7 +13,8 @@ import {
   passwordRecovery,
   resetPassword,
   getAllUser,
-  deleteUser
+  deleteUser,
+  addUser
 
 } from "../controllers/user.js";
 
@@ -56,6 +57,8 @@ router.post('/resetpassword', [
   body('password', 'New Password can not be blank').exists()
 ], resetPassword)
 router.post('/deleteUser', fetchUser, deleteUser)
+router.post('/addUser', addUser)
+
 
 
 export default router;

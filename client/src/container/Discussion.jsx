@@ -23,7 +23,7 @@ const Discussion = () => {
   const [selectedSection, setSelectedSection] = useState('all');
   // const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(false); 
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [discussions, setDiscussions] = useState([]);
   // const [privacy, setPrivacy] = useState('private');
   const [selectedDiscussion, setSelectedDiscussion] = useState(null);
@@ -118,13 +118,13 @@ const Discussion = () => {
     }
   };
   useEffect(() => {
-      if (userToken && user) {
-        setIsLoggedIn(true);
-        fetchDiscussionData(user.EmailId);
-      } else {
-        setIsLoggedIn(false);
-        fetchDiscussionData(null);
-      }
+    if (userToken && user) {
+      setIsLoggedIn(true);
+      fetchDiscussionData(user.EmailId);
+    } else {
+      setIsLoggedIn(false);
+      fetchDiscussionData(null);
+    }
   }, [user, userToken, fetchData]);
 
 
@@ -372,7 +372,7 @@ const Discussion = () => {
           {/* All Discussions */}
           <h2 className="sm:text-sm md:text-base lg:text-lg font-bold mb-4">{selectedSection.charAt(0).toUpperCase() + selectedSection.slice(1)} Discussions</h2>
           <div className="flex flex-col space-y-4">
-            {isFormOpen && <AddDiscussion closeModal={closeModal} demoDiscussions={demoDiscussions} setDemoDiscussions={setDemoDiscussions}/>}
+            {isFormOpen && <AddDiscussion closeModal={closeModal} demoDiscussions={demoDiscussions} setDemoDiscussions={setDemoDiscussions} />}
 
             <div className="two-h-screen scrollbar scrollbar-thin  overflow-y-auto px-6">
               {isLoading ? (

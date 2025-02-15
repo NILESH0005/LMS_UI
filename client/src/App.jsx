@@ -33,6 +33,7 @@ import CreateICSFile from './component/CreateICSFile.jsx';
 import ConfirmationModal from './component/ConfirmationModal.jsx';
 import DiscussionModal from './component/discussion/DiscussionModal.jsx';
 import { ToastContainer } from 'react-toastify';
+import AddUserEvent from './component/AddUserEvent.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -72,6 +73,7 @@ function App() {
             <Route path='/HomeAfterLoginComponent' element={<HomeAfterLoginComponent />} />
             {/* <Route path='/PostCode' element={<PostCode />} /> */}
             <Route path='/CreateICSFile' element={<CreateICSFile />} />
+            <Route path='/AddUserEvent' element={<AddUserEvent/>}/>
          
 
 

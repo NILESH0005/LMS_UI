@@ -7,6 +7,7 @@ dotenv.config()
 
 
 export const discussionpost = async (req, res) => {
+    console.log("invoming req body", req.body);
     let success = false;
 
     const userId = req.user.id;
@@ -65,13 +66,14 @@ export const discussionpost = async (req, res) => {
                     const discussionPostQuery = `
                     INSERT INTO Community_Discussion 
                     (UserID, Title, Content, Image, Likes, Comment, Tag, Visibility, Reference, ResourceUrl, AuthAdd, AddOnDt, delStatus) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), 0); 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?); 
                     `;
                     const discussionPost = await queryAsync(conn, discussionPostQuery, [rows[0].UserID, title, content, image, likes, comment, tags, visibility, threadReference, url, rows[0].Name, 0])
                     const lastInsertedIdQuerry = `select top 1 DiscussionID, Visibility from Community_Discussion where ISNULL(delStatus,0)=0 order by DiscussionID desc;`
                     const lastInsertedId = await queryAsync(conn, lastInsertedIdQuerry)
-                    const lstInsertedvisibilityValue = `select ddValue from tblDDReferences where idCode= ? and ISNULL(delStatus,0)=0`
-                    const lstInserterterVal = await queryAsync(conn, lstInsertedvisibilityValue, [lastInsertedId[0].Visibility])
+                    const lstInsertedvisibilityValue = `SELECT ddValue FROM tblDDReferences WHERE idCode = ? AND ISNULL(delStatus,0) = 0`;
+                    // const lstInserterterVal = await queryAsync(conn, lstInsertedvisibilityValue, [lastInsertedId[0].Visibility])
+                    const lstInserterterVal = await queryAsync(conn,lstInsertedvisibilityValue,[lastInsertedId[0].Visibility]);
                     console.log("val",lstInserterterVal[0].ddValue)
                     success = true;
                     closeConnection();
@@ -89,7 +91,7 @@ export const discussionpost = async (req, res) => {
             } catch (queryErr) {
                 closeConnection();
                 logError(queryErr)
-                res.status(500).json({ success: false, data: queryErr, message: 'Something went wrong please try again' });
+                res.status(500).json({ success: false, data: queryErr, message: 'Something wenjkdjvisjgijsit wrong please try again' });
                 return
             }
         });
@@ -103,9 +105,11 @@ export const discussionpost = async (req, res) => {
 export const getdiscussion = async (req, res) => {
     let success = false;
     const userId = req.body.user;
+    console.log("Received request for getdiscussion. User ID:",userId)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const warningMessage = "Data is not in the right format";
+        console.error(warningMessage, errors.array());
         logWarning(warningMessage);
         res.status(400).json({ success, data: errors.array(), message: warningMessage });
         return;
@@ -140,7 +144,7 @@ export const getdiscussion = async (req, res) => {
 
                 for (const item of discussionGet) {
                     const likeCountQuery = `SELECT DiscussionID, UserID, Likes, AuthAdd as UserName FROM Community_Discussion WHERE ISNULL(delStatus, 0) = 0 AND Likes > 0 AND Reference = ?`;
-                    const likeCountResult = await queryAsync(conn, likeCountQuery, [item.DiscussionID]);
+                    const likeCountResult = await queryAsync(conn, likeCountQuery, [item.DiscussionID]);                
                     // console.log("Like Count Result for Discussion:", item.DiscussionID, likeCountResult); // Log likeCountResult
 
                     const commentQuery = `SELECT DiscussionID, UserID, Comment, AuthAdd as UserName, AddOnDt as timestamp FROM Community_Discussion WHERE ISNULL(delStatus, 0) = 0 AND  Comment IS NOT NULL AND Reference = ? ORDER BY AddOnDt DESC`;
@@ -291,7 +295,7 @@ export const searchdiscussion = async (req, res) => {
 
                     if (commentResult.length > 0) {
     
-                    }
+                    }   
 
                     updatedDiscussions.push({
                         ...item,
