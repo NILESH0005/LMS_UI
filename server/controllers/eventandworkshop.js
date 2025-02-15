@@ -7,134 +7,76 @@ dotenv.config();
 
 export const addEvent = async (req, res) => {
   let success = false;
-
-  // Extract user ID from the authenticated request (assuming it's added by authentication middleware)
   const userId = req.user.id;
 
-  // Validate request data
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const warningMessage = "Data is not in the right format";
-    logWarning(warningMessage); // Log the warning
-    res
-      .status(400)
-      .json({ success, data: errors.array(), message: warningMessage });
-    return;
+    logWarning("Data is not in the right format");
+    return res.status(400).json({ success, data: errors.array(), message: "Data is not in the right format" });
   }
 
   try {
-    // Destructure form data
-    // console.log("hi",req.body)
-    // let data = JSON.parse(req.body)
-    let {
-      title,
-      start,
-      end,
-      category,
-      companyCategory,
-      venue,
-      host,
-      registerLink,
-      poster,
-      description,
-    } = req.body;
+    let { title, start, end, category, companyCategory, venue, host, registerLink, description, poster } = req.body;
 
-    // console.log(title,start,end,category,companyCategory,venue,host,registerLink,description)
-    // Set defaults if necessary
-    title = title ?? null;
-    start = start ?? null;
-    end = end ?? null;
-    category = category ?? null;
-    companyCategory = companyCategory ?? null;
-    venue = venue ?? null;
-    host = host ?? null;
-    registerLink = registerLink ?? null;
-    description = description ?? null;
-
-    // Connect to the database
     connectToDatabase(async (err, conn) => {
       if (err) {
-        const errorMessage = "Failed to connect to database";
-        logError(err); // Log the error
-        res
-          .status(500)
-          .json({ success: false, data: err, message: errorMessage });
-        return;
+        logError("Failed to connect to database");
+        return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
       }
 
       try {
-        const query = `SELECT UserID, Name FROM Community_User WHERE isnull(delStatus,0) = 0 AND EmailId = ?`;
+        // Fetch user details, including isAdmin status
+        const userQuery = `SELECT UserID, Name, isAdmin FROM Community_User WHERE ISNULL(delStatus, 0) = 0 AND EmailId = ?`;
+        const userRows = await queryAsync(conn, userQuery, [userId]);
 
-        const rows = await queryAsync(conn, query, [userId]);
+        if (userRows.length > 0) {
+          const user = userRows[0];
+          const isAdmin = user.isAdmin === 1; // Check if the user is admin
 
-        if (rows.length > 0) {
-          console.log("yaha hu bss ek kadam door bss thoda or");
+          // Set event approval details based on admin status
+          const status = isAdmin ? "Approved" : "Pending";
+          const approvedBy = isAdmin ? user.Name : null;
+          const approvedOn = isAdmin ? new Date() : null;
+
           // Insert event into the Events table
-          const insertEventQuery = `
-            INSERT INTO Community_Event 
-            (EventTitle, StartDate, EndDate, EventType, Category, Venue, Host, RegistrationLink, EventImage, EventDescription, AuthAdd, AddOnDt, delStatus) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?);`;
+          const insertEventQuery = `INSERT INTO Community_Event 
+          (EventTitle, StartDate, EndDate, EventType, Category, Venue, Host, RegistrationLink, EventImage, EventDescription, AuthAdd, AddOnDt, delStatus, Status, AdminRemark, ApprovedBy, ApprovedOn) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), 0, ?, ?, ?, ?);`;
 
-
-          console.log(category);
-
-          // Insert event details
           const insertEvent = await queryAsync(conn, insertEventQuery, [
-            title,
-            start,
-            end,
-            category,
-            companyCategory,
-            venue,
-            host,
-            registerLink,
-            poster, // You may need to handle file upload separately, storing the file URL or path
-            description,
-            rows[0].Name, // AuthAdd (user who added the event)
+            title, start, end, category, companyCategory, venue, host, registerLink, poster, description,
+            user.Name, status, null, approvedBy, approvedOn
           ]);
+          console.log("inserted event:", insertEvent);
 
-          console.log("last hai", insertEvent);
           // Fetch last inserted event ID
           const lastInsertedIdQuery = `SELECT TOP 1 EventID FROM Community_Event WHERE ISNULL(delStatus, 0) = 0 ORDER BY EventID DESC;`;
           const lastInsertedId = await queryAsync(conn, lastInsertedIdQuery);
 
           success = true;
           closeConnection();
+          logInfo("Event added successfully!");
 
-          const infoMessage = "Event added successfully!";
-          logInfo(infoMessage);
-
-          // Send success response
-          res.status(200).json({
+          return res.status(200).json({
             success,
             data: { eventId: lastInsertedId[0].EventID },
-            message: infoMessage,
+            message: "Event added successfully!",
           });
         } else {
           closeConnection();
-          const warningMessage = "User not found, please login first.";
-          logWarning(warningMessage);
-          res
-            .status(400)
-            .json({ success: false, data: {}, message: warningMessage });
+          logWarning("User not found, please login first.");
+          return res.status(400).json({ success: false, data: {}, message: "User not found, please login first." });
         }
       } catch (queryErr) {
         closeConnection();
-        logError(queryErr);
-        res.status(500).json({
-          success: false,
-          data: queryErr,
-          message: "Something went wrong, please try again",
-        });
+        logError("Database Query Error: ", queryErr);  // 🔍 Add detailed error logging
+        return res.status(500).json({ success: false, data: queryErr, message: "Database Query Error" });
       }
+
     });
   } catch (error) {
-    logError(error);
-    res.status(500).json({
-      success: false,
-      data: {},
-      message: "Something went wrong, please try again",
-    });
+    logError("Unexpected Error: ", error);  // 🔍 Log detailed error
+    return res.status(500).json({ success: false, data: error, message: "Unexpected Error, check logs" });
   }
 };
 
@@ -151,36 +93,12 @@ export const getEvent = async (req, res) => {
         return;
       }
       try {
-        // const EventWorkshopGetQuery = `SELECT EventID, EventTitle, AuthAdd as UserName, StartDate, EndDate, EventType, Venue, RegistrationLink, EventDescription, Category, AddOnDt as timestamp, EventImage FROM Community_Event WHERE ISNULL(delStatus, 0) = 0  ORDER BY AddOnDt DESC`;
-        // const EventWorkshopGetQuery = `SELECT EventID, EventTitle, AuthAdd AS UserName, StartDate, EndDate, ddValue AS EventType, Venue, RegistrationLink, EventDescription, ddValue AS Category, AddOnDt AS timestamp,EventImage 
-        // FROM Community_Event LEFT JOIN tblDDReferences ON EventType = idCode AND ddCategory = 'eventType'  
-        // LEFT JOIN tblDDReferences  ON Category = idCode AND ddCategory = 'eventHost'
-        // WHERE ISNULLdelStatus, 0) = 0  
-        // ORDER BYAddOnDt DESC`;
-
-        const EventWorkshopGetQuery = `SELECT 
-    CE.EventID, 
-    CE.EventTitle, 
-    CE.AuthAdd AS UserName, 
-    CE.StartDate, 
-    CE.EndDate, 
-    ET.ddValue AS EventType,  -- Event Type Name
-    CE.Venue, 
-    CE.RegistrationLink, 
-    CE.EventDescription, 
-    C.ddValue AS Category,  -- Category Name
-    CE.AddOnDt AS timestamp,
-    CE.EventImage 
-FROM Community_Event CE
-LEFT JOIN tblDDReferences ET 
-    ON CE.EventType = ET.idCode 
-    AND ET.ddCategory = 'eventType'  
-LEFT JOIN tblDDReferences C 
-    ON CE.Category = C.idCode 
-    AND C.ddCategory = 'eventHost'
-WHERE ISNULL(CE.delStatus, 0) = 0  
-ORDER BY CE.AddOnDt DESC;`
+        const EventWorkshopGetQuery = `SELECT CE.EventID, CE.EventTitle, CE.AuthAdd AS UserName, CE.StartDate, CE.EndDate, CE.Host, ET.ddValue AS EventType,  CE.Venue, CE.RegistrationLink, CE.EventDescription, C.ddValue AS Category, CE.AddOnDt AS timestamp, CE.EventImage, CE.Status FROM Community_Event CE LEFT JOIN tblDDReferences ET ON CE.EventType = ET.idCode 
+        AND ET.ddCategory = 'eventType' LEFT JOIN tblDDReferences C ON CE.Category = C.idCode AND C.ddCategory = 'eventHost'
+         WHERE ISNULL(CE.delStatus, 0) = 0  
+          ORDER BY CE.AddOnDt DESC;`
         const EventWorkshopGet = await queryAsync(conn, EventWorkshopGetQuery);
+
         success = true;
         closeConnection();
         const infoMessage = "Event and Workshop Got Successfully";
@@ -208,20 +126,169 @@ ORDER BY CE.AddOnDt DESC;`
   }
 };
 
+
+// export const updateEvent = async (req, res) => {
+//   let success = false;
+
+//   // Extract user ID from the authenticated request (assuming it's added by authentication middleware)
+//   const userId = req.user.id;
+
+//   // Validate request data
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     const warningMessage = "Data is not in the right format";
+//     logWarning(warningMessage); // Log the warning
+//     res
+//       .status(400)
+//       .json({ success, data: errors.array(), message: warningMessage });
+//     return;
+//   }
+
+//   try {
+//     // Destructure form data
+//     let {
+//       title,
+//       start,
+//       end,
+//       category,
+//       companyCategory,
+//       venue,
+//       host,
+//       registerLink,
+//       poster,
+//       description,
+//     } = req.body;
+
+//     // Set defaults if necessary
+//     title = title ?? null;
+//     start = start ?? null;
+//     end = end ?? null;
+//     category = category ?? null;
+//     companyCategory = companyCategory ?? null;
+//     venue = venue ?? null;
+//     host = host ?? null;
+//     registerLink = registerLink ?? null;
+//     description = description ?? null;
+
+//     // Extract event ID from request parameters (assumes eventId is passed as a parameter)
+//     const eventId = req.params.eventId;
+
+//     // Connect to the database
+//     connectToDatabase(async (err, conn) => {
+//       if (err) {
+//         const errorMessage = "Failed to connect to database";
+//         logError(err); // Log the error
+//         res
+//           .status(500)
+//           .json({ success: false, data: err, message: errorMessage });
+//         return;
+//       }
+
+//       try {
+//         // Check if the event exists and belongs to the authenticated user
+//         const checkEventQuery = `
+//             SELECT EventID, AuthAdd 
+//             FROM Community_Event 
+//             WHERE EventID = ? AND isnull(delStatus, 0) = 0;
+//           `;
+//         const eventRows = await queryAsync(conn, checkEventQuery, [eventId]);
+
+//         if (eventRows.length === 0) {
+//           const warningMessage = "Event not found or does not belong to you";
+//           logWarning(warningMessage);
+//           res
+//             .status(404)
+//             .json({ success: false, data: {}, message: warningMessage });
+//           return;
+//         }
+
+//         // Ensure the event belongs to the user attempting to update it
+//         if (eventRows[0].AuthAdd !== userId && req.user.isAdmin !== 1) {
+//           const warningMessage = "You are not authorized to update this event";
+//           logWarning(warningMessage);
+//           res
+//             .status(403)
+//             .json({ success: false, data: {}, message: warningMessage });
+//           return;
+//         }
+
+//         // Update event details
+//         const updateEventQuery = `UPDATE Community_Event 
+//                         SET EventTitle = ?, 
+//                         StartDate = ?, 
+//                         EndDate = ?, 
+//                         EventType = ?, 
+//                         Category = ?, 
+//                         Venue = ?, 
+//                         Host = ?, 
+//                         RegistrationLink = ?, 
+//                         EventImage = ?, 
+//                         EventDescription = ?, 
+//                         AuthLstEdit = ?, 
+//                         editOnDt = GETDATE() 
+//                     WHERE EventID = ?;
+//                   `;
+
+//         await queryAsync(conn, updateEventQuery, [
+//           title,
+//           start,
+//           end,
+//           category,
+//           companyCategory,
+//           venue,
+//           host,
+//           registerLink,
+//           poster,
+//           description,
+//           userId,  // 👈 Set `AuthLstEdit` to the ID of the user making the update
+//           eventId,
+//         ]);
+
+//         success = true;
+//         closeConnection();
+
+//         const infoMessage = "Event updated successfully!";
+//         logInfo(infoMessage);
+
+//         // Send success response
+//         res.status(200).json({
+//           success,
+//           data: { eventId },
+//           message: infoMessage,
+//         });
+//       } catch (queryErr) {
+//         closeConnection();
+//         logError(queryErr);
+//         res.status(500).json({
+//           success: false,
+//           data: queryErr,
+//           message: "Something went wrong, please try again",
+//         });
+//       }
+//     });
+//   } catch (error) {
+//     logError(error);
+//     res.status(500).json({
+//       success: false,
+//       data: {},
+//       message: "Something went wrong, please try again",
+//     });
+//   }
+// };
+
+
 export const updateEvent = async (req, res) => {
   let success = false;
 
-  // Extract user ID from the authenticated request (assuming it's added by authentication middleware)
+  // Extract user ID from the authenticated request
   const userId = req.user.id;
 
   // Validate request data
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const warningMessage = "Data is not in the right format";
-    logWarning(warningMessage); // Log the warning
-    res
-      .status(400)
-      .json({ success, data: errors.array(), message: warningMessage });
+    logWarning(warningMessage);
+    res.status(400).json({ success, data: errors.array(), message: warningMessage });
     return;
   }
 
@@ -238,35 +305,24 @@ export const updateEvent = async (req, res) => {
       registerLink,
       poster,
       description,
+      action, // New field to specify the action (approve, reject, delete)
+      remark, // Field for rejection remarks
     } = req.body;
 
-    // Set defaults if necessary
-    title = title ?? null;
-    start = start ?? null;
-    end = end ?? null;
-    category = category ?? null;
-    companyCategory = companyCategory ?? null;
-    venue = venue ?? null;
-    host = host ?? null;
-    registerLink = registerLink ?? null;
-    description = description ?? null;
-
-    // Extract event ID from request parameters (assumes eventId is passed as a parameter)
+    // Extract event ID from request parameters
     const eventId = req.params.eventId;
 
     // Connect to the database
     connectToDatabase(async (err, conn) => {
       if (err) {
         const errorMessage = "Failed to connect to database";
-        logError(err); // Log the error
-        res
-          .status(500)
-          .json({ success: false, data: err, message: errorMessage });
+        logError(err);
+        res.status(500).json({ success: false, data: err, message: errorMessage });
         return;
       }
 
       try {
-        // Check if the event exists and belongs to the authenticated user
+        // Check if the event exists
         const checkEventQuery = `
           SELECT EventID, AuthAdd 
           FROM Community_Event 
@@ -275,56 +331,89 @@ export const updateEvent = async (req, res) => {
         const eventRows = await queryAsync(conn, checkEventQuery, [eventId]);
 
         if (eventRows.length === 0) {
-          const warningMessage = "Event not found or does not belong to you";
+          const warningMessage = "Event not found";
           logWarning(warningMessage);
-          res
-            .status(404)
-            .json({ success: false, data: {}, message: warningMessage });
+          res.status(404).json({ success: false, data: {}, message: warningMessage });
           return;
         }
 
-        // Ensure the event belongs to the user attempting to update it
-        if (eventRows[0].AuthAdd !== userId) {
-          const warningMessage = "You are not authorized to update this event";
+        // Ensure the user is authorized to perform the action
+        if (req.user.isAdmin !== 1) {
+          const warningMessage = "You are not authorized to perform this action";
           logWarning(warningMessage);
-          res
-            .status(403)
-            .json({ success: false, data: {}, message: warningMessage });
+          res.status(403).json({ success: false, data: {}, message: warningMessage });
           return;
         }
 
-        // Update event details
-        const updateEventQuery = `UPDATE Community_Event 
-          SET EventTitle = ?, StartDate = ?, EndDate = ?, EventType = ?, Category = ?, Venue = ?, Host = ?, RegistrationLink = ?, EventImage = ?, EventDescription = ? 
-          WHERE EventID = ?;
-        `;
+        let query;
+        let queryParams;
 
-        await queryAsync(conn, updateEventQuery, [
-          title,
-          start,
-          end,
-          category,
-          companyCategory,
-          venue,
-          host,
-          registerLink,
-          poster, // Handle file upload separately if needed
-          description,
-          eventId,
-        ]);
+        // Handle different actions
+        switch (action) {
+          case "approve":
+            query = `
+              UPDATE Community_Event 
+              SET Status = 'Approved', AuthLstEdit = ?, editOnDt = GETDATE() 
+              WHERE EventID = ?;
+            `;
+            queryParams = [userId, eventId];
+            break;
+
+          case "reject":
+            query = `
+              UPDATE Community_Event 
+              SET Status = 'Rejected', Remark = ?, AuthLstEdit = ?, editOnDt = GETDATE() 
+              WHERE EventID = ?;
+            `;
+            queryParams = [remark, userId, eventId];
+            break;
+
+          case "delete":
+            query = `
+              UPDATE Community_Event 
+              SET delStatus = 1, AuthLstEdit = ?, editOnDt = GETDATE() 
+              WHERE EventID = ?;
+            `;
+            queryParams = [userId, eventId];
+            break;
+
+          default:
+            // Default to updating event details
+            query = `
+              UPDATE Community_Event 
+              SET EventTitle = ?, StartDate = ?, EndDate = ?, EventType = ?, Category = ?, 
+                  Venue = ?, Host = ?, RegistrationLink = ?, EventImage = ?, EventDescription = ?, 
+                  AuthLstEdit = ?, editOnDt = GETDATE() 
+              WHERE EventID = ?;
+            `;
+            queryParams = [
+              title,
+              start,
+              end,
+              category,
+              companyCategory,
+              venue,
+              host,
+              registerLink,
+              poster,
+              description,
+              userId,
+              eventId,
+            ];
+            break;
+        }
+
+        // Execute the query
+        await queryAsync(conn, query, queryParams);
 
         success = true;
         closeConnection();
 
-        const infoMessage = "Event updated successfully!";
+        const infoMessage = `Event ${action ? action + "ed" : "updated"} successfully!`;
         logInfo(infoMessage);
 
         // Send success response
-        res.status(200).json({
-          success,
-          data: { eventId },
-          message: infoMessage,
-        });
+        res.status(200).json({ success, data: { eventId }, message: infoMessage });
       } catch (queryErr) {
         closeConnection();
         logError(queryErr);
@@ -344,5 +433,3 @@ export const updateEvent = async (req, res) => {
     });
   }
 };
-
-

@@ -14,18 +14,14 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import ApiContext from '../context/ApiContext.jsx';
 import { ToastContainer, toast, } from "react-toastify";
+import { LiaBlogSolid } from "react-icons/lia";
 
 import EditProfileModal from './EditProfileModal';
 import DiscussionModal from './discussion/DiscussionModal.jsx';
+import AddUserEvent from './AddUserEvent.jsx';
+import AddUserBlog from './AddUserBlog.jsx';
 
 const UserProfile = () => {
-
-
-
-  // const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  // const openEditForm = () => setIsEditModalOpen(true);
-  // const closeEditForm = () => setIsEditModalOpen(false);
 
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
@@ -258,6 +254,10 @@ const UserProfile = () => {
                       <MdEventAvailable className='mr-4 text-2xl' />
                       <li className={`text-lg ${activeTab === 'events' ? 'text-DGXblue font-bold' : ''}`}>My Events</li>
                     </div>
+                    <div className={`flex items-center p-6 cursor-pointer ${activeTab === 'blogs' ? 'bg-DGXgreen/40' : ''}`} onClick={() => setActiveTab('blogs')}>
+                      <LiaBlogSolid className='mr-4 text-2xl' />
+                      <li className={`text-lg ${activeTab === 'blogs' ? 'text-DGXblue font-bold' : ''}`}>My Blogs</li>
+                    </div>
                     <div className={`flex items-center p-6 cursor-pointer ${activeTab === 'password' ? 'bg-DGXgreen/40' : ''}`} onClick={() => setActiveTab('password')}>
                       <CgPassword className='mr-4 text-2xl' />
                       <li className={`text-lg ${activeTab === 'password' ? 'text-DGXblue font-bold' : ''}`}>Change Password</li>
@@ -417,7 +417,7 @@ const UserProfile = () => {
                     </div>
                   </div>
                   <div className="mt-4 flex justify-center items-center">
-                    <UserProfileChart /> {/* Include the Chart component */}
+                    <UserProfileChart /> 
                   </div>
                 </div>
               </div>
@@ -439,14 +439,11 @@ const UserProfile = () => {
                             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{discussion.Title}</h5>
                             <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{discussion.Content}</p>
                             <div className="flex justify-between items-center">
-                              {/* Read More Section */}
                               <span className="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
                                 onClick={() => handleClickDiscussion(discussion)}>
                                 Read more
                                 <FaArrowRight className="ml-1 text-blue-600 dark:text-blue-400" />
                               </span>
-
-                              {/* Edit & Delete Icons */}
                               <div className="flex items-center gap-x-4">
                                 <FaEdit className="text-gray-600 hover:text-blue-600 cursor-pointer text-xl transition-transform transform hover:scale-110"
                                   onClick={() => handleEditDiscussion(discussion)} />
@@ -468,7 +465,16 @@ const UserProfile = () => {
                 <div className='flex-col'>
                   <h4 className="text-xl text-[#0f172a] font-bold">My Events</h4>
                 </div>
-                Coming Soon
+                <AddUserEvent/>
+
+              </div>
+            )}
+              {activeTab === 'blogs' && (
+              <div className='w-full'>
+                <div className='flex-col'>
+                  <h4 className="text-xl text-[#0f172a] font-bold">My Events</h4>
+                </div>
+                <AddUserBlog/>
 
               </div>
             )}

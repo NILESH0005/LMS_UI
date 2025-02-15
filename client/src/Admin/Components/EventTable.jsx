@@ -31,7 +31,6 @@ const EventTable = () => {
         registerLink: '', // Add registerLink to state
     });
 
-    const [selectedEvent, setSelectedEvent] = useState(null);
     const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
     // Create refs for input fields
@@ -55,6 +54,7 @@ const EventTable = () => {
         fetchEvents();
     }, []);
 
+    
     const addEvent = async () => {
         const response = await fetch("/api/addEvent", { method: 'POST' }); // Add data to the event
         const result = await response.json();
@@ -207,175 +207,6 @@ const EventTable = () => {
                 <p className="mt-1 flex text-md justify-center items-center font-normal text-gray-500 dark:text-gray-400">Browse and manage Events in the DGX community.</p>
             </div>
 
-            <div className="mb-5">
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="bg-DGXgreen text-white p-2 rounded"
-                >
-                    Add Event
-                </button>
-            </div>
-
-            {/* {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-5 max-w-7xl w-full max-h-[90vh] overflow-y-auto z-50">
-                        <h2 className="text-xl font-bold mb-4">Add New Event</h2>
-                        <input
-                            type="text"
-                            name="title"
-                            placeholder="Event Title"
-                            value={newEvent.title}
-                            onChange={handleChange}
-                            className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.title ? 'border-red-500' : ''}`}
-                            ref={titleRef}
-                        />
-                        {errors.title && <p className="text-red-500 text-sm mb-2">{errors.title}</p>}
-
-                        <input
-                            type="date"
-                            name="start"
-                            placeholder="Start Date"
-                            value={newEvent.start}
-                            onChange={handleChange}
-                            className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.start ? 'border-red-500' : ''}`}
-                            ref={startRef}
-                        />
-                        {errors.start && <p className="text-red-500 text-sm mb-2">{errors.start}</p>}
-
-                        <input
-                            type="date"
-                            name="end"
-                            placeholder="End Date"
-                            value={newEvent.end}
-                            onChange={handleChange}
-                            className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.end ? 'border-red-500' : ''}`}
-                            ref={endRef}
-                        />
-                        {errors.end && <p className="text-red-500 text-sm mb-2">{errors.end}</p>}
-
-                        <select
-                            name="category"
-                            value={newEvent.category}
-                            onChange={handleChange}
-                            className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.category ? 'border-red-500' : ''}`}
-                            ref={categoryRef}
-                        >
-                            <option value="Select one">Select one</option>
-                            <option value="workshop">Workshop</option>
-                            <option value="event">Event</option>
-                        </select>
-                        <select
-                            name="companyCategory"
-                            value={newEvent.companyCategory}
-                            onChange={handleChange}
-                            className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.companyCategory ? 'border-red-500' : ''}`}
-                            ref={companyCategoryRef}
-                        >
-                            <option value="Select one">Category</option>
-                            <option value="giEvent">Global Infoventures Event</option>
-                            <option value="nvidiaEvent">NVIDIA Event</option>
-                        </select>
-                        {errors.category && <p className="text-red-500 text-sm mb-2">{errors.category}</p>}
-
-                        <input
-                            type="text"
-                            name="venue"
-                            placeholder="Venue"
-                            value={newEvent.venue}
-                            onChange={handleChange}
-                            className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.venue ? 'border-red-500' : ''}`}
-                            ref={venueRef}
-                        />
-                        {errors.venue && <p className="text-red-500 text-sm mb-2">{errors.venue}</p>}
-
-                        <input
-                            type="text"
-                            name="host"
-                            placeholder="Host"
-                            value={newEvent.host}
-                            onChange={handleChange}
-                            className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.host ? 'border-red-500' : ''}`}
-                            ref={hostRef}
-                        />
-                        {errors.host && <p className="text-red-500 text-sm mb-2">{errors.host}</p>}
-
-                        <input
-                            type="text"
-                            name="registerLink"
-                            placeholder="Registration Link"
-                            value={newEvent.registerLink}
-                            onChange={handleChange}
-                            className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.registerLink ? 'border-red-500' : ''}`}
-                            ref={registerLinkRef}
-                        />
-                        {errors.registerLink && <p className="text-red-500 text-sm mb-2">{errors.registerLink}</p>}
-
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            className="p-2 border border-gray-300 rounded mb-2 w-full"
-                        />
-                        {newEvent.poster && (
-                            <img
-                                onChange={handleImageChange}
-                                src={newEvent.poster}
-                                alt="Event Poster"
-                                className="w-32 h-32 object-cover mb-2"
-                            />
-                        )}
-
-                        <ReactQuill
-                            value={newEvent.description}
-                            onChange={handleDescriptionChange}
-                            className={`mb-2 ${errors.description ? 'border-red-500' : ''}`}
-                            ref={descriptionRef}
-                            modules={{
-                                toolbar: [
-                                    ['bold', 'italic', 'underline', 'strike'], // toggled buttons
-                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                                    [{ 'script': 'sub' }, { 'script': 'super' }], // superscript/subscript
-                                    [{ 'indent': '-1' }, { 'indent': '+1' }], // outdent/indent
-                                    [{ 'direction': 'rtl' }], // text direction
-                                    [{ 'size': ['small', false, 'large', 'huge'] }], // custom dropdown
-                                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                                    [{ 'color': [] }, { 'background': [] }], // dropdown with defaults from theme
-                                    [{ 'font': [] }],
-                                    [{ 'align': [] }],
-                                    ['clean'] // remove formatting button
-                                ]
-                            }}
-                            formats={[
-                                'header', 'font', 'size',
-                                'bold', 'italic', 'underline', 'strike',
-                                'blockquote', 'list', 'bullet', 'indent',
-                                'link', 'image', 'color', 'background', 'align',
-                                'script'
-                            ]}
-                        />
-                        {errors.description && <p className="text-red-500 text-sm mb-2">{errors.description}</p>}
-
-                        <div className="flex justify-end">
-                            <button
-                                onClick={handleCloseModal}
-                                className="bg-red-500 text-white p-2 rounded mr-2"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={async (events) => {
-                                    await handleSubmit(events);  // Ensure handleSubmit is completed
-                                    await addEvent();
-                                }
-                            }
-                                className="bg-DGXgreen text-white p-2 rounded"
-                            >
-                                Add Event
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )} */}
 
         </div>
 

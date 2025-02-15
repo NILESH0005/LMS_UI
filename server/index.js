@@ -8,14 +8,24 @@ import userEvent from './routes/EventAndWorkshop.js';
 import userBlog from './routes/Blog.js';
 import userProfile from './routes/UserProfile.js';
 import dropdownRoutes from './routes/Dropdown.js';
-import { connectToDatabase } from './database/mySql.js'; // Removed unused closeConnection
+import { connectToDatabase } from './database/mySql.js'; 
+// import session from 'express-session';
+
+
 import homeRoutes from './routes/Home.js';
 
 dotenv.config(); // Load environment variables
 
 const port = process.env.PORT || 8000; // Use logical OR for fallback
-
+// const JWT_SECRET = process.env.JWT_SECRET
 const app = express();
+
+// app.use(session({
+//   secret: process.env.SESSION_SECRET || "auth-token",
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: {secure: false, httpOnly:true},
+// }))
 
 // CORS Configuration
 app.use(
@@ -39,6 +49,7 @@ app.use('/eventandworkshop', userEvent);
 app.use('/blog', userBlog);
 app.use('/userprofile', userProfile);
 app.use('/dropdown', dropdownRoutes);
+app.use('/addUser', userRoutes);
 app.use('/home', homeRoutes); // Added this line
 
 // Connect to database and start server

@@ -1,38 +1,50 @@
-import React, { useRef } from 'react';
-import { useState, useContext, useEffect } from 'react';
+import React, { useRef, useState, useContext, useEffect } from 'react';
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-// import { images } from '../constant/index.js';
-// import { images } from '../constant/index.js';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import ApiContext from '../context/ApiContext.jsx';
+import ApiContext from '.././context/ApiContext';
 import { compressImage } from '../utils/compressImage.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
+import EventForm from './eventAndWorkshop/EventForm';
+// import EventDetailsModal from './EventDetailsModal'; // Import the modal component
+import DetailsEventModal from './eventAndWorkshop/DetailsEventModal.jsx';
 
 const EventTable = () => {
-  const localizer = momentLocalizer(moment);
   const { fetchData, userToken } = useContext(ApiContext);
   const [events, setEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
+  const [statusFilter, setStatusFilter] = useState("");
+  const [showForm, setShowForm] = useState(false); // State to control form visibility
+  const [selectedEvent, setSelectedEvent] = useState(null); // State for selected event in modal
+
   const [dropdownData, setDropdownData] = useState({
     categoryOptions: [],
     companyCategoryOptions: []
   });
-  // const [newEventDD, setNewEventDD] = useState({
-  //   category: '',
-  //   companyCategory: ''
-  // });
+
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    start: '',
+    end: '',
+    categoryId: dropdownData.categoryOptions[0]?.idCode || '',
+    companyCategoryId: dropdownData.companyCategoryOptions[0]?.idCode || '',
+    poster: '',
+    venue: '',
+    description: '',
+    host: '',
+    registerLink: '',
+  });
+
+  const filteredEvents = events.filter(event =>
+    statusFilter === "" || event.Status === statusFilter
+  );
 
   useEffect(() => {
-    // Fetch categories first (Privacy, eventType, eventHost)
     const fetchDropdownValues = async (category) => {
       try {
         const response = await fetch(`http://localhost:8000/dropdown/getDropdownValues?category=${category}`);
@@ -44,9 +56,7 @@ const EventTable = () => {
       }
     };
 
-    // Fetch category options for Privacy, eventType, eventHost
     const fetchCategories = async () => {
-      // const privacyOptions = await fetchDropdownValues('Privacy');
       const eventTypeOptions = await fetchDropdownValues('eventType');
       const eventHostOptions = await fetchDropdownValues('eventHost');
 
@@ -59,77 +69,21 @@ const EventTable = () => {
     fetchCategories();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'categoryId' || name === 'companyCategoryId') {
-      const options = name === 'categoryId' ? dropdownData.categoryOptions : dropdownData.companyCategoryOptions;
-      const selectedOption = options.find(option => option.ddValue === value);
-      console.log("optio conpamny", selectedOption)
-      setNewEvent({ ...newEvent, [name]: selectedOption ? selectedOption.idCode : '' });
-    } else {
-      setNewEvent({ ...newEvent, [name]: value });
-    }
-  };  
-  const handleChanges = (e) => {
-    // console.log("this is category workshop/event", categoryId);
-    const { name, value } = e.target;
-    if (name === 'categoryId' || name === 'companyCategoryId') {
-      // Find the corresponding idCode for the selected ddValue
-      const options = name === 'categoryId' ? dropdownData.categoryOptions : dropdownData.companyCategoryOptions;
-      const selectedOption = options.find(option => option.ddValue === value);
-      console.log("optio conpamny", selectedOption)
-      setNewEvent((prev) => ({
-        ...prev,
-        [name]: selectedOption ? selectedOption.idCode : ''
-      }));
-    } else {
-      setNewEvent((prev) => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
-
-  const [errors, setErrors] = useState({});
-  const [newEvent, setNewEvent] = useState({
-
-    title: '',  
-    start: '',
-    end: '',
-    categoryId: '',
-    companyCategoryId: '',
-    poster: null,
-    venue: '',
-    description: '',
-    host: '',
-    registerLink: '', // Add registerLink to state
-  });
-
-  const handleCloseConfirmationModal = () => {
-    setShowCancelConfirmation(true); // Show the confirmation modal
-  };
-
   const handleEditEvent = (event) => {
     setNewEvent({
       title: event.EventTitle || '',
       start: moment(event.StartDate).format('YYYY-MM-DD') || '',
       end: moment(event.EndDate).format('YYYY-MM-DD') || '',
-      category: event.categoryId || 'Select one',
-      companyCategory: event.companyCategoryId|| 'Select one',
+      category: event.categoryId || '',
+      companyCategory: event.companyCategoryId || '',
       poster: event.EventImage || null,
       venue: event.Venue || '',
       description: event.EventDescription || '',
       host: event.Host || '',
       registerLink: event.RegistrationLink || '',
     });
-    setModalType('edit'); // Set modal type to "edit"
-    setIsModalOpen(true); // Open the modal
-  };
-
-  const handleAddEvent = () => {
-    resetForm(); // Clear the form
-    setModalType('add'); // Set modal type to "add"
-    setIsModalOpen(true); // Open the modal
+    setModalType('edit');
+    setIsModalOpen(true);
   };
 
   useEffect(() => {
@@ -142,7 +96,7 @@ const EventTable = () => {
 
       try {
         const result = await fetchData(endpoint, method, {}, headers);
-        console.log("event result:",result)
+        console.log("event result:", result);
         if (result.success && Array.isArray(result.data)) {
           setEvents(result.data);
         } else {
@@ -151,7 +105,7 @@ const EventTable = () => {
         }
       } catch (error) {
         console.error("Error fetching events:", error);
-        setEvents([]); // Set events to an empty array if there's an error
+        setEvents([]);
       } finally {
         setLoading(false);
       }
@@ -160,17 +114,8 @@ const EventTable = () => {
     fetchEvents();
   }, [fetchData]);
 
-  // Conditional rendering
-  // if (loading) return <div>Loading events...</div>;
-  // if (error) return <div>Error: {error}</div>;
-
-
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  // const [errors, setErrors] = useState({});
   const fileInputRef = useRef(null);
 
-  // Create refs for input fields
-  const titleRef = useRef(null);
   const startRef = useRef(null);
   const endRef = useRef(null);
   const categoryRef = useRef(null);
@@ -179,152 +124,17 @@ const EventTable = () => {
   const hostRef = useRef(null);
   const descriptionRef = useRef(null);
   const registerLinkRef = useRef(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const maxLength = 800;
 
+  const remainingChars = maxLength - newEvent.description.length;
 
-
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewEvent({ ...newEvent, poster: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
+  const formatDate = (isoString) => {
+    return moment(isoString).format('DD/MM/YYYY');
   };
 
-  // const handleDeleteUser = async () => {
-  //   const endpoint = "/user/deleteUser";
-  //   const method = "POST";
-  //   const headers = { 'Content-Type': 'application/json' };
-
-  //   try {
-  //     const result = await fetchData(endpoint, method, {}, headers);
-  //     if (result?.success) {
-  //       setUsers(users.filter((user) => user.UserID !== selectedUserId));
-  //       setShowModal(false);
-  //     } else {
-  //       setError(result?.message || 'Failed to delete user');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error deleting user:', error);
-  //     setError('Failed to delete user');
-  //   }
-  // };
-
-  
-
-  const handleDescriptionChange = (value) => {
-    setNewEvent({ ...newEvent, description: value });
-  };
-
-
-  const handleImageChange = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file) {
-        const compressedFile = await compressImage(file);
-        setNewEvent({ ...newEvent, [poster]: compressedFile });
-      }
-    }
-  };
-
-  const handleSubmit = async () => {
-    const errors = {};
-
-    // Validate form fields
-    if (!newEvent.title) errors.title = 'Event title is required.';
-    if (!newEvent.start) errors.start = 'Start date is required.';
-    // if (!newEvent.end) errors.end = 'End date is required.';
-    if (newEvent.categoryId === 'Select one') errors.categoryId = 'Please select a category.';
-    if (newEvent.companyCategoryId === 'Select one') errors.companyCategoryId = 'Please select a company category.';
-    if (!newEvent.venue) errors.venue = 'Venue is required.';
-    if (!newEvent.description) errors.description = 'Description is required.';
-    if (!newEvent.host) errors.host = 'Host is required.';
-    if (!newEvent.registerLink) errors.registerLink = 'Register link is required.';
-
-    // Check for errors
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
-      const firstErrorField = Object.keys(errors)[0];
-      const refMap = {
-        title: titleRef,
-        start: startRef,
-        end: endRef,
-        category: categoryRef,
-        companyCategory: companyCategoryRef,
-        venue: venueRef,
-        host: hostRef,
-        description: descriptionRef,
-        registerLink: registerLinkRef,
-      };
-      const element = refMap[firstErrorField].current;
-      if (element) {
-        element.focus();
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      return;
-    }
-
-    const endpoint = 'eventandworkshop/addEvent';
-    const method = 'POST';
-    const headers = {
-      'Content-Type': 'application/json',
-      'auth-token': userToken,
-    };
-    const body = {
-      title: newEvent.title,
-      start: newEvent.start,
-      end: newEvent.end,
-      category: newEvent.categoryId, // Send categoryId
-      companyCategory: newEvent.companyCategoryId,
-      venue: newEvent.venue,
-      host: newEvent.host,
-      registerLink: newEvent.registerLink,
-      poster: newEvent.poster, // Ensure you handle the poster appropriately
-      description: newEvent.description,
-    };
-    console.log("body is ", body)
-
-    try {
-      const data = await fetchData(endpoint, method, body, headers);
-      console.log("data is ", data);
-      if (data.success) {
-        const addedEvent = {
-          EventTitle: newEvent.title,
-          StartDate: newEvent.start,
-          EndDate: newEvent.end,
-          Category: newEvent.categoryId,
-          CompanyCategory: newEvent.companyCategoryId,
-          Venue: newEvent.venue,
-          Host: newEvent.host,
-          RegistrationLink: newEvent.registerLink,
-          EventImage: newEvent.poster,
-          EventDescription: newEvent.description,
-        };
-        console.log("add event", addedEvent);
-        // setEvents([
-        //   ...events,
-        //   {
-        //     ...newEvent,
-        //     start: new Date(newEvent.start),
-        //     end: new Date(newEvent.end),
-        //   },
-        // ]);
-        setEvents([...events, addedEvent]);
-        // resetForm();
-        setIsModalOpen(false);
-        toast.success('Event added successfully!'); // Show success toast
-        console.log('Event added successfully!', data.message);
-      } else {
-        console.error(`Server Error: ${data.message}`);
-        toast.error(`Error: ${data.message}`); // Show error toast
-      }
-    } catch (error) {
-      console.error('Error adding event:', error);
-      toast.error('An error occurred while adding the event. Please try again.'); // Show error toast
-    }
+  const formatTime = (isoString) => {
+    return moment(isoString).format('HH:mm');
   };
 
   const handleCloseModal = () => {
@@ -343,307 +153,105 @@ const EventTable = () => {
       venue: '',
       description: '',
       host: '',
-      registerLink: '', // Reset registerLink
+      registerLink: '',
     });
     setErrors({});
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''; // Clear the file input
+      fileInputRef.current.value = '';
     }
   };
 
+  const convertToKolkataTime = (date) => {
+    const offsetIST = 5.5 * 60 * 60 * 1000;
+    return new Date(date.getTime() + offsetIST);
+  };
 
   return (
-
-
     <div className="container mx-auto mt-10">
       <div>
         <h1 className='flex justify-center items-center font-bold text-3xl mb-10'>Events and Workshops Calendar</h1>
         <p className="mt-1 flex text-md justify-center items-center font-normal text-gray-500 dark:text-gray-400">Browse and manage discussions in the DGX community.</p>
       </div>
 
-      <div className="mb-5">
+      <div className="flex justify-between mb-4">
+        {/* Filter on the left */}
+        <div className="flex items-center">
+          <label className="mr-2 text-lg font-medium">Filter by Status:</label>
+          <select
+            className="border px-3 py-2 rounded-lg"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+
+        {/* Button on the right */}
         <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-DGXblue hover:bg-DGXgreen text-white p-2 rounded"
+          className="bg-DGXgreen text-white px-4 py-2 rounded-lg"
+          onClick={() => setShowForm(!showForm)}
         >
-          Add Event
+          {showForm ? 'Show Table' : 'Add Event'}
         </button>
       </div>
 
-      <div className="event-table flex items-center justify-center">
-        <table className="table-fixed border bottom-2 w-full mt-4">
-          <thead className='bg-DGXgreen text-white'>
-            <tr >
-              <th className="border px-4 py-2 ">Title</th>
-              <th className="border px-4 py-2">Start Date</th>
-              <th className="border px-4 py-2">End Date</th>
-              <th className="border px-4 py-2">Category</th>
-              <th className="border px-4 py-2">Venue</th>
-              <th className="border px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((event, index) => (
-              <tr className='text-center' key={index}>
-                <td className="border px-4 py-2 w-2/6">
-                  {event.EventTitle && event.EventTitle.length > 50
-                    ? `${event.EventTitle.slice(0, 50)}...`
-                    : event.EventTitle}
-                </td>
-
-                <td className="border px-4 py-2">{new Date(event.StartDate).toLocaleDateString()}</td>
-                <td className="border px-4 py-2">{new Date(event.EndDate).toLocaleDateString()}</td>
-                <td className="border px-4 py-2"> {dropdownData.categoryOptions.find(option => option.idCode === event.Category)?.ddValue || 'Unknown'}</td>
-                <td className="border px-4 py-2">{event.Venue}</td>
-                <td className="border px-4 py-2">
-                  {/* Add actions like Edit or Delete */}
-                  <button className='font-medium hover:text-DGXblue bg-DGXgreen text-white px-6 py-1 rounded-lg' onClick={() => handleEditEvent(event)}>Edit</button>
-                  <button className='font-medium hover:text-DGXblue bg-red-500 text-white px-4 py-1 rounded-lg'
-                    onClick={() => {
-                      setModalType('delete');
-                      // setSelectedUserId(user.UserID);
-                      setShowModal(true);
-                    }}>
-                    Delete
-                  </button>
-                </td>
+      {showForm ? (
+        <EventForm />
+      ) : (
+        <div className="event-table flex items-center justify-center">
+          <table className="table-fixed border bottom-2 w-full mt-4">
+            <thead className='bg-DGXgreen text-white'>
+              <tr >
+                <th className="border px-4 py-2 ">Title</th>
+                <th className="border px-4 py-2">Start Date</th>
+                <th className="border px-4 py-2">End Date</th>
+                <th className="border px-4 py-2">Category</th>
+                <th className="border px-4 py-2">Venue</th>
+                <th className="border px-4 py-2">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filteredEvents.map((event, index) => (
+                <tr className='text-center' key={index}>
+                  <td className="border px-4 py-2 w-2/6">
+                    {event.EventTitle && event.EventTitle.length > 50
+                      ? `${event.EventTitle.slice(0, 50)}...`
+                      : event.EventTitle}
+                  </td>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-5 max-w-7xl w-full max-h-[90vh] overflow-y-auto z-50">
-            <h2 className="text-xl font-bold mb-4">Add New Event</h2>
-            <input
-              type="text"
-              name="title"
-              placeholder="Event Title"
-              value={newEvent.title}
-              onChange={handleChange}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.title ? 'border-red-500' : ''}`}
-              ref={titleRef}
-            />
-            {errors.title && <p className="text-red-500 text-sm mb-2">{errors.title}</p>}
-            <input
-              type="text"
-              onFocus={(e) => (e.target.type = "date")}
-              onBlur={(e) => (e.target.value === "" ? (e.target.type = "text") : null)}
-              name="start"
-              value={newEvent.start}
-              onChange={handleChange}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.start ? 'border-red-500' : ''}`}
-              ref={startRef}
-              placeholder="Start Date"
-              min={new Date().toISOString().split("T")[0]}
-            />
-
-            {errors.start && <p className="text-red-500 text-sm mb-2">{errors.start}</p>}
-
-            <input
-              type="text"
-              onFocus={(e) => (e.target.type = "date")}
-              onBlur={(e) => (e.target.value === "" ? (e.target.type = "text") : null)}
-              name="end"
-              value={newEvent.end}
-              onChange={handleChange}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.end ? 'border-red-500' : ''}`}
-              ref={endRef}
-              placeholder='End Date'
-              min={newEvent.start}
-            />
-            {errors.end && <p className="text-red-500 text-sm mb-2">{errors.end}</p>}
-
-            <select
-              name="categoryId"
-              value={dropdownData.categoryOptions.find(option => option.idCode === newEvent.categoryId)?.ddValue || ''}
-              
-              onChange={handleChanges}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.categoryId ? 'border-red-500' : ''}`}
-            >
-              <option value="">Select one</option>
-              {dropdownData.categoryOptions.map((item) => (
-                <option key={item.idCode} value={item.ddValue}>
-                  {item.ddValue}
-                </option>
+                  <td className="border px-4 py-2">
+                    <div>{formatDate(event.EndDate)}</div>
+                    <div>{formatTime(event.EndDate)}</div>
+                  </td>
+                  <td className="border px-4 py-2">{new Date(event.EndDate).toLocaleDateString()}</td>
+                  <td className="border px-4 py-2"> {dropdownData.categoryOptions.find(option => option.idCode === event.Category)?.ddValue || 'Unknown'}</td>
+                  <td className="border px-4 py-2">{event.Venue}</td>
+                  <td className="border px-4 py-2">
+                    <button
+                      className='font-medium hover:text-DGXblue bg-DGXblue text-white px-6 py-1 rounded-lg'
+                      onClick={() => setSelectedEvent(event)} // Open modal on click
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </select>
-
-            <select
-              name="companyCategoryId"
-              value={dropdownData.companyCategoryOptions.find(option => option.idCode === newEvent.companyCategoryId)?.ddValue || ''}
-              onChange={handleChange}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.companyCategoryId ? 'border-red-500' : ''}`}
-            >
-              <option value="">Select one</option>
-              {dropdownData.companyCategoryOptions.map((item) => (
-                <option key={item.idCode} value={item.ddValue}>
-                  {item.ddValue}
-                </option>
-              ))}
-            </select>
-            {errors.category && <p className="text-red-500 text-sm mb-2">{errors.category}</p>}
-
-            <input
-              type="text"
-              name="venue"
-              placeholder="Venue"
-              value={newEvent.venue}
-              onChange={handleChanges}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.venue ? 'border-red-500' : ''}`}
-              ref={venueRef}
-            />
-            {errors.venue && <p className="text-red-500 text-sm mb-2">{errors.venue}</p>}
-
-            <input
-              type="text"
-              name="host"
-              placeholder="Host"
-              value={newEvent.host}
-              onChange={handleChange}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.host ? 'border-red-500' : ''}`}
-              ref={hostRef}
-            />
-            {errors.host && <p className="text-red-500 text-sm mb-2">{errors.host}</p>}
-
-            <input
-              type="text"
-              name="registerLink"
-              placeholder="Registration Link"
-              value={newEvent.registerLink}
-              onChange={handleChange}
-              className={`p-2 border border-gray-300 rounded mb-2 w-full ${errors.registerLink ? 'border-red-500' : ''}`}
-              ref={registerLinkRef}
-            />
-            {errors.registerLink && <p className="text-red-500 text-sm mb-2">{errors.registerLink}</p>}
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="p-2 border border-gray-300 rounded mb-2 w-full"
-            />
-            {newEvent.poster && (
-              <img
-                onChange={handleImageChange}
-                src={newEvent.poster}
-                alt="Event Poster"
-                className="w-32 h-32 object-cover mb-2"
-              />
-            )}
-
-            <ReactQuill
-              value={newEvent.description}
-              placeholder='Description of the Event'
-              onChange={handleDescriptionChange}
-              className={`mb-2 ${errors.description ? 'border-red-500' : ''}`}
-              ref={descriptionRef}
-              modules={{
-                toolbar: [
-                  ['bold', 'italic', 'underline', 'strike'], // toggled buttons
-                  [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                  [{ 'script': 'sub' }, { 'script': 'super' }], // superscript/subscript
-                  [{ 'indent': '-1' }, { 'indent': '+1' }], // outdent/indent
-                  [{ 'direction': 'rtl' }], // text direction
-                  [{ 'size': ['small', false, 'large', 'huge'] }], // custom dropdown
-                  [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                  [{ 'color': [] }, { 'background': [] }], // dropdown with defaults from theme
-                  [{ 'font': [] }],
-                  [{ 'align': [] }],
-                  ['clean'] // remove formatting button
-                ]
-              }}
-              formats={[
-                'header', 'font', 'size',
-                'bold', 'italic', 'underline', 'strike',
-                'blockquote', 'list', 'bullet', 'indent',
-                'link', 'image', 'color', 'background', 'align',
-                'script'
-              ]}
-            />
-            {errors.description && <p className="text-red-500 text-sm mb-2">{errors.description}</p>}
-
-            <div className="flex justify-end">
-              <button
-                onClick={handleCloseConfirmationModal}
-                className="bg-red-500 text-white p-2 rounded mr-2"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={async (events) => {
-                  await handleSubmit(events);  // Ensure handleSubmit is completed
-                  // await addEventTable();
-                }
-                }
-                className="bg-DGXgreen text-white p-2 rounded"
-              >
-                Add Event
-              </button>
-            </div>
-          </div>
+            </tbody>
+          </table>
         </div>
       )}
-      {showModal && modalType === 'delete' && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h3 className="text-xl font-semibold mb-4">Confirm Delete</h3>
-            <p>Are you sure you want to delete this Event?</p>
-            <div className="flex justify-between mt-4">
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleDeleteUser}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
+
+      {/* Render the EventDetailsModal */}
+      {selectedEvent && (
+        <DetailsEventModal
+          selectedEvent={selectedEvent}
+          onClose={() => setSelectedEvent(null)} // Close modal
+        />
       )}
-      {showCancelConfirmation && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h3 className="text-xl font-semibold mb-4">Confirm Cancel</h3>
-            <p>Are you sure you want to cancel? Any unsaved changes will be lost.</p>
-            <div className="flex justify-between mt-4">
-              <button
-                type="button"
-                onClick={() => setShowCancelConfirmation(false)} // Close the confirmation modal
-                className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
-              >
-                No, Continue Editing
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  resetForm(); // Reset the form
-                  setIsModalOpen(false); // Close the add event modal
-                  setShowCancelConfirmation(false); // Close the confirmation modal
-                }}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg"
-              >
-                Yes, Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="container mx-auto mt-10">
-        <ToastContainer /> {/* Add this line */}
-        {/* ... rest of your JSX */}
-      </div>
     </div>
-
   );
 };
 

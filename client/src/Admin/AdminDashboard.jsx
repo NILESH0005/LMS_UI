@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Users from './Components/Users';
 import Discussions from './Components/Discussions';
 import Events from './Components/Events';
+// import AddUserEvent from '../component/AddUserEvent'
 import GuidelineManager from './Components/GuidelineManager';
 import Contact from './Components/Contact';
 import BlogManager from './Components/BlogManager';
@@ -21,7 +22,7 @@ const AdminDashboard = () => {
       case 'discussions':
         return <Discussions />;
       case 'events':
-        return <Events />;
+        return <Events/>;
       case 'blog_manager':
         return <BlogManager />;
       case 'guidelines':

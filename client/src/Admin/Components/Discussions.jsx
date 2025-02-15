@@ -11,6 +11,13 @@ const Discussions = () => {
   const [modalType, setModalType] = useState('');
   const [loading, setLoading] = useState(false); // Add loading state
 
+  const resetForm = () => {
+    setDiscussions([]);  // Reset discussions state if needed
+    setUsers([]);  // Reset users or any other state you want to clear
+    setModalType('');  // Reset modal type
+  };
+
+
   useEffect(() => {
     const fetchDiscussions = async () => {
       try {
@@ -60,7 +67,7 @@ const Discussions = () => {
     fetchDiscussions();
   }, [fetchData]);
 
-  
+
 
   const handleDeleteUser = async () => {
     const endpoint = "/user/deleteUser";
@@ -80,7 +87,7 @@ const Discussions = () => {
       setError('Failed to delete user');
     }
   };
-  
+
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -158,7 +165,10 @@ const Discussions = () => {
                         <div className="flex justify-between mt-4">
                           <button
                             type="button"
-                            onClick={() => setShowModal(false)}
+                            onClick={() => {
+                              setShowModal(false);  // Close the modal
+                              resetForm();  // Reset the form
+                            }}
                             className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
                           >
                             Cancel

@@ -1,11 +1,9 @@
-import { body, validationResult } from "express-validator";
+// import { body, validationResult } from "express-validator";
 import { connectToDatabase, closeConnection } from "../database/mySql.js";
 import dotenv from "dotenv";
 import { queryAsync, logError, logInfo } from "../helper/index.js";
 
 dotenv.config();
-
-
 
 export const getDropdownValues = async (req, res) => {
     let success = false;

@@ -38,6 +38,7 @@ import ParallaxSection from './component/ParallaxSection.jsx';
 import NewsSection from './component/NewsSection.jsx';
 import ProjectShowcase from './component/ProjectShowcase.jsx';
 import CommunityHighlights from './component/CommunityHighlights.jsx';
+import AddUserEvent from './component/AddUserEvent.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -76,6 +77,9 @@ function App() {
             <Route path='/EventRegistrationPage' element={<EventRegistrationPage />} />
             <Route path='/HomeAfterLoginComponent' element={<HomeAfterLoginComponent />} />
             {/* <Route path='/PostCode' element={<PostCode />} /> */}
+            <Route path='/CreateICSFile' element={<CreateICSFile />} />
+            <Route path='/AddUserEvent' element={<AddUserEvent/>}/>
+         
             
             
             {/* //add path for dynamic  homepage */}

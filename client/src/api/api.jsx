@@ -24,6 +24,7 @@ const apiRequest = async (endpoint, method = 'GET', body = {}, headers = { 'Cont
             console.log("Details", errorDetails);
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        console.log("got api request");
         return await response.json();
     } catch (error) {
         console.error('Error in API request:', error.message, error.stack);
