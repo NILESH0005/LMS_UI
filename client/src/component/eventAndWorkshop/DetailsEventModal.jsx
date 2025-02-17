@@ -1,22 +1,63 @@
 import React, { useState } from 'react';
 import moment from 'moment';
+import Swal from 'sweetalert2';
 
 const DetailsEventModal = ({ selectedEvent, onClose }) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState(null); // 'approve', 'reject', 'delete'
   const [remark, setRemark] = useState('');
 
+  const updateEventStatus = async (eventId, action, remark = '') => {
+    const endpoint = `eventandworkshop/updateEvent/${eventId}`; 
+    const method = "POST"; 
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('userToken')}`, 
+    };
+
+    // Request body
+    const body = {
+      action, // 'approve', 'reject', or 'delete'
+      remark, // Only required for 'reject'
+    };
+
+    try {
+      const result = await fetchData(endpoint, method, body, headers);
+      console.log("Update event result:", result);
+
+      if (result.success) {
+        console.log(`Event ${action}ed successfully!`);
+        return true; // Indicate success
+      } else {
+        console.error(`Failed to ${action} event:`, result.message);
+        return false; // Indicate failure
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing event:`, error);
+      return false; // Indicate failure
+    }
+  };
+
+
+
   const handleConfirmation = (action) => {
     setConfirmationAction(action);
     setShowConfirmationModal(true);
   };
 
-  const handleConfirmAction = () => {
-    // Handle the action (approve, reject, delete) here
-    console.log(`Action: ${confirmationAction}, Remark: ${remark}`);
-    // You can call an API here to update the event status
+  const handleConfirmAction = async () => {
+    const success = await updateEventStatus(selectedEvent.EventID, confirmationAction, remark);
+
+    if (success) {
+      // Refresh the events list or close the modal
+      onClose(); // Close the modal after successful action
+    } else {
+      // Display an error message (e.g., using a toast or alert)
+      console.error(`Failed to ${confirmationAction} event.`);
+    }
+
+    // Close the confirmation modal
     setShowConfirmationModal(false);
-    onClose(); // Close the modal after action
   };
 
   return (

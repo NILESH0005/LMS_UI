@@ -293,7 +293,6 @@ export const updateEvent = async (req, res) => {
   }
 
   try {
-    // Destructure form data
     let {
       title,
       start,
@@ -305,11 +304,10 @@ export const updateEvent = async (req, res) => {
       registerLink,
       poster,
       description,
-      action, // New field to specify the action (approve, reject, delete)
-      remark, // Field for rejection remarks
+      action,
+      remark,
     } = req.body;
 
-    // Extract event ID from request parameters
     const eventId = req.params.eventId;
 
     // Connect to the database
@@ -342,6 +340,20 @@ export const updateEvent = async (req, res) => {
           const warningMessage = "You are not authorized to perform this action";
           logWarning(warningMessage);
           res.status(403).json({ success: false, data: {}, message: warningMessage });
+          return;
+        }
+
+        if (action === "approve" && Status === "Approved") {
+          const warningMessage = "Event is already approved";
+          logWarning(warningMessage);
+          res.status(400).json({ success: false, data: {}, message: warningMessage });
+          return;
+        }
+
+        if (action === "reject" && Status === "Rejected") {
+          const warningMessage = "Event is already rejected";
+          logWarning(warningMessage);
+          res.status(400).json({ success: false, data: {}, message: warningMessage });
           return;
         }
 
