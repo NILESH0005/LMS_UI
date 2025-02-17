@@ -110,7 +110,7 @@ const EventWorkshopPage = () => {
     setSelectedEvent(null);
   };
 
-
+   
   const handleTabChange = (tab) => {
     setIsAnimating(true);
     setTimeout(() => {
