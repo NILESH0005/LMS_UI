@@ -28,6 +28,7 @@ const GeneralUserCalendar = ({ events }) => {
   }, [events]);
 
   const handleSelectEvent = (event) => {
+    console.log("Selected Event:", event); // Debug selected event
     setSelectedEvent(event);
     const eventDetailElement = document.getElementById('event-detail');
     if (eventDetailElement) {
@@ -56,9 +57,14 @@ const GeneralUserCalendar = ({ events }) => {
 
   const formattedEvents = events?.map(event => ({
     ...event,
-    start: new Date(event.StartDate),  // Directly use Date object
-    end: new Date(event.EndDate),
+    start: moment.utc(event.StartDate).local().toDate(), // Convert UTC to local time
+    end: moment.utc(event.EndDate).local().toDate(),     // Convert UTC to local time
+    title: event.EventTitle,
   }));
+
+  console.log("Formatted Events:", formattedEvents); // Debug formatted events
+
+  
 
   const formats = {
     timeGutterFormat: (date, culture, localizer) =>
@@ -80,7 +86,7 @@ const GeneralUserCalendar = ({ events }) => {
       ) : (
         <BigCalendar
           localizer={localizer}
-          events={formattedEvents || []}
+          events={formattedEvents }
           formats={formats}
           eventPropGetter={eventStyleGetter}
           startAccessor="start"

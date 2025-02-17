@@ -1,6 +1,7 @@
 import React, { useRef, useState, useContext, useEffect } from 'react';
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+// import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -11,10 +12,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import EventForm from './eventAndWorkshop/EventForm';
 // import EventDetailsModal from './EventDetailsModal'; // Import the modal component
 import DetailsEventModal from './eventAndWorkshop/DetailsEventModal.jsx';
+import LoadPage from './LoadPage'
 
 const EventTable = () => {
   const { fetchData, userToken } = useContext(ApiContext);
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
@@ -22,27 +25,14 @@ const EventTable = () => {
   const [showForm, setShowForm] = useState(false); // State to control form visibility
   const [selectedEvent, setSelectedEvent] = useState(null); // State for selected event in modal
 
+
+
+
   const [dropdownData, setDropdownData] = useState({
     categoryOptions: [],
     companyCategoryOptions: []
   });
 
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    start: '',
-    end: '',
-    categoryId: dropdownData.categoryOptions[0]?.idCode || '',
-    companyCategoryId: dropdownData.companyCategoryOptions[0]?.idCode || '',
-    poster: '',
-    venue: '',
-    description: '',
-    host: '',
-    registerLink: '',
-  });
-
-  const filteredEvents = events.filter(event =>
-    statusFilter === "" || event.Status === statusFilter
-  );
 
   useEffect(() => {
     const fetchDropdownValues = async (category) => {
@@ -68,6 +58,56 @@ const EventTable = () => {
 
     fetchCategories();
   }, []);
+
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const endpoint = "eventandworkshop/getEvent";
+      const method = "GET";
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+
+      try {
+        const result = await fetchData(endpoint, method, {}, headers);
+        console.log("event result:", result);
+        if (result.success && Array.isArray(result.data)) {
+          setEvents(result.data);
+        } else {
+          console.error("Invalid data format:", result);
+          setEvents([]);
+        }
+      } catch (error) {
+        console.error("Error fetching events:", error);
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, [fetchData]);
+  // console.log("events ::", fetchData)
+
+
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    start: '',
+    end: '',
+    categoryId: dropdownData.categoryOptions[0]?.idCode || '',
+    companyCategoryId: dropdownData.companyCategoryOptions[0]?.idCode || '',
+    poster: '',
+    venue: '',
+    description: '',
+    host: '',
+    registerLink: '',
+  });
+
+  const filteredEvents = events.filter(event =>
+    statusFilter === "" || event.Status === statusFilter
+  );
+
+
 
   const handleEditEvent = (event) => {
     setNewEvent({
@@ -129,13 +169,13 @@ const EventTable = () => {
 
   const remainingChars = maxLength - newEvent.description.length;
 
-  const formatDate = (isoString) => {
-    return moment(isoString).format('DD/MM/YYYY');
-  };
+  // const formatDate = (isoString) => {
+  //   return moment(isoString).tz('Asia/Kolkata').format('DD/MM/YYYY');
+  // };
 
-  const formatTime = (isoString) => {
-    return moment(isoString).format('HH:mm');
-  };
+  // const formatTime = (isoString) => {
+  //   return moment(isoString).tz('Asia/Kolkata').format('HH:mm');
+  // };
 
   const handleCloseModal = () => {
     resetForm();
@@ -165,6 +205,11 @@ const EventTable = () => {
     const offsetIST = 5.5 * 60 * 60 * 1000;
     return new Date(date.getTime() + offsetIST);
   };
+
+  if (loading) {
+    return <div><LoadPage /></div>;
+  }
+
 
   return (
     <div className="container mx-auto mt-10">
@@ -222,17 +267,26 @@ const EventTable = () => {
                       : event.EventTitle}
                   </td>
 
+                  {/* Start Date */}
                   <td className="border px-4 py-2">
-                    <div>{formatDate(event.EndDate)}</div>
-                    <div>{formatTime(event.EndDate)}</div>
+                    <div>{moment.utc(event.StartDate).format("MMMM D, YYYY ")}</div>
+                    <div>{moment.utc(event.StartDate).format("h:mm A")}</div>
                   </td>
-                  <td className="border px-4 py-2">{new Date(event.EndDate).toLocaleDateString()}</td>
-                  <td className="border px-4 py-2"> {dropdownData.categoryOptions.find(option => option.idCode === event.Category)?.ddValue || 'Unknown'}</td>
+
+                  {/* End Date */}
+                  <td className="border px-4 py-2">
+                    <div>{moment.utc(event.EndDate).format("MMMM D, YYYY ")}</div>
+                    <div>{moment.utc(event.EndDate).format("h:mm A")}</div>
+                  </td>
+
+                  <td className="border px-4 py-2">
+                    {dropdownData.categoryOptions.find(option => option.idCode === event.Category)?.ddValue || 'Unknown'}
+                  </td>
                   <td className="border px-4 py-2">{event.Venue}</td>
                   <td className="border px-4 py-2">
                     <button
                       className='font-medium hover:text-DGXblue bg-DGXblue text-white px-6 py-1 rounded-lg'
-                      onClick={() => setSelectedEvent(event)} // Open modal on click
+                      onClick={() => setSelectedEvent(event)}
                     >
                       View
                     </button>
