@@ -275,20 +275,6 @@ const AdminUsers = () => {
                 />
                 {formErrors.Category && <p className="text-red-500 text-sm">{formErrors.Category}</p>}
               </div>
-
-              {/* <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">User  Type</label>
-                <select
-                  name="User Type"
-                  value={newUser.UserType}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-md`}
-                >
-                  <option value="General User">General User</option>
-                  <option value="Admin">Admin</option>
-                </select>
-              </div> */}
-
               <div className="flex justify-between">
                 <button
                   type="button"

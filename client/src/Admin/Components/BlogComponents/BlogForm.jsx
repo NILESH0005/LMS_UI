@@ -69,8 +69,6 @@ const BlogForm = ({ updateBlogs }) => {
 
     if (validateForm()) {
       setShowModal(true);
-    } else {
-      toast.error("Please fix the validation errors before submitting.");
     }
   };
 
