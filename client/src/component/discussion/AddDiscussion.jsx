@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { FaWindowClose } from 'react-icons/fa';
 import ReactQuill from "react-quill";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import ApiContext from '../../context/ApiContext';
 import { compressImage } from '../../utils/compressImage';
 
@@ -64,7 +64,12 @@ const AddDiscussion = ({ closeModal, demoDiscussions, setDemoDiscussions }) => {
                 setSelectedImage(compressedFile);
                 setErrors((prev) => ({ ...prev, image: null })); // Clear error
             } catch (error) {
-                toast.error("Failed to compress image.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to compress image.',
+                    confirmButtonText: 'OK'
+                });
             }
         }
     };
@@ -126,15 +131,11 @@ const AddDiscussion = ({ closeModal, demoDiscussions, setDemoDiscussions }) => {
             try {
                 const data = await fetchData(endpoint, method, body, headers);
                 if (!data.success) {
-                    toast.error(`Error in posting discussion try again: ${data.message}`, {
-                        position: "top-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Error in posting discussion try again: ${data.message}`,
+                        confirmButtonText: 'OK'
                     });
                 } else if (data.success) {
                     console.log(data);
@@ -152,30 +153,23 @@ const AddDiscussion = ({ closeModal, demoDiscussions, setDemoDiscussions }) => {
                         comment: []
                     };
 
-                    toast.success("Discussion Posted Successfully", {
-                        position: "top-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Discussion Posted Successfully',
+                        confirmButtonText: 'OK'
                     });
+
                     setDemoDiscussions([newDiscussion, ...demoDiscussions]);
                 }
             } catch (error) {
                 console.log(error);
 
-                toast.error(`Something went wrong, try again`, {
-                    position: "top-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong, try again',
+                    confirmButtonText: 'OK'
                 });
             }
             setTitle('');

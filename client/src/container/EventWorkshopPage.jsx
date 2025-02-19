@@ -13,7 +13,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 
-const EventDetailsModal = ({ event, isOpen, onClose }) => {
+const   EventDetailsModal = ({ event, isOpen, onClose }) => {
   console.log("the event data:", event)
  
   if (!isOpen || !event || event.Status !== "Approved") return null;

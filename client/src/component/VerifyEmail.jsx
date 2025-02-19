@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { images } from "../../public/index.js";
 import { IoRefreshCircleSharp } from "react-icons/io5";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 import generateCaptcha from '../utils/generateCaptcha.js';
 import ApiContext from '../context/ApiContext.jsx';
 import LoadPage from "./LoadPage.jsx";
+import Swal from 'sweetalert2';
 
 const VerifyEmail = () => {
-
   const { fetchData } = useContext(ApiContext);
   const [loading, setLoading] = useState(false);
   const [captcha, setCaptcha] = useState('');
@@ -39,29 +37,21 @@ const VerifyEmail = () => {
     e.preventDefault();
 
     if (userCaptcha !== captcha) {
-      toast.error("Invalid captcha", {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Captcha',
+        text: 'Please enter the correct captcha.',
+        confirmButtonText: 'OK',
       });
       return;
     }
 
     if (!isValidEmail(email)) {
-      toast.error("Invalid Email", {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Email',
+        text: 'Please enter a valid email address.',
+        confirmButtonText: 'OK',
       });
       return;
     }
@@ -77,54 +67,39 @@ const VerifyEmail = () => {
       if (!data.success) {
         refreshCaptcha();
         setLoading(false);
-        toast.error(`Error in verify mail: ${data.message}`, {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+        Swal.fire({
+          icon: 'error',
+          title: 'Error in Verification',
+          text: data.message,
+          confirmButtonText: 'OK',
         });
       } else if (data.success) {
         refreshCaptcha();
         setLoading(false);
-        toast.success("Mail sent successfully", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        setTimeout(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Email Sent Successfully',
+          text: 'Please check your email for further instructions.',
+          confirmButtonText: 'OK',
+        }).then(() => {
           navigate('/SignInn');
-        }, 3500);
+        });
       }
     } catch (error) {
       refreshCaptcha();
       setLoading(false);
-      toast.error(`Something went wrong, try again`, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      Swal.fire({
+        icon: 'error',
+        title: 'Something Went Wrong',
+        text: 'Please try again.',
+        confirmButtonText: 'OK',
       });
     }
   };
 
   return (
     loading ? < LoadPage /> : (
-
       <div>
-        <ToastContainer />
         <section className="h-screen">
           <div className="h-full">
             <div className="flex h-full flex-wrap md:w-250 items-center justify-center lg:justify-between">
@@ -145,44 +120,42 @@ const VerifyEmail = () => {
                     </div>
 
                     <div className="relative mb-6">
-                      <input
-                        type="email"
-                        className="peer block w-full rounded border border-DGXgreen bg-transparent px-3 py-2 leading-5 outline-none transition-all duration-200 ease-linear placeholder-transparent focus:placeholder-opacity-100"
-                        id="email"
-                        value={email}
-                        onChange={handleChangeEmail}
-                        placeholder="Email address"
-                        required
-                      />
                       <label
                         htmlFor="email"
-                        className="absolute left-3 top-2 mb-0 text-neutral-500 transition-all duration-200 ease-out origin-[0_0] -translate-y-6 scale-75 peer-focus:-translate-y-6 peer-focus:scale-75 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100"
+                        className="block mb-2 text-neutral-500"
                       >
                         Email address
                       </label>
+                      <input
+                        type="email"
+                        className="block w-full rounded border border-DGXgreen bg-transparent px-3 py-2 leading-5 outline-none transition-all duration-200 ease-linear"
+                        id="email"
+                        value={email}
+                        onChange={handleChangeEmail}
+                        required
+                      />
                     </div>
 
                     <div className="relative mb-6">
-                      <input
-                        type="text"
-                        className="peer block w-full rounded border border-DGXgreen bg-transparent px-3 py-2 leading-5 outline-none transition-all duration-200 ease-linear placeholder-transparent focus:placeholder-opacity-100"
-                        id="userCaptcha"
-                        value={userCaptcha}
-                        onChange={(e) => setUserCaptcha(e.target.value)}
-                        placeholder="Enter Captcha"
-                        required
-                      />
                       <label
                         htmlFor="userCaptcha"
-                        className="absolute left-3 top-2 mb-0 text-neutral-500 transition-all duration-200 ease-out origin-[0_0] -translate-y-6 scale-75 peer-focus:-translate-y-6 peer-focus:scale-75 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100"
+                        className="block mb-2 text-neutral-500"
                       >
                         Enter Captcha
                       </label>
+                      <input
+                        type="text"
+                        className="block w-full rounded border border-DGXgreen bg-transparent px-3 py-2 leading-5 outline-none transition-all duration-200 ease-linear"
+                        id="userCaptcha"
+                        value={userCaptcha}
+                        onChange={(e) => setUserCaptcha(e.target.value)}
+                        required
+                      />
                     </div>
 
                     <div className="relative mb-4 flex justify-center items-center">
                       <div
-                        className="peer block w-full rounded border border-DGXgreen bg-transparent px-3 py-2 leading-5 outline-none transition-all duration-200 ease-linear focus:placeholder-opacity-100 peer-focus:text-primary select-none font-extrabold tracking-widest"
+                        className="block w-full rounded border border-DGXgreen bg-transparent px-3 py-2 leading-5 outline-none transition-all duration-200 ease-linear select-none font-extrabold tracking-widest"
                         id="captchaDisplay"
                       >
                         {captcha}

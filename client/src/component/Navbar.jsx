@@ -53,7 +53,7 @@ const Navbar = () => {
 
     return (
         <main>
-            <nav className='flex justify-between items-center h-14 md:h-10 lg:h-12 xl:h-14'>
+            <nav className='flex justify-between items-center h-14 md:h-10 lg:h-12 xl:h-14 bg-DGXblue/10 shadow-lg'>
                 <section>
                     <Link to="/" className="flex items-center space-x-0 rtl:space-x-reverse">
                         <AiOutlineMenu onClick={() => setMenu(true)} className='text-3xl cursor-pointer md:hidden' />
@@ -126,11 +126,30 @@ const Navbar = () => {
                             {isDropdownOpen && (
                                 <div className="relative">
                                     {isDropdownOpen && (
-                                        <div className='absolute right-0 mt-8 w-48 bg-white rounded-md shadow-lg z-50 border border-DGXblue'>
-                                            <Link to="/UserProfile" className='block px-4 py-2 text-gray-800 hover:bg-gray-200' onClick={toggleDropdown}>Profile</Link>
-                                            {(user.isAdmin == '1') && <Link to="/AdminDashboard" className='block px-4 py-2 text-gray-800 hover:bg-gray-200' onClick={toggleDropdown}>Admin Profile</Link>}
-                                            <button onClick={handleLogout} className='block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200'>Logout</button>
-                                        </div>
+                                        <div className='absolute right-0 mt-8 w-48 bg-white rounded-md shadow-lg z-50 border border-DGXblue transform transition-all duration-300 ease-in-out origin-top-right'>
+                                        <Link 
+                                            to="/UserProfile" 
+                                            className='block px-4 py-2 text-gray-800 hover:bg-DGXblue/10 hover:text-DGXblue transition-all duration-200 ease-in-out transform hover:translate-x-1' 
+                                            onClick={toggleDropdown}
+                                        >
+                                            Profile
+                                        </Link>
+                                        {(user.isAdmin == '1') && (
+                                            <Link 
+                                                to="/AdminDashboard" 
+                                                className='block px-4 py-2 text-gray-800 hover:bg-DGXblue/10 hover:text-DGXblue transition-all duration-200 ease-in-out transform hover:translate-x-1' 
+                                                onClick={toggleDropdown}
+                                            >
+                                                Admin Profile
+                                            </Link>
+                                        )}
+                                        <button 
+                                            onClick={handleLogout} 
+                                            className='block w-full text-left px-4 py-2 text-gray-800 hover:bg-DGXblue/10 hover:text-DGXblue transition-all duration-200 ease-in-out transform hover:translate-x-1'
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>  
                                     )}
                                 </div>
                             )}

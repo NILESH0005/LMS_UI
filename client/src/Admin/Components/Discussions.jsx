@@ -99,7 +99,7 @@ const Discussions = () => {
         </caption>
         <thead className="text-xs text-gray-700 uppercase bg-DGXgreen text-white dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" className="border px-6 py-3">User ID</th>
+            <th scope="col" className="border px-6 py-3">Serial No.</th>
             <th scope="col" className="border px-6 py-3">Discussion ID</th>
             <th scope="col" className="border px-6 py-3">Title</th>
             <th scope="col" className="border px-6 py-3">Content</th>
