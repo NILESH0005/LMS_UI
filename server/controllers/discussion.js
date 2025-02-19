@@ -71,7 +71,7 @@ export const discussionpost = async (req, res) => {
                     const discussionPost = await queryAsync(conn, discussionPostQuery, [rows[0].UserID, title, content, image, likes, comment, tags, visibility, threadReference, url, rows[0].Name, 0])
                     const lastInsertedIdQuerry = `select top 1 DiscussionID, Visibility from Community_Discussion where ISNULL(delStatus,0)=0 order by DiscussionID desc;`
                     const lastInsertedId = await queryAsync(conn, lastInsertedIdQuerry)
-                    const lstInsertedvisibilityValue = `SELECT ddValue FROM tblDDReferences WHERE idCode = ? AND ISNULL(delStatus,0) = 0`;
+                    const lstInsertedvisibilityValue = `SELECT ddValue FROM tblDDReferences WHERE idCode = 1 AND ISNULL(delStatus,0) = 0`;
                     // const lstInserterterVal = await queryAsync(conn, lstInsertedvisibilityValue, [lastInsertedId[0].Visibility])
                     const lstInserterterVal = await queryAsync(conn,lstInsertedvisibilityValue,[lastInsertedId[0].Visibility]);
                     console.log("val",lstInserterterVal[0].ddValue)
