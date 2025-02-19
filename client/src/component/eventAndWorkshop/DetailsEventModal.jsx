@@ -1,23 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import Swal from 'sweetalert2';
+import ApiContext from '../../context/ApiContext';
 
-const DetailsEventModal = ({ selectedEvent, onClose }) => {
+const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange  }) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const { user, userToken, fetchData } = useContext(ApiContext);
   const [confirmationAction, setConfirmationAction] = useState(null); // 'approve', 'reject', 'delete'
   const [remark, setRemark] = useState('');
 
-  const updateEventStatus = async (eventId, action, remark = '') => {
-    const endpoint = `eventandworkshop/updateEvent/${eventId}`; 
-    const method = "POST"; 
+  const updateEventStatus = async (eventId, Status, remark = '') => {
+    // const eventId = Number(selectedEvent.EventID);
+    // if (isNaN(eventId)) {
+    //   console.error("Invalid EventID:", selectedEvent.EventID);
+    //   return;
+    // }
+    const endpoint = `eventandworkshop/updateEvent/${eventId}`;
+    const method = "POST";
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${localStorage.getItem('userToken')}`, 
+      'auth-token': userToken
     };
 
     // Request body
     const body = {
-      action, // 'approve', 'reject', or 'delete'
+      Status, // 'approve', 'reject', or 'delete'
       remark, // Only required for 'reject'
     };
 
@@ -26,22 +33,43 @@ const DetailsEventModal = ({ selectedEvent, onClose }) => {
       console.log("Update event result:", result);
 
       if (result.success) {
-        console.log(`Event ${action}ed successfully!`);
+        // handleEventStatusChange(selectedEvent.EventID, confirmationAction);
+        Swal.fire({
+          title: "Success!",
+          text: `Event ${Status}ed successfully!`,
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+
         return true; // Indicate success
       } else {
-        console.error(`Failed to ${action} event:`, result.message);
+        Swal.fire({
+          title: "Error!",
+          text: `Failed to ${Status} event`,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        console.log("error", result.message)
+
         return false; // Indicate failure
       }
     } catch (error) {
-      console.error(`Error ${action}ing event:`, error);
+      Swal.fire({
+        title: "Error!",
+        text: `Error ${Status}ing event`,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      console.log("error", result.message)
+
       return false; // Indicate failure
     }
   };
 
 
 
-  const handleConfirmation = (action) => {
-    setConfirmationAction(action);
+  const handleConfirmation = (Status) => {
+    setConfirmationAction(Status);
     setShowConfirmationModal(true);
   };
 
@@ -50,7 +78,7 @@ const DetailsEventModal = ({ selectedEvent, onClose }) => {
 
     if (success) {
       // Refresh the events list or close the modal
-      onClose(); // Close the modal after successful action
+      onClose(); // Close the modal after successful Status
     } else {
       // Display an error message (e.g., using a toast or alert)
       console.error(`Failed to ${confirmationAction} event.`);
@@ -91,23 +119,21 @@ const DetailsEventModal = ({ selectedEvent, onClose }) => {
             <strong className="text-xl underline">Venue:</strong>
             <div className="mt-1 text-lg">{selectedEvent.Venue}</div>
           </div>
-          <div>
-            <strong className="text-xl underline">Description:</strong>
-            <div className="mt-1 text-lg" dangerouslySetInnerHTML={{ __html: selectedEvent.EventDescription }} />
-          </div>
-          <div>
-            <strong className="text-xl underline">Host:</strong>
-            <div className="mt-1 text-lg">{selectedEvent.Host}</div>
-          </div>
-          {selectedEvent.EventImage && (
-            <img
-              src={selectedEvent.EventImage}
-              alt="Event Poster"
-              className="w-full max-w-3xl object-cover rounded-lg shadow-sm"
-            />
-          )}
         </div>
-        <div className="flex justify-center gap-4 mt-6">
+        <div className="mb-2">
+          <strong className="text-xl underline">Description:</strong>
+          <div className="" dangerouslySetInnerHTML={{ __html: selectedEvent.EventDescription }} />
+        </div>
+        <div className="mb-4">
+          <strong className="text-xl underline">Host:</strong> 
+          <div>
+          <span>{selectedEvent.Host}</span>
+        </div>
+        </div>
+        {selectedEvent.EventImage && (
+          <img src={selectedEvent.EventImage} alt="Event Poster" className="mb-4 w-full max-w-3xl object-cover" />
+        )}
+        <div className="flex justify-center gap-4 mt-4">
           {selectedEvent.Status === 'Pending' && (
             <>
               <button
@@ -124,23 +150,15 @@ const DetailsEventModal = ({ selectedEvent, onClose }) => {
               </button>
             </>
           )}
-          {selectedEvent.Status === 'Approved' && (
+          {(user.isAdmin == '1') && ((selectedEvent.Status === 'Approved' || selectedEvent.Status === 'Rejected') && (
             <button
               onClick={() => handleConfirmation('delete')}
               className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-300"
             >
               Delete
             </button>
-          )}
-          {selectedEvent.Status === 'Rejected' && (
-            <button
-              onClick={() => handleConfirmation('delete')}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-300"
-            >
-              Delete
-            </button>
-          )}
-          {selectedEvent.RegistrationLink && selectedEvent.Status !== 'Pending' && (
+          ))}
+          {selectedEvent.RegistrationLink && selectedEvent.Status !== 'Pending' && selectedEvent.Status !== 'Rejected' && (
             <a
               href={selectedEvent.RegistrationLink}
               target="_blank"

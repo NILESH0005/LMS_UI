@@ -11,7 +11,7 @@ export const discussionpost = async (req, res) => {
     let success = false;
 
     const userId = req.user.id;
-    // console.log(userId)
+    console.log(userId)
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -22,7 +22,7 @@ export const discussionpost = async (req, res) => {
     }
 
     try {
-        // console.log(req.body)
+        console.log(req.body)
         let { title, content, image, likes, comment, tags, url, visibility, reference } = req.body;
         const threadReference = reference ?? 0;
         title = title ?? null
@@ -90,8 +90,9 @@ export const discussionpost = async (req, res) => {
                 }
             } catch (queryErr) {
                 closeConnection();
+                console.error("Database Query Error:", queryErr); 
                 logError(queryErr)
-                res.status(500).json({ success: false, data: queryErr, message: 'Something wenjkdjvisjgijsit wrong please try again' });
+                res.status(500).json({ success: false, data: queryErr, message: 'Something went wrong please try again' });
                 return
             }
         });

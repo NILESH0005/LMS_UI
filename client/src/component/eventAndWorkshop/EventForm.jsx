@@ -13,7 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const EventForm = () => {
-    const { fetchData, userToken } = useContext(ApiContext);
+    const { user, fetchData, userToken } = useContext(ApiContext);
     const [events, setEvents] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
@@ -294,6 +294,7 @@ const EventForm = () => {
             'auth-token': userToken,
         };
         const body = {
+            userID: user.UserID,
             title: newEvent.title,
             start: newEvent.start,
             end: newEvent.end,

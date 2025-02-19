@@ -14,7 +14,9 @@ import EventForm from './eventAndWorkshop/EventForm';
 import DetailsEventModal from './eventAndWorkshop/DetailsEventModal.jsx';
 import LoadPage from './LoadPage'
 
-const EventTable = () => {
+const EventTable = ({ }) => {
+
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const { fetchData, userToken } = useContext(ApiContext);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,9 @@ const EventTable = () => {
   const [modalType, setModalType] = useState('');
   const [statusFilter, setStatusFilter] = useState("");
   const [showForm, setShowForm] = useState(false); // State to control form visibility
-  const [selectedEvent, setSelectedEvent] = useState(null); // State for selected event in modal
+  const [selectedCategory, setSelectedCategory] = useState("");
+  // const [selectedEvent, setSelectedEvent] = useState(null); // State for selected event in modal
+  // const [handleEventStatusChange, setHandleEventStatusChange] = useState(false);
 
 
 
@@ -46,9 +50,23 @@ const EventTable = () => {
       }
     };
 
+    // const handleEventStatusChange = (eventId, newStatus) => {
+    //   // Update event status logic (e.g., updating status in the state)
+    //   setEvents((prevEvents) =>
+    //     prevEvents.map((event) =>
+    //       event.EventID === eventId ? { ...event, Status: newStatus } : event
+    //     )
+    //   );
+    // };
+
     const fetchCategories = async () => {
       const eventTypeOptions = await fetchDropdownValues('eventType');
       const eventHostOptions = await fetchDropdownValues('eventHost');
+
+      const eventTypeDropdown = [
+        { idCode: 'All', ddValue: 'All', ddCategory: 'eventType' },
+        ...eventTypeOptions, // These are fetched dynamically
+      ];
 
       setDropdownData({
         categoryOptions: eventTypeOptions,
@@ -103,27 +121,29 @@ const EventTable = () => {
     registerLink: '',
   });
 
-  const filteredEvents = events.filter(event =>
-    statusFilter === "" || event.Status === statusFilter
-  );
+  const filteredEvents = events.filter((event) => {
+    // Filter by status
+    const matchesStatus = statusFilter === "" || event.Status === statusFilter;
+
+    // Filter by event type (Workshop or Event)
+    const matchesCategory = selectedCategory === "" || event.EventType === selectedCategory;
+
+    return matchesStatus && matchesCategory;
+  });
 
 
+  const handleEventUpdate = (updatedEvent) => {
+    setEvents((prevEvents) =>
+      prevEvents.map((event) =>
+        event.EventID === updatedEvent.EventID ? updatedEvent : event
+      )
+    );
+  };
 
-  const handleEditEvent = (event) => {
-    setNewEvent({
-      title: event.EventTitle || '',
-      start: moment(event.StartDate).format('YYYY-MM-DD') || '',
-      end: moment(event.EndDate).format('YYYY-MM-DD') || '',
-      category: event.categoryId || '',
-      companyCategory: event.companyCategoryId || '',
-      poster: event.EventImage || null,
-      venue: event.Venue || '',
-      description: event.EventDescription || '',
-      host: event.Host || '',
-      registerLink: event.RegistrationLink || '',
-    });
-    setModalType('edit');
-    setIsModalOpen(true);
+  const handleEventDelete = (eventId) => {
+    setEvents((prevEvents) =>
+      prevEvents.filter((event) => event.EventID !== eventId)
+    );
   };
 
   useEffect(() => {
@@ -156,26 +176,6 @@ const EventTable = () => {
 
   const fileInputRef = useRef(null);
 
-  const startRef = useRef(null);
-  const endRef = useRef(null);
-  const categoryRef = useRef(null);
-  const companyCategoryRef = useRef(null);
-  const venueRef = useRef(null);
-  const hostRef = useRef(null);
-  const descriptionRef = useRef(null);
-  const registerLinkRef = useRef(null);
-  const [isFocused, setIsFocused] = useState(false);
-  const maxLength = 800;
-
-  const remainingChars = maxLength - newEvent.description.length;
-
-  // const formatDate = (isoString) => {
-  //   return moment(isoString).tz('Asia/Kolkata').format('DD/MM/YYYY');
-  // };
-
-  // const formatTime = (isoString) => {
-  //   return moment(isoString).tz('Asia/Kolkata').format('HH:mm');
-  // };
 
   const handleCloseModal = () => {
     resetForm();
@@ -201,11 +201,6 @@ const EventTable = () => {
     }
   };
 
-  const convertToKolkataTime = (date) => {
-    const offsetIST = 5.5 * 60 * 60 * 1000;
-    return new Date(date.getTime() + offsetIST);
-  };
-
   if (loading) {
     return <div><LoadPage /></div>;
   }
@@ -218,8 +213,7 @@ const EventTable = () => {
         <p className="mt-1 flex text-md justify-center items-center font-normal text-gray-500 dark:text-gray-400">Browse and manage discussions in the DGX community.</p>
       </div>
 
-      <div className="flex justify-between mb-4">
-        {/* Filter on the left */}
+      <div className="flex justify-between mb-4 pt-4">
         <div className="flex items-center">
           <label className="mr-2 text-lg font-medium">Filter by Status:</label>
           <select
@@ -234,7 +228,21 @@ const EventTable = () => {
           </select>
         </div>
 
-        {/* Button on the right */}
+        <div className="flex items-center">
+          <label className="mr-2 text-lg font-medium">Filter by Event Type:</label>
+          <select
+            className="border px-3 py-2 rounded-lg"
+            value={selectedCategory}  // Update this to `selectedCategory`
+            onChange={(e) => setSelectedCategory(e.target.value)} // Update the state to selectedCategory
+          >
+            <option value="">All</option>
+            {dropdownData.categoryOptions.map((option) => (
+              <option key={option.idCode} value={option.ddValue}>
+                {option.ddValue}
+              </option>
+            ))}
+          </select>
+        </div>
         <button
           className="bg-DGXgreen text-white px-4 py-2 rounded-lg"
           onClick={() => setShowForm(!showForm)}
@@ -242,6 +250,23 @@ const EventTable = () => {
           {showForm ? 'Show Table' : 'Add Event'}
         </button>
       </div>
+
+      {/* <div className="flex items-center">
+        <label className="mr-2 text-lg font-medium">Filter by Event Type:</label>
+        <select
+          className="border px-3 py-2 rounded-lg"
+          value={selectedCategory}  // Update this to `selectedCategory`
+          onChange={(e) => setSelectedCategory(e.target.value)} // Update the state to selectedCategory
+        >
+          <option value="">All</option>
+          {dropdownData.categoryOptions.map((option) => (
+            <option key={option.idCode} value={option.ddValue}>
+              {option.ddValue}
+            </option>
+          ))}
+        </select>
+      </div> */}
+
 
       {showForm ? (
         <EventForm />
@@ -251,9 +276,10 @@ const EventTable = () => {
             <thead className='bg-DGXgreen text-white'>
               <tr >
                 <th className="border px-4 py-2 ">Title</th>
+                <th className="border px-4 py-2 ">Created By</th>
                 <th className="border px-4 py-2">Start Date</th>
                 <th className="border px-4 py-2">End Date</th>
-                <th className="border px-4 py-2">Category</th>
+                <th className="border px-4 py-2">Status</th>
                 <th className="border px-4 py-2">Venue</th>
                 <th className="border px-4 py-2">Actions</th>
               </tr>
@@ -265,6 +291,10 @@ const EventTable = () => {
                     {event.EventTitle && event.EventTitle.length > 50
                       ? `${event.EventTitle.slice(0, 50)}...`
                       : event.EventTitle}
+                  </td>
+
+                  <td className="border px-4 py-2">
+                    {event.UserName}
                   </td>
 
                   {/* Start Date */}
@@ -280,7 +310,7 @@ const EventTable = () => {
                   </td>
 
                   <td className="border px-4 py-2">
-                    {dropdownData.categoryOptions.find(option => option.idCode === event.Category)?.ddValue || 'Unknown'}
+                    {event.Status}
                   </td>
                   <td className="border px-4 py-2">{event.Venue}</td>
                   <td className="border px-4 py-2">
@@ -303,6 +333,9 @@ const EventTable = () => {
         <DetailsEventModal
           selectedEvent={selectedEvent}
           onClose={() => setSelectedEvent(null)} // Close modal
+          onEventUpdate={handleEventUpdate} // Pass the callback function
+          onEventDelete={handleEventDelete} // Pass the delete callback function
+        // onEventStatusChange={handleEventStatusChange}
         />
       )}
     </div>

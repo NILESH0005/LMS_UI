@@ -15,7 +15,100 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
 
   const [loading, setLoading] = useState(false);
 
+  // const handleAddComment = async (id) => {
+  //   if (userToken) {
+  //     const endpoint = "discussion/discussionpost";
+  //     const method = "POST";
+  //     const headers = {
+  //       'Content-Type': 'application/json',
+  //       'auth-token': userToken
+  //     };
+  //     const body = {
+  //       "reference": id,
+  //       "comment": newComment
+  //     };  
+  //     console.log("thsi is body:", body)
+  //     setLoading(true);
+  //     console.log(headers, endpoint)
+
+  //     try {
+  //       // console.log("Inside Try");
+
+  //       const data = await fetchData(endpoint, method, body, headers)
+  //       // console.log(data);
+  //       if (!data.success) {
+  //         setLoading(false);
+  //         toast.error(`Error in posting comment try again: ${data.message}`, {
+  //           position: "top-center",
+  //           autoClose: 3000,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //           theme: "light",
+  //         });
+  //       } else if (data.success) {
+  //         console.log(data.postId);
+
+  //         const newCommentObj = {
+  //           UserID: user.UserID,
+  //           UserName: user.Name,
+  //           DiscussionID: data.postId,
+  //           timestamp: new Date().toLocaleString(),
+  //           Comment: newComment,
+  //           comment: [],
+  //           likeCount: 0,
+  //           UserLike: 0,
+  //         };
+  //         // console.log(discussion.comment);
+  //         discussion.comment = [newCommentObj, ...discussion.comment]
+  //         console.log(discussion.comment);
+  //         setLoading(false);
+  //         toast.success("Comment Post Successfully", {
+  //           position: "top-center",
+  //           autoClose: 3000,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //           theme: "light",
+  //         });
+  //       }
+  //     } catch (error) {
+  //       setLoading(false);
+  //       toast.error(`Something went wrong`, {
+  //         position: "top-center",
+  //         autoClose: 3000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //         progress: undefined,
+  //         theme: "light",
+  //       });
+  //     }
+  //   }
+
+  //   if (newComment.trim() !== "") {
+  //     const newCommentObj = {
+  //       username: "New User",
+  //       discussion: discussion.DiscussionID,
+  //       timestamp: new Date().toLocaleString(),
+  //       commentData: newComment,
+  //       likes: 0,
+  //       replies: [],
+  //     };
+
+  //     setDissComments([...dissComments, newCommentObj]);
+  //     setNewComment("");
+  //   }
+  // };
+
   const handleAddComment = async (id) => {
+    if (!newComment.trim()) return;
+
     if (userToken) {
       const endpoint = "discussion/discussionpost";
       const method = "POST";
@@ -23,86 +116,41 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
         'Content-Type': 'application/json',
         'auth-token': userToken
       };
-      const body = {
-        "reference": id,
-        "comment": newComment
-      };
-      console.log("thsi is body:", body)
+      const body = { reference: id, comment: newComment };
+
       setLoading(true);
-      console.log(headers, endpoint)
 
       try {
-        // console.log("Inside Try");
+        const data = await fetchData(endpoint, method, body, headers);
 
-        const data = await fetchData(endpoint, method, body, headers)
-        // console.log(data);
         if (!data.success) {
           setLoading(false);
-          toast.error(`Error in posting comment try again: ${data.message}`, {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-        } else if (data.success) {
-          console.log(data.postId);
-
-          const newCommentObj = {
-            UserID: user.UserID,
-            UserName: user.Name,
-            DiscussionID: data.postId,
-            timestamp: new Date().toLocaleString(),
-            Comment: newComment,
-            comment: [],
-            likeCount: 0,
-            UserLike: 0,
-          };
-          // console.log(discussion.comment);
-          discussion.comment = [newCommentObj, ...discussion.comment]
-          console.log(discussion.comment);
-          setLoading(false);
-          toast.success("Comment Post Successfully", {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
+          toast.error(`Error posting comment: ${data.message}`);
+          return;
         }
+
+        const newCommentObj = {
+          UserID: user.UserID,
+          UserName: user.Name,
+          DiscussionID: data.postId,
+          timestamp: new Date().toLocaleString(),
+          Comment: newComment,
+          comment: [],
+          likeCount: 0,
+          UserLike: 0,
+        };
+        console.log("ne comment", newCommentObj);
+
+        // Update the discussion comments in real-time
+        setDissComments(prev => [newCommentObj, ...prev]);
+
+        setNewComment("");
+        setLoading(false);
+        toast.success("Comment posted successfully");
       } catch (error) {
         setLoading(false);
-        toast.error(`Something went wrong`, {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.error("Something went wrong. Try again.");
       }
-    }
-
-    if (newComment.trim() !== "") {
-      const newCommentObj = {
-        username: "New User",
-        discussion: discussion.DiscussionID,
-        timestamp: new Date().toLocaleString(),
-        commentData: newComment,
-        likes: 0,
-        replies: [],
-      };
-
-      setDissComments([...dissComments, newCommentObj]);
-      setNewComment("");
     }
   };
 
@@ -191,7 +239,7 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
       }
     }
   };
-  
+
   return (
     <div>
       {/* Background Overlay */}
@@ -397,7 +445,7 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
       )}
 
     </div>
-    
+
   );
 
 };
