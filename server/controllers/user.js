@@ -727,7 +727,12 @@ export const getAllUser = async (req, res) => {
         }
 
         try {
-          const query = `SELECT UserID, Name, EmailId, CollegeName, MobileNumber, Category, Designation, ReferalNumberCount, ReferalNumber, ReferedBy, FlagPasswordChange, AddOnDt FROM Community_User`;
+          const query = `SELECT 
+    UserID, Name, EmailId, CollegeName, MobileNumber, Category, 
+    Designation,  
+    FlagPasswordChange, AddOnDt, isAdmin, delStatus 
+FROM Community_User 
+WHERE delStatus = 0 OR delStatus IS NULL;`;
           const rows = await queryAsync(conn, query);
 
           closeConnection();
@@ -1243,7 +1248,7 @@ export const addUser = async (req, res) => {
     return res.status(400).json({ success, data: errors.array(), message: warningMessage });
   }
 
-  const {Name, EmailId, CollegeName, MobileNumber, Category, Designation} = req.body;
+  const { Name, EmailId, CollegeName, MobileNumber, Category, Designation } = req.body;
   const referalNumberCount = Category === "F" ? 10 : 2;
   const FlagPasswordChange = 0;
 
