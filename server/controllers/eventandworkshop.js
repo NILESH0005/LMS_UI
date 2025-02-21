@@ -1,4 +1,4 @@
-  import { body, validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
   import { connectToDatabase, closeConnection } from "../database/mySql.js";
   import dotenv from "dotenv";
   import { queryAsync, logError, logInfo, logWarning } from "../helper/index.js";
@@ -282,12 +282,12 @@ console.log(user.UserID);
   //   }
   // };
 
-
   export const updateEvent = async (req, res) => {
     let success = false;
 
     // Extract user ID from the authenticated request
     const userId = req.user.id;
+    console.log("user ID:", userId);
 
     // Validate request data
     const errors = validationResult(req);
@@ -333,6 +333,7 @@ console.log(user.UserID);
               WHERE EventID = ? AND isnull(delStatus, 0) = 0;
             `;
           const eventRows = await queryAsync(conn, checkEventQuery, [eventId]);
+          console.log("event:", eventRows);
 
           if (eventRows.length === 0) {
             const warningMessage = "Event not found";

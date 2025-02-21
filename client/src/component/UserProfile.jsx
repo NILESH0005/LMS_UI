@@ -248,7 +248,7 @@ const UserProfile = () => {
                     </div>
                     <div className={`flex items-center p-6 cursor-pointer ${activeTab === 'posts' ? 'bg-DGXgreen/40' : ''}`} onClick={() => setActiveTab('posts')}>
                       <GoCommentDiscussion className='mr-4 text-2xl' />
-                      <li className={`text-lg ${activeTab === 'posts' ? 'text-DGXblue font-bold' : ''}`}>My Posts</li>
+                      <li className={`text-lg ${activeTab === 'posts' ? 'text-DGXblue font-bold' : ''}`}>My Discussions</li>
                     </div>
                     <div className={`flex items-center p-6 cursor-pointer ${activeTab === 'events' ? 'bg-DGXgreen/40' : ''}`} onClick={() => setActiveTab('events')}>
                       <MdEventAvailable className='mr-4 text-2xl' />

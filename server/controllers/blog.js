@@ -111,81 +111,88 @@ export const blogpost_bulk = async (req, res) => {
     }
 };
 
-
 export const blogpost = async (req, res) => {
     let success = false;
-
     const userId = req.user.id;
-    console.log(userId)
+    console.log("User ID:", userId);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        const warningMessage = "Data is not in the right format";
-        logWarning(warningMessage); // Log the warning
-        res.status(400).json({ success, data: errors.array(), message: warningMessage });
-        return;
+        logWarning("Data is not in the right format");
+        return res.status(400).json({ success, data: errors.array(), message: "Data is not in the right format" });
     }
 
     try {
-        // console.log(req.body)
         let { title, author, content, image, category, publishedDate } = req.body;
 
-        title = title ?? null
-        content = content ?? null
-        image = image ?? null
-        category = category ?? null
-        author = author ?? null
-        publishedDate = publishedDate ?? null
+        // Set default values for null checks
+        title = title ?? null;
+        content = content ?? null;
+        image = image ?? null;
+        category = category ?? null;
+        author = author ?? null;
+        publishedDate = publishedDate ?? null;
 
-        // Connect to the database
         connectToDatabase(async (err, conn) => {
             if (err) {
-                const errorMessage = "Failed to connect to database";
-                logError(err); // Log the error
-                res.status(500).json({ success: false, data: err, message: errorMessage });
-                return;
+                logError("Failed to connect to database");
+                return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
             }
 
             try {
-                const query = `SELECT UserID, Name FROM Community_User WHERE isnull(delStatus,0) = 0 AND EmailId = ?`;
-                const rows = await queryAsync(conn, query, [userId]);
-                // console.log(rows)
+                // Fetch user details (including admin status)
+                const userQuery = `SELECT UserID, Name, isAdmin FROM Community_User WHERE ISNULL(delStatus, 0) = 0 AND EmailId = ?`;
+                const userRows = await queryAsync(conn, userQuery, [userId]);
 
-                if (rows.length > 0) {
+                if (userRows.length > 0) {
+                    const user = userRows[0];
+                    const isAdmin = user.isAdmin === 1;
+
+                    // Determine approval details based on admin status
+                    const status = isAdmin ? "Approved" : "Pending";
+                    const approvedBy = isAdmin ? user.Name : null;
+                    const approvedOn = isAdmin ? new Date() : null;
+
+                    // Insert blog post
                     const blogPostQuery = `
-                    INSERT INTO Community_Blog 
-                    (title, author, content, Category,  image, publishedDate, AuthAdd, AddOnDt, delStatus) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), 0); 
+                        INSERT INTO Community_Blog 
+                        (title, author, content, Category, image, publishedDate, AuthAdd, AddOnDt, delStatus, Status, AdminRemark, ApprovedBy, ApprovedOn, UserID) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), 0, ?, ?, ?, ?, ?);
                     `;
-                    const blogPost = await queryAsync(conn, blogPostQuery, [title, author, content, category, image, publishedDate, rows[0].Name, 0])
-                    const lastInsertedIdQuerry = `select top 1 BlogID from Community_Blog where ISNULL(delStatus,0)=0 order by BlogID desc;`
-                    const lastInsertedId = await queryAsync(conn, lastInsertedIdQuerry)
+                    const blogPost = await queryAsync(conn, blogPostQuery, [
+                        title, author, content, category, image, publishedDate,
+                        user.Name, status, null, approvedBy, approvedOn, user.UserID
+                    ]);
+
+                    // Fetch last inserted Blog ID
+                    const lastInsertedIdQuery = `SELECT TOP 1 BlogID FROM Community_Blog WHERE ISNULL(delStatus, 0) = 0 ORDER BY BlogID DESC;`;
+                    const lastInsertedId = await queryAsync(conn, lastInsertedIdQuery);
+
                     success = true;
                     closeConnection();
-                    const infoMessage = "Blog Posted Successfully"
-                    logInfo(infoMessage)
-                    res.status(200).json({ success, data: { postId: lastInsertedId[0].BlogID }, message: infoMessage });
-                    return
+                    logInfo("Blog posted successfully!");
+
+                    return res.status(200).json({
+                        success,
+                        data: { postId: lastInsertedId[0].BlogID },
+                        message: "Blog posted successfully!"
+                    });
                 } else {
                     closeConnection();
-                    const warningMessage = "User not found login first"
-                    logWarning(warningMessage)
-                    res.status(200).json({ success: false, data: {}, message: warningMessage });
-                    return
+                    logWarning("User not found, please login first.");
+                    return res.status(400).json({ success: false, data: {}, message: "User not found, please login first." });
                 }
             } catch (queryErr) {
                 closeConnection();
-                logError(queryErr)
-                res.status(500).json({ success: false, data: queryErr, message: 'Something went wrong please try again' });
-                return
+                logError("Database Query Error:", queryErr);
+                return res.status(500).json({ success: false, data: queryErr, message: "Database Query Error" });
             }
         });
     } catch (error) {
-        logError(error)
-        return res.status(500).json({ success: false, data: {}, message: 'Something went wrong please try again' });
-
+        logError("Unexpected Error:", error);
+        return res.status(500).json({ success: false, data: error, message: "Unexpected Error, check logs" });
     }
-}
+};
 
 export const getBlog = async (req, res) => {
     let success = false;
@@ -198,7 +205,7 @@ export const getBlog = async (req, res) => {
                 return;
             }
             try {
-                const BlogQuery = `SELECT BlogID, title, AuthAdd as UserName, author, content, Category as category, publishedDate, AddOnDt as timestamp, image FROM Community_Blog WHERE ISNULL(delStatus, 0) = 0  ORDER BY AddOnDt DESC`;
+                const BlogQuery = `SELECT BlogID, title, AuthAdd as UserName, author, content, Category as category, publishedDate, AddOnDt as timestamp, image, UserID, Status FROM Community_Blog WHERE ISNULL(delStatus, 0) = 0  ORDER BY AddOnDt DESC`;
                 const BlogGet = await queryAsync(conn, BlogQuery);
                 success = true;
                 closeConnection();
@@ -218,3 +225,143 @@ export const getBlog = async (req, res) => {
         res.status(500).json({ success: false, data: {}, message: 'Something went wrong please try again' });
     }
 }
+
+export const updateBlog = async (req, res) => {
+    let success = false;
+    const userId = req.user.id;
+    console.log("user ID:", userId)
+  
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const warningMessage = "Data is not in the right format";
+      logWarning(warningMessage);
+      res.status(400).json({ success, data: errors.array(), message: warningMessage });
+      return;
+    }
+  
+    try {
+      let {
+        title,
+        author,
+        content,
+        publishedDate,
+        category,
+        image,
+        Status,
+        remark,
+      } = req.body;
+  
+      const blogId = req.params.blogId;
+  
+      connectToDatabase(async (err, conn) => {
+        if (err) {
+          logError(err);
+          res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
+          return;
+        }
+  
+        try {
+          const checkBlogQuery = `
+              SELECT BlogID, AuthAdd 
+              FROM Community_Blog
+              WHERE BlogID = ? AND isnull(delStatus, 0) = 0;
+            `;
+          const blogRows = await queryAsync(conn, checkBlogQuery, [blogId]);
+  
+          if (blogRows.length === 0) {
+            logWarning("Blog not found");
+            res.status(404).json({ success: false, data: {}, message: "Blog not found" });
+            return;
+          }
+  
+          if (req.user.isAdmin !== 1) {
+            logWarning("You are not authorized to perform this action");
+            res.status(403).json({ success: false, data: {}, message: "You are not authorized" });
+            return;
+          }
+  
+          if (Status === "approve" && Status === "Approved") {
+            logWarning("Blog is already approved");
+            res.status(400).json({ success: false, data: {}, message: "Blog is already approved" });
+            return;
+          }
+  
+          if (Status === "reject" && Status === "Rejected") {
+            logWarning("Blog is already rejected");
+            res.status(400).json({ success: false, data: {}, message: "Blog is already rejected" });
+            return;
+          }
+  
+          let query;
+          let queryParams;
+  
+          switch (Status) {
+            case "approve":
+              query = `
+                  UPDATE Community_Blog 
+                  SET Status = 'Approved', ApprovedBy = ?, ApprovedOn = GETDATE(), AuthLstEdit = ?, editOnDt = GETDATE() 
+                  WHERE BlogID = ?;
+                `;
+              queryParams = [userId, userId, blogId];
+              break;
+  
+            case "reject":
+              if (!remark || typeof remark !== "string") remark = "";
+  
+              query = `
+                  UPDATE Community_Blog 
+                  SET Status = 'Rejected', AdminRemark = ?, AuthLstEdit = ?, editOnDt = GETDATE() 
+                  WHERE BlogID = ?;
+                `;
+              queryParams = [String(remark), userId, blogId];
+              break;
+  
+            case "delete":
+              query = `
+                  UPDATE Community_Blog 
+                  SET delStatus = 1, AuthLstEdit = ?, delOnDt = GETDATE() 
+                  WHERE BlogID = ?;
+                `;
+              queryParams = [userId, blogId];
+              break;
+  
+            default:
+              query = `
+                  UPDATE Community_Blog 
+                  SET title = ?, author = ?, content = ?, publishedDate = ?, Category = ?, image = ?, 
+                      AuthLstEdit = ?, editOnDt = GETDATE() 
+                  WHERE BlogID = ?;
+                `;
+              queryParams = [
+                title,
+                author,
+                content,
+                publishedDate,
+                category,
+                image,
+                userId,
+                blogId,
+              ];
+              break;
+          }
+  
+          await queryAsync(conn, query, queryParams);
+          success = true;
+          closeConnection();
+  
+          const infoMessage = `Blog ${Status ? Status + "d" : "updated"} successfully!`;
+          logInfo(infoMessage);
+  
+          res.status(200).json({ success, data: { blogId }, message: infoMessage });
+        } catch (queryErr) {
+          closeConnection();
+          logError(`Error updating blog ${blogId} : ${queryErr.message}`);
+          res.status(500).json({ success: false, data: queryErr, message: "Something went wrong, please try again" });
+        }
+      });
+    } catch (error) {
+      logError(error);
+      res.status(500).json({ success: false, data: {}, message: "Something went wrong, please try again" });
+    }
+  };
+  

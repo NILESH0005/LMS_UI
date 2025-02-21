@@ -39,7 +39,7 @@ const GuidelineManager = () => {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">{isTableView ? "Guidelines" : "Add New Guideline"}</h1>
-        <button onClick={toggleView} className="bg-DGXgreen text-white py-2 px-4 rounded-lg">
+        <button onClick={toggleView} className="bg-DGXblue text-white py-2 px-4 rounded-lg">
           {isTableView ? "Add New Guideline" : "View Guidelines"}
         </button>
       </div>

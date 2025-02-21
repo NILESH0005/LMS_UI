@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import ApiContext from '../../context/ApiContext';
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import LoadPage from "../../component/LoadPage"
 
 const AdminUsers = () => {
   const { fetchData, userToken } = useContext(ApiContext);
@@ -136,8 +137,8 @@ const AdminUsers = () => {
     setShowConfirmationModal(false);
   };
 
-  if (loading) return <div>Loading users...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div><LoadPage/></div>;
+  if (error) return <div><LoadPage/></div>;
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -157,7 +158,7 @@ const AdminUsers = () => {
         </caption>
         <thead className="text-xs text-gray-700 uppercase bg-DGXgreen text-white">
           <tr>
-            <th scope="col" className="border px-6 py-3">User ID</th>
+            <th scope="col" className="border px-6 py-3">#</th>
             <th scope="col" className="border px-6 py-3">Name</th>
             <th scope="col" className="border px-6 py-3">Email</th>
             <th scope="col" className="border px-6 py-3">College Name</th>
@@ -170,9 +171,9 @@ const AdminUsers = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {users.map((user, index) => (
             <tr key={user.UserID} className="bg-white border-b">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{user.UserID}</th>
+              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{index+1}</th>
               <td className="border px-6 py-4">{user.Name}</td>
               <td className="border px-6 py-4">{user.EmailId}</td>
               <td className="border px-6 py-4">{user.CollegeName}</td>

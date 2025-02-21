@@ -3,7 +3,7 @@ import moment from 'moment';
 import Swal from 'sweetalert2';
 import ApiContext from '../../context/ApiContext';
 
-const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange  }) => {
+const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const { user, userToken, fetchData } = useContext(ApiContext);
   const [confirmationAction, setConfirmationAction] = useState(null); // 'approve', 'reject', 'delete'
@@ -122,16 +122,16 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange  })
           <div className="" dangerouslySetInnerHTML={{ __html: selectedEvent.EventDescription }} />
         </div>
         <div className="mb-4">
-          <strong className="text-xl underline">Host:</strong> 
+          <strong className="text-xl underline">Host:</strong>
           <div>
-          <span>{selectedEvent.Host}</span>
-        </div>
+            <span>{selectedEvent.Host}</span>
+          </div>
         </div>
         {selectedEvent.EventImage && (
           <img src={selectedEvent.EventImage} alt="Event Poster" className="mb-4 w-full max-w-3xl object-cover" />
         )}
         <div className="flex justify-center gap-4 mt-4">
-          {selectedEvent.Status === 'Pending' && (
+          {(user.isAdmin == '1') && ((selectedEvent.Status === 'Pending') && (
             <>
               <button
                 onClick={() => handleConfirmation('approve')}
@@ -146,7 +146,7 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange  })
                 Reject
               </button>
             </>
-          )}
+          ))}
           {(user.isAdmin == '1') && ((selectedEvent.Status === 'Approved' || selectedEvent.Status === 'Rejected') && (
             <button
               onClick={() => handleConfirmation('delete')}

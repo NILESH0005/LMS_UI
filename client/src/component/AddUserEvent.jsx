@@ -18,7 +18,7 @@ const AddUserEvent = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedEvent(null); // Clear selected event when closing
+    setSelectedEvent(null);
   };
 
 
@@ -59,70 +59,6 @@ const AddUserEvent = () => {
   console.log("user ID is :", user.UserID);
   console.log("filtered events is :", filteredEvents);
 
-  // Dummy event data (Replace with real API data)
-  // const userEvents = [
-  //   { 
-  //     id: 1, 
-  //     title: "AI Workshop", 
-  //     description: "Learn about AI advancements.", 
-  //     location: "Tech Hub, NY", 
-  //     time: "10:00 AM - 2:00 PM", 
-  //     date: "2025-02-25", 
-  //     status: "Approved", 
-  //     posterUrl: "https://via.placeholder.com/150" 
-  //   },
-  //   { 
-  //     id: 2, 
-  //     title: "Cyber Security Bootcamp", 
-  //     description: "Deep dive into cybersecurity.", 
-  //     location: "Online Webinar", 
-  //     time: "6:00 PM - 8:00 PM", 
-  //     date: "2025-03-10", 
-  //     status: "Pending", 
-  //     posterUrl: ""
-  //   },
-  //   { 
-  //     id: 3, 
-  //     title: "Blockchain Seminar", 
-  //     description: "Understanding blockchain and Web3.", 
-  //     location: "Silicon Valley, CA", 
-  //     time: "1:00 PM - 5:00 PM", 
-  //     date: "2025-04-05", 
-  //     status: "Rejected", 
-  //     posterUrl: "https://via.placeholder.com/150" 
-  //   },
-  //   { 
-  //     id: 1, 
-  //     title: "AI Workshop", 
-  //     description: "Learn about AI advancements.", 
-  //     location: "Tech Hub, NY", 
-  //     time: "10:00 AM - 2:00 PM", 
-  //     date: "2025-02-25", 
-  //     status: "Approved", 
-  //     posterUrl: "https://via.placeholder.com/150" 
-  //   },
-  //   { 
-  //     id: 2, 
-  //     title: "Cyber Security Bootcamp", 
-  //     description: "Deep dive into cybersecurity.", 
-  //     location: "Online Webinar", 
-  //     time: "6:00 PM - 8:00 PM", 
-  //     date: "2025-03-10", 
-  //     status: "Pending", 
-  //     posterUrl: ""
-  //   },
-  //   { 
-  //     id: 3, 
-  //     title: "Blockchain Seminar", 
-  //     description: "Understanding blockchain and Web3.", 
-  //     location: "Silicon Valley, CA", 
-  //     time: "1:00 PM - 5:00 PM", 
-  //     date: "2025-04-05", 
-  //     status: "Rejected", 
-  //     posterUrl: "https://via.placeholder.com/150" 
-  //   },
-  // ];
-
   if (loading) {
     return <LoadPage />;
   }
@@ -133,7 +69,7 @@ const AddUserEvent = () => {
       <div className="flex justify-center mb-6">
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-all duration-300 text-lg font-semibold"
+          className="flex items-center gap-3 bg-DGXblue from-blue-500 to-indigo-600 text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-all duration-300 text-lg font-semibold"
         >
           {showForm ? "My Events" : "Add Event"}
           {showForm ? <IoMdList className="size-6" /> : <MdAdd className="size-6" />}
@@ -209,7 +145,7 @@ const AddUserEvent = () => {
                   {/* View Button */}
                   <button
                     onClick={() => setSelectedEvent(event)}
-                    className="w-full bg-indigo-600 text-white py-2 text-lg rounded-md hover:bg-indigo-700 transition-all"
+                    className="w-full bg-DGXblue text-white py-2 text-lg rounded-md hover:bg-indigo-700 transition-all"
                   >
                     View Details
                   </button>

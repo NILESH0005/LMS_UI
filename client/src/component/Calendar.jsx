@@ -250,24 +250,6 @@ const EventTable = ({ }) => {
           {showForm ? 'Show Table' : 'Add Event'}
         </button>
       </div>
-
-      {/* <div className="flex items-center">
-        <label className="mr-2 text-lg font-medium">Filter by Event Type:</label>
-        <select
-          className="border px-3 py-2 rounded-lg"
-          value={selectedCategory}  // Update this to `selectedCategory`
-          onChange={(e) => setSelectedCategory(e.target.value)} // Update the state to selectedCategory
-        >
-          <option value="">All</option>
-          {dropdownData.categoryOptions.map((option) => (
-            <option key={option.idCode} value={option.ddValue}>
-              {option.ddValue}
-            </option>
-          ))}
-        </select>
-      </div> */}
-
-
       {showForm ? (
         <EventForm />
       ) : (
@@ -332,10 +314,9 @@ const EventTable = ({ }) => {
       {selectedEvent && (
         <DetailsEventModal
           selectedEvent={selectedEvent}
-          onClose={() => setSelectedEvent(null)} // Close modal
-          onEventUpdate={handleEventUpdate} // Pass the callback function
-          onEventDelete={handleEventDelete} // Pass the delete callback function
-        // onEventStatusChange={handleEventStatusChange}
+          onClose={() => setSelectedEvent(null)} 
+          onEventUpdate={handleEventUpdate} 
+          onEventDelete={handleEventDelete} 
         />
       )}
     </div>

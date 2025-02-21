@@ -83,19 +83,60 @@ const BlogForm = ({ updateBlogs }) => {
 
     try {
       const data = await fetchData(endpoint, method, body, headers);
+      console.log("API Response:", data);
+      let dataSuccess = data.success;
+
       setLoading(false);
-      if (!data.success) {
-        toast.error(`Error: ${data.message}`);
-      } else {
-        updateBlogs({ BlogId: data.data.postId, title, content, category, image: selectedImage, author, publishedDate });
+
+      if (dataSuccess == true) {
+        if (typeof updateBlogs === "function") {
+          updateBlogs({ BlogId: data.data.postId, title, content, category, image: selectedImage, author, publishedDate });
+        } else {
+          console.warn("updateBlogs is not a function!");
+        }
         toast.success("Blog Posted Successfully");
         resetForm();
+      } else {
+        toast.error(`Error: ${data.message}`);
       }
     } catch (error) {
+      console.error("Error:", error);
       setLoading(false);
       toast.error("Something went wrong, please try again.");
     }
   };
+
+
+  // const handleConfirmSubmit = async () => {
+  //   setShowModal(false);
+  //   setLoading(true);
+
+  //   const endpoint = "blog/blogpost";
+  //   const method = "POST";
+  //   const headers = { "Content-Type": "application/json", "auth-token": userToken };
+  //   const body = { title, content, image: selectedImage, author, category, publishedDate };
+
+  //   try {
+  //     const data = await fetchData(endpoint, method, body, headers);
+  //     console.log("API Response:", data);
+  //     let dataSuccess = data.success;
+
+  //     setLoading(false);
+  //     console.log("data success:", data.success);
+
+  //     if (dataSuccess == true) {
+  //       updateBlogs({ BlogId: data.data.postId, title, content, category, image: selectedImage, author, publishedDate });
+  //       toast.success("Blog Posted Successfully");
+  //       resetForm();
+  //     } else {
+  //       toast.error(`Error: ${data.message}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     setLoading(false);
+  //     toast.error("Something went wrong, please try again.");
+  //   }
+  // };
 
   const resetForm = () => {
     setTitle("");
