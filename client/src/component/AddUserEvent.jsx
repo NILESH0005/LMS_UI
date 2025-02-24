@@ -19,7 +19,7 @@ const AddUserEvent = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedEvent(null); // Clear selected event when closing
+    setSelectedEvent(null);
   };
 
   useEffect(() => {
@@ -71,7 +71,7 @@ const AddUserEvent = () => {
       <div className="flex justify-center mb-6">
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-all duration-300 text-lg font-semibold"
+          className="flex items-center gap-3 bg-DGXblue from-blue-500 to-indigo-600 text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-all duration-300 text-lg font-semibold"
         >
           {showForm ? "My Events" : "Add Event"}
           {showForm ? <IoMdList className="size-6" /> : <MdAdd className="size-6" />}
@@ -148,7 +148,7 @@ const AddUserEvent = () => {
                   {/* View Button */}
                   <button
                     onClick={() => setSelectedEvent(event)}
-                    className="w-full bg-indigo-600 text-white py-2 text-lg rounded-md hover:bg-indigo-700 transition-all"
+                    className="w-full bg-DGXblue text-white py-2 text-lg rounded-md hover:bg-indigo-700 transition-all"
                   >
                     View Details
                   </button>

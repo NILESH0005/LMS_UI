@@ -3,7 +3,7 @@ import { connectToDatabase, closeConnection } from '../database/mySql.js';
 import dotenv from 'dotenv'
 import { queryAsync, mailSender, logError, logInfo, logWarning } from '../helper/index.js';
 
-dotenv.config() 
+dotenv.config()
 
 
 export const discussionpost = async (req, res) => {
@@ -73,13 +73,13 @@ export const discussionpost = async (req, res) => {
                     const lastInsertedId = await queryAsync(conn, lastInsertedIdQuerry)
                     const lstInsertedvisibilityValue = `SELECT ddValue FROM tblDDReferences WHERE idCode = 1 AND ISNULL(delStatus,0) = 0`;
                     // const lstInserterterVal = await queryAsync(conn, lstInsertedvisibilityValue, [lastInsertedId[0].Visibility])
-                    const lstInserterterVal = await queryAsync(conn,lstInsertedvisibilityValue,[lastInsertedId[0].Visibility]);
-                    console.log("val",lstInserterterVal[0].ddValue)
+                    const lstInserterterVal = await queryAsync(conn, lstInsertedvisibilityValue, [lastInsertedId[0].Visibility]);
+                    console.log("val", lstInserterterVal[0].ddValue)
                     success = true;
                     closeConnection();
                     const infoMessage = "Disscussion Posted Successfully"
                     logInfo(infoMessage)
-                    res.status(200).json({ success, data: { postId: lastInsertedId[0].DiscussionID, visibility:{ value:lstInserterterVal[0].ddValue, id:lastInsertedId[0].Visibility}}, message: infoMessage });
+                    res.status(200).json({ success, data: { postId: lastInsertedId[0].DiscussionID, visibility: { value: lstInserterterVal[0].ddValue, id: lastInsertedId[0].Visibility } }, message: infoMessage });
                     return
                 } else {
                     closeConnection();
@@ -90,7 +90,7 @@ export const discussionpost = async (req, res) => {
                 }
             } catch (queryErr) {
                 closeConnection();
-                console.error("Database Query Error:", queryErr); 
+                console.error("Database Query Error:", queryErr);
                 logError(queryErr)
                 res.status(500).json({ success: false, data: queryErr, message: 'Something went wrong please try again' });
                 return
@@ -106,7 +106,7 @@ export const discussionpost = async (req, res) => {
 export const getdiscussion = async (req, res) => {
     let success = false;
     const userId = req.body.user;
-    console.log("Received request for getdiscussion. User ID:",userId)
+    console.log("Received request for getdiscussion. User ID:", userId)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const warningMessage = "Data is not in the right format";
@@ -145,7 +145,7 @@ export const getdiscussion = async (req, res) => {
 
                 for (const item of discussionGet) {
                     const likeCountQuery = `SELECT DiscussionID, UserID, Likes, AuthAdd as UserName FROM Community_Discussion WHERE ISNULL(delStatus, 0) = 0 AND Likes > 0 AND Reference = ?`;
-                    const likeCountResult = await queryAsync(conn, likeCountQuery, [item.DiscussionID]);                
+                    const likeCountResult = await queryAsync(conn, likeCountQuery, [item.DiscussionID]);
                     // console.log("Like Count Result for Discussion:", item.DiscussionID, likeCountResult); // Log likeCountResult
 
                     const commentQuery = `SELECT DiscussionID, UserID, Comment, AuthAdd as UserName, AddOnDt as timestamp FROM Community_Discussion WHERE ISNULL(delStatus, 0) = 0 AND  Comment IS NOT NULL AND Reference = ? ORDER BY AddOnDt DESC`;
@@ -220,11 +220,8 @@ export const getdiscussion = async (req, res) => {
     }
 };
 
-
-
-
 export const searchdiscussion = async (req, res) => {
-    let success = false;    
+    let success = false;
     const { searchTerm, userId } = req.body;
 
     if (!searchTerm || searchTerm.trim() === "") {
@@ -258,7 +255,7 @@ export const searchdiscussion = async (req, res) => {
                     rows.push({ UserID: null });
                 }
 
-                const searchPattern = `%${searchTerm}%`; 
+                const searchPattern = `%${searchTerm}%`;
                 const discussionGetQuery = `
                     SELECT 
                         DiscussionID, UserID, AuthAdd as UserName, Title, Content, Image, Tag, ResourceUrl, AddOnDt as timestamp 
@@ -295,8 +292,8 @@ export const searchdiscussion = async (req, res) => {
                     }
 
                     if (commentResult.length > 0) {
-    
-                    }   
+
+                    }
 
                     updatedDiscussions.push({
                         ...item,
@@ -326,68 +323,77 @@ export const searchdiscussion = async (req, res) => {
     }
 };
 
+export const deleteDiscussion = (req, res) => {
+    let success = false;
+    const { discussionId } = req.body;
+    const adminName = req.user?.id;
 
+    try {
+        connectToDatabase(async (err, conn) => {
+            if (err) {
+                logError(err);
+                return res.status(500).json({
+                    success: false,
+                    data: err,
+                    message: "Database connection error.",
+                });
+            }
+            try {
+                const checkQuery = `SELECT * FROM Community_Discussion WHERE DiscussionID = ? AND (delStatus IS NULL OR delStatus = 0)`;
+                const result = await queryAsync(conn, checkQuery, [discussionId]);
 
+                if (result.length === 0) {
+                    return res.status(404).json({
+                        success: false,
+                        message: "Discussion not found or already deleted.",
+                    });
+                } else {
+                    try {
+                        const updateQuery = ` UPDATE Community_Discussion  SET delStatus = 1, delOnDt = GETDATE(), AuthDel = ?  OUTPUT inserted.DiscussionID, inserted.delStatus,inserted.delOnDt, inserted.AuthDel
+                WHERE DiscussionID = ? AND (delStatus IS NULL OR delStatus = 0)
+              `;
+                        const rows = await queryAsync(conn, updateQuery, [adminName, discussionId]);
 
-
-
-    // existing
-    // export const searchdiscussion = async (req, res) => {
-    //     let success = false;
-    
-    //     const userId = req.body.user; // Ensure this is defined
-    //     const searchKeyword = req.body.searchKeyword; // Get this from the request body
-    //     console.log(req.body);
-    
-    //     const errors = validationResult(req);
-    //     if (!errors.isEmpty()) {
-    //         const warningMessage = "Data is not in the right format";
-    //         logWarning(warningMessage);
-    //         return res.status(400).json({ success, data: errors.array(), message: warningMessage });
-    //     }
-    
-    //     try {
-    //         // Connect to the database
-    //         const conn = await connectToDatabase(); // Assume this is a promise-based function
-    //         let rows = [];
-    
-    //         if (userId) {
-    //             const userQuery = `SELECT UserID, Name FROM Community_User WHERE ISNULL(delStatus, 0) = 0 AND EmailId = ?`;
-    //             rows = await queryAsync(conn, userQuery, [userId]);
-    //         }
-    
-    //         if (rows.length === 0) {
-    //             rows.push({ UserID: null });
-    //         }
-    
-    //         const discussionGetQuery = `
-    //             SELECT DiscussionID, UserID, AuthAdd as UserName, Title, Content, Image, Tag, ResourceUrl, AddOnDt as timestamp 
-    //             FROM Community_Discussion 
-    //             WHERE ISNULL(delStatus, 0) = 0 AND Visibility = 'public' AND Reference = 0 
-    //             AND (Title LIKE ? OR Content LIKE ? OR Tag LIKE ?) 
-    //             ORDER BY AddOnDt DESC`;
-            
-    //         const discussionGet = await queryAsync(conn, discussionGetQuery, [`%${searchKeyword}%`, `%${searchKeyword}%`, `%${searchKeyword}%`]);
-    
-    //         const updatedDiscussions = await Promise.all(discussionGet.map(async (item) => {
-    //             const likeCountResult = await queryAsync(conn, `SELECT DiscussionID, UserID, Likes FROM Community_Discussion WHERE ISNULL(delStatus, 0) = 0 AND Likes > 0 AND Reference = ?`, [item.DiscussionID]);
-    //             const likeCount = likeCountResult.length;
-    //             const userLike = likeCountResult.some(likeItem => likeItem.UserID === rows[0].UserID && likeItem.Likes === 1) ? 1 : 0;
-    
-    //             const commentsArray = await queryAsync(conn, `SELECT DiscussionID, UserID, Comment, AuthAdd as UserName, AddOnDt as timestamp FROM Community_Discussion WHERE ISNULL(delStatus, 0) = 0 AND Comment IS NOT NULL AND Reference = ? ORDER BY AddOnDt DESC`, [item.DiscussionID]);
-    //             return { ...item, likeCount, userLike, commentsArray };
-    //         }));
-    
-    //         success = true;
-    //         const infoMessage = "Discussion Get Successfully";
-    //         logInfo(infoMessage);
-    //         res.status(200).json({ success, data: { updatedDiscussions }, message: infoMessage });
-    
-    //     } catch (error) {
-    //         logError(error);
-    //         res.status(500).json({ success: false, data: {}, message: 'Something went wrong please try again' });
-    //     } finally {
-    //         closeConnection(); // Ensure to close the connection in the end
-    //     }
-    // };
-    
+                        if (rows.length > 0) {
+                            success = true;
+                            logInfo("Discussion deleted successfully");
+                            return res.status(200).json({
+                                success,
+                                data: {
+                                    discussionId: rows[0].DiscussionID,
+                                    AuthDel: rows[0].AuthDel,
+                                    delOnDt: rows[0].delOnDt,
+                                    delStatus: rows[0].delStatus
+                                },
+                                message: "Discussion deleted successfully.",
+                            });
+                        } else {
+                            logWarning("Failed to delete the discussion.");
+                            return res.status(404).json({
+                                success: false,
+                                message: "Failed to delete the discussion.",
+                            });
+                        }
+                    } catch (updateErr) {
+                        logError(updateErr);
+                        return res.status(500).json({
+                            success: false,
+                            data: updateErr,
+                            message: "Error updating discussion deletion.",
+                        });
+                    }
+                }
+            } catch (error) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Error finding discussion data!",
+                });
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Unable to connect to the database!",
+        });
+    }
+};

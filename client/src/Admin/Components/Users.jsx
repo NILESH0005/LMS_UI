@@ -1,17 +1,13 @@
-import { useState, useContext, useEffect } from "react";
-import ApiContext from "../../context/ApiContext";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Swal from "sweetalert2";
+import { useState, useContext, useEffect } from 'react';
+import ApiContext from '../../context/ApiContext';
+import LoadPage from "../../component/LoadPage";
+import Swal from 'sweetalert2';
 
 const AdminUsers = () => {
   const { fetchData, userToken } = useContext(ApiContext);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState("");
-  const [selectedUserId, setSelectedUserId] = useState(null);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [modalAction, setModalAction] = useState("");
@@ -27,31 +23,32 @@ const AdminUsers = () => {
 
   const [formErrors, setFormErrors] = useState({});
 
+  // Fetch users on component mount
   useEffect(() => {
-    const fetchUsers = async () => {
-      const endpoint = "user/users";
-      const method = "GET";
-      const headers = {
-        "Content-Type": "application/json",
-        "auth-token": userToken,
-      };
+    fetchUsers();
+  }, []);
 
-      try {
-        const result = await fetchData(endpoint, method, {}, headers);
-        if (result.success) {
-          setUsers(result.data);
-        } else {
-          setError(result.message || "Failed to fetch user data");
-        }
-      } catch (error) {
-        setError("Failed to fetch user data");
-      } finally {
-        setLoading(false);
-      }
+  const fetchUsers = async () => {
+    const endpoint = "user/users";
+    const method = "GET";
+    const headers = {
+      'Content-Type': 'application/json',
+      'auth-token': userToken,
     };
 
-    fetchUsers();
-  }, [fetchData]);
+    try {
+      const result = await fetchData(endpoint, method, {}, headers);
+      if (result.success) {
+        setUsers(result.data);
+      } else {
+        setError(result.message || 'Failed to fetch user data');
+      }
+    } catch (error) {
+      setError('Failed to fetch user data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -62,46 +59,27 @@ const AdminUsers = () => {
   };
 
   const handleCancel = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to cancel the form?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setNewUser({
-          Name: "",
-          EmailId: "",
-          CollegeName: "",
-          Designation: "",
-          MobileNumber: "",
-          Category: "",
-        });
-        setFormErrors({});
-        setShowAddUserModal(false);
-      }
-    });
+    setModalAction('cancel');
+    setShowConfirmationModal(true);
   };
 
   const handleSubmit = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to submit the form?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        handleAddUser();
-      }
+    setModalAction('submit');
+    setShowConfirmationModal(true);
+  };
+
+  const confirmCancel = () => {
+    setNewUser({
+      Name: '',
+      EmailId: '',
+      CollegeName: '',
+      Designation: '',
+      MobileNumber: '',
+      Category: '',
     });
+    setFormErrors({});
+    setShowAddUserModal(false);
+    setShowConfirmationModal(false);
   };
 
   const handleAddUser = async () => {
@@ -120,31 +98,92 @@ const AdminUsers = () => {
     const endpoint = "user/addUser";
     const method = "POST";
     const headers = {
-      "Content-Type": "application/json",
-      "auth-token": userToken,
+      'Content-Type': 'application/json',
+      'auth-token': userToken,
     };
     const body = { ...newUser };
-    console.log("Sending Request:", { endpoint, method, headers, body });
 
     try {
       const result = await fetchData(endpoint, method, body, headers);
-      console.log("API Response:", result);
       if (result && result.success) {
-        toast.success("User added successfully!");
+        // Show success alert
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'User added successfully!',
+        });
+
+        // Refetch users to update the table
+        await fetchUsers();
+
+        // Close the modal and reset the form
         setShowAddUserModal(false);
+        setNewUser({
+          Name: '',
+          EmailId: '',
+          CollegeName: '',
+          Designation: '',
+          MobileNumber: '',
+          Category: '',
+        });
       } else {
-        setError(result?.message || "Failed to add user");
-        toast.error(result?.message || "Failed to add user");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: result?.message || 'Failed to add user',
+        });
       }
     } catch (error) {
-      console.error("Error in handleAddUser:", error);
-      setError("Failed to add user");
-      toast.error("Error adding user!");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'Failed to add user',
+      });
     }
   };
 
-  if (loading) return <div>Loading users...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const confirmSubmit = () => {
+    handleAddUser();
+    setShowConfirmationModal(false);
+  };
+
+  const handleDeleteUser = async (userId) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const endpoint = "user/deleteUser";
+        const method = "POST";
+        const headers = {
+          'Content-Type': 'application/json',
+          'auth-token': userToken,
+        };
+        const body = { userId };
+
+        const response = await fetchData(endpoint, method, body, headers);
+
+        if (response.success) {
+          Swal.fire('Deleted!', 'User has been deleted.', 'success');
+          await fetchUsers(); // Refetch users after deletion
+        } else {
+          Swal.fire('Error!', response.message || 'Failed to delete user', 'error');
+        }
+      } catch (error) {
+        Swal.fire('Error!', 'Failed to delete user', 'error');
+      }
+    }
+  };
+
+  if (loading) return <div><LoadPage /></div>;
+  if (error) return <div><LoadPage /></div>;
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -166,42 +205,20 @@ const AdminUsers = () => {
         </caption>
         <thead className="text-xs text-gray-700 uppercase bg-DGXgreen text-white">
           <tr>
-            <th scope="col" className="border px-6 py-3">
-              Serial No.
-            </th>
-            <th scope="col" className="border px-6 py-3">
-              Name
-            </th>
-            <th scope="col" className="border px-6 py-3">
-              Email
-            </th>
-            <th scope="col" className="border px-6 py-3">
-              College Name
-            </th>
-            <th scope="col" className="border px-6 py-3">
-              Designation
-            </th>
-            <th scope="col" className="border px-6 py-3">
-              Mobile Number
-            </th>
-            <th scope="col" className="border px-6 py-3">
-              Category
-            </th>
-            <th scope="col" className="border px-6 py-3">
-              <span className="sr-only">Delete</span>
-            </th>
+            <th scope="col" className="border px-6 py-3">#</th>
+            <th scope="col" className="border px-6 py-3">Name</th>
+            <th scope="col" className="border px-6 py-3">Email</th>
+            <th scope="col" className="border px-6 py-3">College Name</th>
+            <th scope="col" className="border px-6 py-3">Designation</th>
+            <th scope="col" className="border px-6 py-3">Mobile Number</th>
+            <th scope="col" className="border px-6 py-3">Category</th>
+            <th scope="col" className="border px-6 py-3"><span className="sr-only">Delete</span></th>
           </tr>
         </thead>
         <tbody>
           {users.map((user, index) => (
             <tr key={user.UserID} className="bg-white border-b">
-              {/* Serial number will be index + 1 */}
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-              >
-                {index + 1}
-              </th>
+              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{index + 1}</th>
               <td className="border px-6 py-4">{user.Name}</td>
               <td className="border px-6 py-4">{user.EmailId}</td>
               <td className="border px-6 py-4">{user.CollegeName}</td>
@@ -210,11 +227,7 @@ const AdminUsers = () => {
               <td className="border px-6 py-4">{user.Category}</td>
               <td className="border px-6 py-4 text-right">
                 <button
-                  onClick={() => {
-                    setModalType("delete");
-                    setSelectedUserId(user.UserID);
-                    setShowModal(true);
-                  }}
+                  onClick={() => handleDeleteUser(user.UserID)}
                   className="bg-red-500 text-white px-4 py-1 rounded-lg"
                 >
                   Delete
@@ -230,8 +243,6 @@ const AdminUsers = () => {
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
             <h3 className="text-xl font-semibold mb-4">Add New User</h3>
-
-            {/* Input fields for Name, EmailId, etc. */}
             <form>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">

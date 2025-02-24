@@ -1,114 +1,115 @@
-const errorClass = 'text-DGXgreen'
-const validClass = 'text-red-500'
+const errorClass = 'text-DGXgreen';
+const validClass = 'text-red-500';
 
 export const validateRequired = (field) => {
     const inputField = document.getElementById(field);
     const errorElement = document.getElementById(`${field}Verify`);
-    if (inputField.value === '') {
+    if (inputField.value.trim() === '') {
         inputField.classList.remove('is-valid');
         inputField.classList.add('is-invalid');
         errorElement.classList.remove(errorClass);
         errorElement.classList.add(validClass);
-        errorElement.textContent = 'This field is required';
+        errorElement.textContent = 'This field is required. Please enter a value.';
     } else {
         inputField.classList.remove('is-invalid');
         inputField.classList.add('is-valid');
         errorElement.classList.remove(validClass);
         errorElement.classList.add(errorClass);
-        errorElement.textContent = 'Looks Great!';
+        errorElement.textContent = 'Valid input.';
     }
-}
+};
 
 export const validatePhone = (phoneInput, phoneValue) => {
     const phoneVerify = document.getElementById('phoneNoVerify');
-    if (!/^[6-9]\d{9}$/.test(phoneValue)) {
+    if (!/^[6-9]\d{9}$/.test(phoneValue.trim())) {
         phoneInput.classList.remove('is-valid');
         phoneInput.classList.add('is-invalid');
         phoneVerify.classList.remove(errorClass);
         phoneVerify.classList.add(validClass);
-        phoneVerify.textContent = 'Phone Number Is Invalid';
+        phoneVerify.textContent = 'Invalid phone number. Please enter a valid 10-digit number starting with 6-9.';
     } else {
         phoneInput.classList.remove('is-invalid');
         phoneInput.classList.add('is-valid');
         phoneVerify.classList.remove(validClass);
         phoneVerify.classList.add(errorClass);
-        phoneVerify.textContent = "That's Okay";
+        phoneVerify.textContent = 'Valid phone number.';
     }
-}
+};
+
 export const validateEmail = (emailInput, emailValue) => {
     const emailVerify = document.getElementById('emailVerify');
-    if (!/^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/.test(emailValue)) {
+    if (!/^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/.test(emailValue.trim())) {
         emailInput.classList.remove('is-valid');
         emailInput.classList.add('is-invalid');
         emailVerify.classList.remove(errorClass);
         emailVerify.classList.add(validClass);
-        emailVerify.textContent = 'Enter a valid email address';
+        emailVerify.textContent = 'Invalid email address. Please enter a valid email in the format example@domain.com.';
     } else {
         emailInput.classList.remove('is-invalid');
         emailInput.classList.add('is-valid');
         emailVerify.classList.remove(validClass);
         emailVerify.classList.add(errorClass);
-        emailVerify.textContent = "Good to Go!";
+        emailVerify.textContent = 'Valid email address.';
     }
-}
+};
 
 export const validatePassword = (passwordInput, passwordValue) => {
-
     const passwordVerify = document.getElementById(passwordInput.id + 'Verify');
     let errorMessage = '';
     if (passwordValue.length < 8) {
         errorMessage += 'Password must be at least 8 characters long';
     }
     if (!/\d/.test(passwordValue)) {
-        errorMessage += ', must contain at least one digit';
+        errorMessage += ', include at least one digit';
     }
-    // eslint-disable-next-line no-useless-escape
     if (!/[!@#$%^&*()_+={}\[\]:;<>,.?/~]/.test(passwordValue)) {
-        errorMessage += ', one special character';
+        errorMessage += ', include at least one special character';
     }
     if (!/[a-z]/.test(passwordValue)) {
-        errorMessage += ', one lowercase letter';
+        errorMessage += ', include at least one lowercase letter';
     }
     if (!/[A-Z]/.test(passwordValue)) {
-        errorMessage += ', one uppercase letter';
+        errorMessage += ', include at least one uppercase letter';
     }
     if (errorMessage) {
         passwordInput.classList.remove('is-valid');
         passwordInput.classList.add('is-invalid');
         passwordVerify.classList.remove(errorClass);
         passwordVerify.classList.add(validClass);
-        passwordVerify.textContent = errorMessage;
+        passwordVerify.textContent = `Invalid password. Ensure it contains: ${errorMessage}.`;
     } else {
         passwordInput.classList.remove('is-invalid');
         passwordInput.classList.add('is-valid');
         passwordVerify.classList.remove(validClass);
         passwordVerify.classList.add(errorClass);
-        passwordVerify.textContent = 'That looks kind of strong password';
+        passwordVerify.textContent = 'Strong password.';
     }
-}
+};
 
 export const validateConfirmPassword = (passwordValue, confirmPasswordValue, confirmPasswordInput) => {
+    if (!confirmPasswordInput) return;
     const conPasswordVerify = document.getElementById(confirmPasswordInput.id + 'Verify');
-    if (confirmPasswordValue !== '') {
-        if (!(confirmPasswordValue === passwordValue)) {
+    if (!conPasswordVerify) return;
+
+    if (confirmPasswordValue.trim() !== '') {
+        if (confirmPasswordValue !== passwordValue) {
             confirmPasswordInput.classList.remove('is-valid');
             confirmPasswordInput.classList.add('is-invalid');
             conPasswordVerify.classList.remove(errorClass);
             conPasswordVerify.classList.add(validClass);
-            conPasswordVerify.textContent = 'Password and Confirm Passwords do not match';
+            conPasswordVerify.textContent = 'Passwords do not match. Please ensure both fields are identical.';
         } else {
             confirmPasswordInput.classList.remove('is-invalid');
             confirmPasswordInput.classList.add('is-valid');
             conPasswordVerify.classList.remove(validClass);
             conPasswordVerify.classList.add(errorClass);
-            conPasswordVerify.textContent = 'Very Good! Password Matched';
+            conPasswordVerify.textContent = 'Passwords match successfully.';
         }
-    }
-    else{
+    } else {
         confirmPasswordInput.classList.remove('is-valid');
         confirmPasswordInput.classList.add('is-invalid');
         conPasswordVerify.classList.remove(errorClass);
         conPasswordVerify.classList.add(validClass);
-        conPasswordVerify.textContent = 'This field is required';
+        conPasswordVerify.textContent = 'This field is required. Please enter the confirmation password.';
     }
-}
+};

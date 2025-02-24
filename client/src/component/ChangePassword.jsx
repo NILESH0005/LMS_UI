@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { validatePassword } from "../utils/formValidation.js";
+import { validatePassword, validateConfirmPassword } from "../utils/formValidation.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import ApiContext from '../context/ApiContext.jsx';
 import { FaEye } from "react-icons/fa";
 import { FaEyeLowVision } from "react-icons/fa6";
 import { images } from '../../public/index.js';
+import Swal from "sweetalert2";
 import LoadPage from './LoadPage.jsx';
 
 const ChangePassword = () => {
@@ -31,6 +32,7 @@ const ChangePassword = () => {
 
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
 
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
@@ -45,16 +47,31 @@ const ChangePassword = () => {
 
         const { oldPassword, newPassword, confirmPassword } = formData;
 
-        if (Object.values(messages).some((message) => message)) {
-            toast.error("Password does not meet the required criteria.");
+        const passwordValid =
+            newPassword.length >= 8 &&
+            /\d/.test(newPassword) &&
+            /[!@#$%^&*()_+={}\[\]:;<>,.?/~]/.test(newPassword) &&
+            /[A-Z]/.test(newPassword) &&
+            /[a-z]/.test(newPassword);
+
+        if (!passwordValid) {
+            Swal.fire({
+                icon: "error",
+                title: "Weak Password",
+                text: "Password does not meet the required criteria.",
+            });
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            toast.error("Passwords do not match.");
+            Swal.fire({
+                icon: "error",
+                title: "Mismatch",
+                text: "Passwords do not match.",
+            }); 
             return;
         }
-        // Add further form submission logic here (e.g., API call)
+
 
         const endpoint = "user/changePassword";
 
@@ -119,12 +136,23 @@ const ChangePassword = () => {
     const handleChange = (e) => {
         const { name, value, id } = e.target;
         setFormData((prevState) => ({ ...prevState, [name]: value }));
+
         if (name === "newPassword") {
+            setIsTyping(true);
             const passwordInput = document.getElementById(id);
             validatePassword(passwordInput, value);
+            setMessages({
+                number: /\d/.test(value),
+                specialChar: /[!@#$%^&*()_+={}\[\]:;<>,.?/~]/.test(value),
+                uppercase: /[A-Z]/.test(value),
+                lowercase: /[a-z]/.test(value),
+                length: value.length >= 8,
+            });
+        } else if (name === "confirmPassword") {
+            const confirmPasswordInput = document.getElementById("confirmPassword"); // Ensure this matches the input field's id
+            validateConfirmPassword(formData.newPassword, value, confirmPasswordInput);
         }
     };
-
     return (
         loading ? < LoadPage /> : <section className="h-screen">
             <ToastContainer />
@@ -169,8 +197,19 @@ const ChangePassword = () => {
                                         className="absolute inset-y-0 right-0 flex items-center px-4 text-DGXgreen focus:outline-none mt-8">
                                         {confirmPasswordVisible ? <FaEye /> : <FaEyeLowVision />}
                                     </button>
+
                                 </div>
-                                <button type="button" onClick={handleSubmit} className="text-DGXblack hover:text-DGXwhite hover:bg-[#1e40af] focus:ring-4 focus:outline-none focus:ring-[#93c5fd]/50 dark:focus:ring-[#1e40af]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-[#e2e8f0] dark:bg-DGXblack dark:text-DGXwhite dark:border-DGXblack dark:hover:text-DGXblack dark:hover:bg-DGXwhite dark:focus:ring-DGXwhite">Submit</button>
+                                <div id="newPasswordVerify"></div>
+                                {isTyping && (
+                                    <div className="text-sm text-red-500">
+                                        {!messages.length && <p>Password must be at least 8 characters long.</p>}
+                                        {!messages.number && <p>Password must contain at least one digit.</p>}
+                                        {!messages.specialChar && <p>Password must contain at least one special character.</p>}
+                                        {!messages.uppercase && <p>Password must contain at least one uppercase letter.</p>}
+                                        {!messages.lowercase && <p>Password must contain at least one lowercase letter.</p>}
+                                    </div>
+                                )}
+                                <button type="button" onClick={handleSubmit} className="text-DGXwhite hover:text-DGXwhite hover:bg-[#1e40af] focus:ring-4 focus:outline-none focus:ring-[#93c5fd]/50 dark:focus:ring-[#1e40af]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-DGXblue dark:bg-DGXblack dark:text-DGXwhite dark:border-DGXblack dark:hover:text-DGXblack dark:hover:bg-DGXwhite dark:focus:ring-DGXwhite">Submit</button>
                             </form>
                         </div>
                     </div>

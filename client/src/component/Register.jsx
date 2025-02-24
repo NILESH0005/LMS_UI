@@ -9,6 +9,7 @@ import { FaEye } from "react-icons/fa";
 import { FaEyeLowVision } from "react-icons/fa6";
 import ApiContext from '../context/ApiContext.jsx';
 import { decrypt } from "../utils/decrypt.js";
+import LoadPage from "./LoadPage.jsx";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -214,10 +215,10 @@ const Register = () => {
 
   };
   if (emailLoading) {
-    return <h1>Loading...</h1>; // Show loading indicator while email is being extracted
+    return <LoadPage/>; // Show loading indicator while email is being extracted
   }
   return (
-    loading ? <h1>loading ....</h1> : <div className="my-8">
+    loading ? <LoadPage/> : <div className="my-8">
       <ToastContainer />
       <section className="max-w-4xl p-6 mx-auto bg-DGXwhite rounded-md shadow-2xl border border-DGXgreen ">
         <h1 className="text-xl font-bold text-DGXblack capitalize text-center ">

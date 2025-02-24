@@ -28,35 +28,45 @@ const EventForm = () => {
     (event) => statusFilter === "" || event.Status === statusFilter
   );
 
-  useEffect(() => {
-    // Fetch categories first (Privacy, eventType, eventHost)
-    const fetchDropdownValues = async (category) => {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/dropdown/getDropdownValues?category=${category}`
-        );
-        const data = await response.json();
-        return data.success ? data.data : [];
-      } catch (error) {
-        console.error("Error fetching dropdown values:", error);
-        return [];
-      }
-    };
+    useEffect(() => {
+        const fetchDropdownValues = async (category) => {
+            const endpoint = `dropdown/getDropdownValues?category=${category}`;
+            const method = 'GET';
+            const headers = {
+                'Content-Type': 'application/json',
+                'auth-token': userToken,    
+            };
 
-    // Fetch category options for Privacy, eventType, eventHost
-    const fetchCategories = async () => {
-      // const privacyOptions = await fetchDropdownValues('Privacy');
-      const eventTypeOptions = await fetchDropdownValues("eventType");
-      const eventHostOptions = await fetchDropdownValues("eventHost");
+            try {
+                const data = await fetchData(endpoint, method, headers);
+                console.log(`Fetched ${category} data:`, data); 
+                return data.success ? data.data : [];
+            } catch (error) {
+                console.error('Error fetching dropdown values:', error);
+                return [];
+            }
+        };
 
-      setDropdownData({
-        categoryOptions: eventTypeOptions,
-        companyCategoryOptions: eventHostOptions,
-      });
-    };
+        const fetchCategories = async () => {
+            try {
+                const [eventTypeOptions, eventHostOptions] = await Promise.all([
+                    fetchDropdownValues('eventType'),
+                    fetchDropdownValues('eventHost'),
+                ]);
 
-    fetchCategories();
-  }, []);
+                setDropdownData({
+                    categoryOptions: eventTypeOptions,
+                    companyCategoryOptions: eventHostOptions,
+                });
+            } catch (error) {
+                console.error('Error fetching category data:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -223,109 +233,102 @@ const EventForm = () => {
     return moment(isoString).format("HH:mm"); // Custom time format
   };
 
-  const handleSubmit = async () => {
-    const errors = {};
-    if (!newEvent.title) errors.title = "Event title is required.";
-    if (!newEvent.start) errors.start = "Start date is required.";
-    if (!newEvent.end) errors.end = "End date is required.";
-    if (newEvent.categoryId === "Select one")
-      errors.categoryId = "Please select a category.";
-    if (newEvent.companyCategoryId === "Select one")
-      errors.companyCategoryId = "Please select a company category.";
-    if (!newEvent.venue) errors.venue = "Venue is required.";
-    if (!newEvent.description) errors.description = "Description is required.";
-    if (!newEvent.host) errors.host = "Host is required.";
-    if (!newEvent.registerLink)
-      errors.registerLink = "Register link is required.";
-    if (!newEvent.poster) errors.poster = "Poster is required.";
-  
-    // Check for errors
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
-      const firstErrorField = Object.keys(errors)[0];
-      const refMap = {
-        title: titleRef,
-        start: startRef,
-        end: endRef,
-        category: categoryRef,
-        companyCategory: companyCategoryRef,
-        venue: venueRef,
-        host: hostRef,
-        description: descriptionRef,
-        registerLink: registerLinkRef,
-      };
-      const element = refMap[firstErrorField].current;
-      if (element) {
-        element.focus();
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-      return;
-    }
-  
-    const endpoint = "eventandworkshop/addEvent";
-    const method = "POST";
-    const headers = {
-      "Content-Type": "application/json",
-      "auth-token": userToken,
-    };
-    const body = {
-      userID: user.UserID,
-      title: newEvent.title,
-      start: newEvent.start,
-      end: newEvent.end,
-      category: newEvent.categoryId, // Send categoryId
-      companyCategory: newEvent.companyCategoryId,
-      venue: newEvent.venue,
-      host: newEvent.host,
-      registerLink: newEvent.registerLink,
-      poster: newEvent.poster, // Ensure you handle the poster appropriately
-      description: newEvent.description,
-    };
-    console.log("body is ", body);
-  
-    try {
-      const data = await fetchData(endpoint, method, body, headers);
-      console.log("data is ", data);
-      if (data.success) {
-        const addedEvent = {
-          EventTitle: newEvent.title,
-          StartDate: newEvent.start,
-          EndDate: newEvent.end,
-          Category: newEvent.categoryId,
-          CompanyCategory: newEvent.companyCategoryId,
-          Venue: newEvent.venue,
-          Host: newEvent.host,
-          RegistrationLink: newEvent.registerLink,
-          EventImage: newEvent.poster,
-          EventDescription: newEvent.description,
+    const handleSubmit = async () => {
+        const errors = {};
+        if (!newEvent.title) errors.title = 'Event title is required.';
+        if (!newEvent.start) errors.start = 'Start date is required.';
+        if (!newEvent.end) errors.end = 'End date is required.';
+        if (newEvent.categoryId === 'Select one') errors.categoryId = 'Please select a category.';
+        if (newEvent.companyCategoryId === 'Select one') errors.companyCategoryId = 'Please select a company category.';
+        if (!newEvent.venue) errors.venue = 'Venue is required.';
+        if (!newEvent.description) errors.description = 'Description is required.';
+        if (!newEvent.host) errors.host = 'Host is required.';
+        if (!newEvent.registerLink) errors.registerLink = 'Register link is required.';
+        if (!newEvent.poster) errors.poster = 'Poster is required.';
+
+        // Check for errors
+        if (Object.keys(errors).length > 0) {
+            setErrors(errors);
+            const firstErrorField = Object.keys(errors)[0];
+            const refMap = {
+                title: titleRef,
+                start: startRef,
+                end: endRef,
+                category: categoryRef,
+                companyCategory: companyCategoryRef,
+                venue: venueRef,
+                host: hostRef,
+                description: descriptionRef,
+                registerLink: registerLinkRef,
+            };
+            const element = refMap[firstErrorField].current;
+            if (element) {
+                element.focus();
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        const endpoint = 'eventandworkshop/addEvent';
+        const method = 'POST';
+        const headers = {
+            'Content-Type': 'application/json',
+            'auth-token': userToken,
         };
-        console.log("add event", addedEvent);
-  
-        // Update the events state with the new event
-        setEvents((prevEvents) => [...prevEvents, addedEvent]);
-        resetForm();
-        setIsModalOpen(false);
-        toast.success("Event added successfully!"); // Show success toast
-        console.log("Event added successfully!", data.message);
-      } else {
-        console.error(`Server Error: ${data.message}`);
-        toast.error(`Error: ${data.message}`); // Show error toast
-      }
-    } catch (error) {
-      console.error("Error adding event:", error);
-      toast.error(
-        "An error occurred while adding the event. Please try again."
-      ); // Show error toast
-    }
-  };
-  
-  // Update the "Add Event" button to only call handleSubmit
-  <button
-    onClick={handleSubmit}
-    className="bg-DGXgreen text-white p-2 rounded"
-  >
-    Add Event
-  </button> 
+        const body = {
+            userID: user.UserID,
+            title: newEvent.title,
+            start: newEvent.start,
+            end: newEvent.end,
+            category: newEvent.categoryId, // Send categoryId
+            companyCategory: newEvent.companyCategoryId,
+            venue: newEvent.venue,
+            host: newEvent.host,
+            registerLink: newEvent.registerLink,
+            poster: newEvent.poster, // Ensure you handle the poster appropriately
+            description: newEvent.description,
+        };
+        console.log("body is ", body)
+
+        try {
+            const data = await fetchData(endpoint, method, body, headers);
+            console.log("data is ", data);
+            if (data.success) {
+                const addedEvent = {
+                    EventTitle: newEvent.title,
+                    StartDate: newEvent.start,
+                    EndDate: newEvent.end,
+                    Category: newEvent.categoryId,
+                    CompanyCategory: newEvent.companyCategoryId,
+                    Venue: newEvent.venue,
+                    Host: newEvent.host,
+                    RegistrationLink: newEvent.registerLink,
+                    EventImage: newEvent.poster,
+                    EventDescription: newEvent.description,
+                };
+                console.log("add event", addedEvent);
+                // setEvents([
+                //   ...events,
+                //   {
+                //     ...newEvent,
+                //     start: new Date(newEvent.start),
+                //     end: new Date(newEvent.end),
+                //   },
+                // ]);
+                setEvents([...events, addedEvent]);
+                resetForm();
+                setIsModalOpen(false);
+                toast.success('Event added successfully!'); // Show success toast
+                console.log('Event added successfully!', data.message);
+            } else {
+                console.error(`Server Error: ${data.message}`);
+                toast.error(`Error: ${data.message}`); // Show error toast
+            }
+        } catch (error) {
+            console.error('Error adding event:', error);
+            toast.error('An error occurred while adding the event. Please try again.'); // Show error toast
+        }
+    };
 
   const handleCloseModal = () => {
     resetForm();
@@ -644,36 +647,84 @@ const EventForm = () => {
               <p className="text-red-500 text-sm">{errors.description}</p>
             )}
 
-            <p className="text-sm text-gray-500 mt-1 pt-8 px-2">
-              {remainingChars} characters remaining
-            </p>
-          </div>
-          <div className="flex justify-end  ">
-            <button
-              onClick={handleCloseConfirmationModal}
-              className="bg-red-500 text-white p-2 rounded mr-2"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={async (events) => {
-                await handleSubmit(events);
-              }}
-              onChange={handleAddEvent}
-              className="bg-DGXgreen text-white p-2 rounded"
-            >
-              Add Event
-            </button>
-          </div>
+                        <p className="text-sm text-gray-500 mt-1 pt-8 px-2">
+                            {remainingChars} characters remaining
+                        </p>
+                    </div>
+                    <div className="flex justify-end  ">
+                        <button onClick={handleCloseConfirmationModal} className="bg-red-500 text-white p-2 rounded mr-2">Cancel</button>
+                        <button
+                            onClick={async (events) => {
+                                await handleSubmit(events);
+                            }}
+                            onChange={handleAddEvent}
+                            className="bg-DGXgreen text-white p-2 rounded"
+                        >
+                            Add Event
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {showModal && modalType === 'delete' && (
+                <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+                        <h3 className="text-xl font-semibold mb-4">Confirm Delete</h3>
+                        <p>Are you sure you want to delete this Event?</p>
+                        <div className="flex justify-between mt-4">
+                            <button
+                                type="button"
+                                onClick={() => setShowModal(false)}
+                                className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDeleteUser}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showCancelConfirmation && (
+                <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+                        <h3 className="text-xl font-semibold mb-4">Confirm Cancel</h3>
+                        <p>Are you sure you want to cancel? Any unsaved changes will be lost.</p>
+                        <div className="flex justify-between mt-4">
+                            <button
+                                type="button"
+                                onClick={() => setShowCancelConfirmation(false)} // Close the confirmation modal
+                                className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
+                            >
+                                No, Continue Editing
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    resetForm(); // Reset the form
+                                    setIsModalOpen(false); // Close the add event modal
+                                    setShowCancelConfirmation(false); // Close the confirmation modal
+                                }}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                            >
+                                Yes, Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            <div className="container mx-auto mt-10">
+                <ToastContainer /> {/* Add this line */}
+                {/* ... rest of your JSX */}
+            </div>
+
         </div>
-      </div>
-      </div>
-      <div className="container mx-auto mt-10">
-        <ToastContainer /> {/* Add this line */}
-        {/* ... rest of your JSX */}
-      </div>
-    </div>
-  );
-};
+        </div>
+    )
+}
 
 export default EventForm;

@@ -250,24 +250,6 @@ const EventTable = ({ }) => {
           {showForm ? 'Show Table' : 'Add Event'}
         </button>
       </div>
-
-      {/* <div className="flex items-center">
-        <label className="mr-2 text-lg font-medium">Filter by Event Type:</label>
-        <select
-          className="border px-3 py-2 rounded-lg"
-          value={selectedCategory}  // Update this to `selectedCategory`
-          onChange={(e) => setSelectedCategory(e.target.value)} // Update the state to selectedCategory
-        >
-          <option value="">All</option>
-          {dropdownData.categoryOptions.map((option) => (
-            <option key={option.idCode} value={option.ddValue}>
-              {option.ddValue}
-            </option>
-          ))}
-        </select>
-      </div> */}
-
-
       {showForm ? (
         <EventForm />
       ) : (
@@ -275,6 +257,7 @@ const EventTable = ({ }) => {
           <table className="table-fixed border bottom-2 w-full mt-4">
             <thead className='bg-DGXgreen text-white'>
               <tr >
+                <th className="border px-4 py-2 ">#</th>
                 <th className="border px-4 py-2 ">Title</th>
                 <th className="border px-4 py-2 ">Created By</th>
                 <th className="border px-4 py-2">Start Date</th>
@@ -287,6 +270,9 @@ const EventTable = ({ }) => {
             <tbody>
               {filteredEvents.map((event, index) => (
                 <tr className='text-center' key={index}>
+                  <td className="border ">
+                    {index+1}
+                  </td>
                   <td className="border px-4 py-2 w-2/6">
                     {event.EventTitle && event.EventTitle.length > 50
                       ? `${event.EventTitle.slice(0, 50)}...`
@@ -332,10 +318,9 @@ const EventTable = ({ }) => {
       {selectedEvent && (
         <DetailsEventModal
           selectedEvent={selectedEvent}
-          onClose={() => setSelectedEvent(null)} // Close modal
-          onEventUpdate={handleEventUpdate} // Pass the callback function
-          onEventDelete={handleEventDelete} // Pass the delete callback function
-        // onEventStatusChange={handleEventStatusChange}
+          onClose={() => setSelectedEvent(null)}
+          onEventUpdate={handleEventUpdate}
+          onEventDelete={handleEventDelete}
         />
       )}
     </div>

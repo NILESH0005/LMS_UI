@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import Swal from 'sweetalert2';
 import UserProfileChart from './UserProfileChart';
 import { FaArrowRight, FaEdit, FaUsers, FaPoll, FaTrash } from 'react-icons/fa';
 // import { FaEdit } from "react-icons/fa";
@@ -182,6 +183,55 @@ const UserProfile = () => {
       fetchUserDisscussions();
     }
   }, [user, userToken, fetchData]);
+
+  const handleDeleteDiscussion = async (discussion) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        const endpoint = "discussion/deleteDiscussion";
+        const method = "POST";
+        const headers = {
+          'Content-Type': 'application/json',
+          'auth-token': userToken
+        };
+        const body = { discussionId: discussion.DiscussionID }; // Ensure the correct field name
+  
+        const response = await fetchData(endpoint, method, body, headers);
+        if (response && response.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'The discussion has been deleted.',
+          });
+  
+          // Remove the deleted discussion from the local state
+          setUserDisscussion(prevDiscussions => 
+            prevDiscussions.filter(d => d.DiscussionID !== discussion.DiscussionID)
+          );
+  
+        } else {
+          throw new Error("Failed to delete the discussion.");
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Failed to delete the discussion: ${error.message}`,
+        });
+      }
+    }
+  };
+
+
   return (
 
     !isLoggedIn ? <h1>login?</h1> : loading ? <h1>loading....</h1> :
@@ -248,7 +298,7 @@ const UserProfile = () => {
                     </div>
                     <div className={`flex items-center p-6 cursor-pointer ${activeTab === 'posts' ? 'bg-DGXgreen/40' : ''}`} onClick={() => setActiveTab('posts')}>
                       <GoCommentDiscussion className='mr-4 text-2xl' />
-                      <li className={`text-lg ${activeTab === 'posts' ? 'text-DGXblue font-bold' : ''}`}>My Posts</li>
+                      <li className={`text-lg ${activeTab === 'posts' ? 'text-DGXblue font-bold' : ''}`}>My Discussions</li>
                     </div>
                     <div className={`flex items-center p-6 cursor-pointer ${activeTab === 'events' ? 'bg-DGXgreen/40' : ''}`} onClick={() => setActiveTab('events')}>
                       <MdEventAvailable className='mr-4 text-2xl' />
@@ -417,7 +467,7 @@ const UserProfile = () => {
                     </div>
                   </div>
                   <div className="mt-4 flex justify-center items-center">
-                    <UserProfileChart /> 
+                    <UserProfileChart />
                   </div>
                 </div>
               </div>
@@ -445,8 +495,8 @@ const UserProfile = () => {
                                 <FaArrowRight className="ml-1 text-blue-600 dark:text-blue-400" />
                               </span>
                               <div className="flex items-center gap-x-4">
-                                <FaEdit className="text-gray-600 hover:text-blue-600 cursor-pointer text-xl transition-transform transform hover:scale-110"
-                                  onClick={() => handleEditDiscussion(discussion)} />
+                                {/* <FaEdit className="text-gray-600 hover:text-blue-600 cursor-pointer text-xl transition-transform transform hover:scale-110"
+                                  onClick={() => handleEditDiscussion(discussion)} /> */}
 
                                 <FaTrash className="text-gray-600 hover:text-red-600 cursor-pointer text-xl transition-transform transform hover:scale-110"
                                   onClick={() => handleDeleteDiscussion(discussion)} />
@@ -465,16 +515,16 @@ const UserProfile = () => {
                 <div className='flex-col'>
                   <h4 className="text-xl text-[#0f172a] font-bold">My Events</h4>
                 </div>
-                <AddUserEvent/>
+                <AddUserEvent />
 
               </div>
             )}
-              {activeTab === 'blogs' && (
+            {activeTab === 'blogs' && (
               <div className='w-full'>
                 <div className='flex-col'>
                   <h4 className="text-xl text-[#0f172a] font-bold">My Events</h4>
                 </div>
-                <AddUserBlog/>
+                <AddUserBlog />
 
               </div>
             )}
@@ -485,7 +535,7 @@ const UserProfile = () => {
               </div>
             )}
           </div>
-          
+
         </div>
       </div>
   );
