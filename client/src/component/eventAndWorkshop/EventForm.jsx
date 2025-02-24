@@ -35,11 +35,17 @@ const EventForm = () => {
     // });
 
     useEffect(() => {
-        // Fetch categories first (Privacy, eventType, eventHost)
         const fetchDropdownValues = async (category) => {
+            const endpoint = `dropdown/getDropdownValues?category=${category}`;
+            const method = 'GET';
+            const headers = {
+                'Content-Type': 'application/json',
+                'auth-token': userToken,    
+            };
+
             try {
-                const response = await fetch(`http://localhost:8000/dropdown/getDropdownValues?category=${category}`);
-                const data = await response.json();
+                const data = await fetchData(endpoint, method, headers);
+                console.log(`Fetched ${category} data:`, data); 
                 return data.success ? data.data : [];
             } catch (error) {
                 console.error('Error fetching dropdown values:', error);
@@ -47,20 +53,25 @@ const EventForm = () => {
             }
         };
 
-        // Fetch category options for Privacy, eventType, eventHost
         const fetchCategories = async () => {
-            // const privacyOptions = await fetchDropdownValues('Privacy');
-            const eventTypeOptions = await fetchDropdownValues('eventType');
-            const eventHostOptions = await fetchDropdownValues('eventHost');
+            try {
+                const [eventTypeOptions, eventHostOptions] = await Promise.all([
+                    fetchDropdownValues('eventType'),
+                    fetchDropdownValues('eventHost'),
+                ]);
 
-            setDropdownData({
-                categoryOptions: eventTypeOptions,
-                companyCategoryOptions: eventHostOptions
-            });
+                setDropdownData({
+                    categoryOptions: eventTypeOptions,
+                    companyCategoryOptions: eventHostOptions,
+                });
+            } catch (error) {
+                console.error('Error fetching category data:', error);
+            }
         };
 
         fetchCategories();
     }, []);
+
 
 
     const handleChange = (e) => {
@@ -279,13 +290,6 @@ const EventForm = () => {
             }
             return;
         }
-
-        // const start = newEvent.start.split('T')[0]; // Extract date part
-        // // const startTime = newEvent.start.split('T')[1].slice(0, 5); // Extract time part (HH:MM)
-
-        // const endDate = newEvent.end.split('T')[0]; // Extract date part
-        // // const endTime = newEvent.end.split('T')[1].slice(0, 5); 
-
 
         const endpoint = 'eventandworkshop/addEvent';
         const method = 'POST';
@@ -607,62 +611,62 @@ const EventForm = () => {
                     </div>
                 </div>
             </div>
-             {showModal && modalType === 'delete' && (
-                    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
-                      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            {showModal && modalType === 'delete' && (
+                <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
                         <h3 className="text-xl font-semibold mb-4">Confirm Delete</h3>
                         <p>Are you sure you want to delete this Event?</p>
                         <div className="flex justify-between mt-4">
-                          <button
-                            type="button"
-                            onClick={() => setShowModal(false)}
-                            className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleDeleteUser}
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg"
-                          >
-                            Delete
-                          </button>
+                            <button
+                                type="button"
+                                onClick={() => setShowModal(false)}
+                                className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDeleteUser}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                            >
+                                Delete
+                            </button>
                         </div>
-                      </div>
                     </div>
-                  )}
-                  {showCancelConfirmation && (
-                    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
-                      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+                </div>
+            )}
+            {showCancelConfirmation && (
+                <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
                         <h3 className="text-xl font-semibold mb-4">Confirm Cancel</h3>
                         <p>Are you sure you want to cancel? Any unsaved changes will be lost.</p>
                         <div className="flex justify-between mt-4">
-                          <button
-                            type="button"
-                            onClick={() => setShowCancelConfirmation(false)} // Close the confirmation modal
-                            className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
-                          >
-                            No, Continue Editing
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              resetForm(); // Reset the form
-                              setIsModalOpen(false); // Close the add event modal
-                              setShowCancelConfirmation(false); // Close the confirmation modal
-                            }}
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg"
-                          >
-                            Yes, Cancel
-                          </button>
+                            <button
+                                type="button"
+                                onClick={() => setShowCancelConfirmation(false)} // Close the confirmation modal
+                                className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
+                            >
+                                No, Continue Editing
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    resetForm(); // Reset the form
+                                    setIsModalOpen(false); // Close the add event modal
+                                    setShowCancelConfirmation(false); // Close the confirmation modal
+                                }}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                            >
+                                Yes, Cancel
+                            </button>
                         </div>
-                      </div>
                     </div>
-                  )}
-                  <div className="container mx-auto mt-10">
-                    <ToastContainer /> {/* Add this line */}
-                    {/* ... rest of your JSX */}
-                  </div>
+                </div>
+            )}
+            <div className="container mx-auto mt-10">
+                <ToastContainer /> {/* Add this line */}
+                {/* ... rest of your JSX */}
+            </div>
 
         </div>
     )

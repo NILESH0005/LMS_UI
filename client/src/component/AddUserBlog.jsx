@@ -49,9 +49,12 @@ const AddUserBlog = () => {
     fetchBlogs();
   }, [fetchData]);
 
+
+
   const filteredBlogs = blogs.filter((blog) => blog.UserID === user.UserID);
   console.log("user ID is :", user.UserID);
   console.log("filtered blogs is ", filteredBlogs);
+
 
 
   if (loading) {
@@ -73,7 +76,7 @@ const AddUserBlog = () => {
 
       <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-lg">
         {showForm ? (
-          <BlogForm />
+          <BlogForm setBlogs={setBlogs} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBlogs.length > 0 ? (
@@ -81,6 +84,7 @@ const AddUserBlog = () => {
                 <div
                   key={blog.BlogID}
                   className="p-5 rounded-xl shadow-lg border-2 border-gray-200 bg-white hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col gap-3"
+                  style={{ height: "400px" }} // Set a fixed height for the card
                 >
                   {/* Blog Image */}
                   <div className="w-full h-44 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
@@ -96,26 +100,35 @@ const AddUserBlog = () => {
                   </div>
 
                   {/* Blog Details */}
-                  <div className="flex flex-col gap-2">
-                    <h3 className="text-xl font-bold text-gray-900">{blog.title}</h3>
-                    <p className="text-gray-600 line-clamp-3">{blog.content.split(" ").slice(0, 2).join(" ")}...</p>
-                    <span className="text-gray-500 text-sm">Published: {new Date(blog.publishedDate).toDateString()}</span>
+                  <div className="flex flex-col gap-2 flex-grow">
+                    <h3 className="text-lg font-bold text-gray-900">{blog.title}</h3>
+
+                    {/* Blog content preview with max 3 lines */}
+                    <p className="text-gray-600 overflow-hidden line-clamp-3 h-[60px]">
+                      {blog.content}
+                    </p>
+
+                    <span className="text-gray-500 text-sm">
+                      Published: {new Date(blog.publishedDate).toDateString()}
+                    </span>
                   </div>
 
                   {/* Status Badge */}
                   <span
-                    className={`px-3 py-1 text-sm font-semibold rounded-full self-start ${blog.Status === "Approved" ? "bg-green-100 text-green-700" :
-                      blog.Status === "Pending" ? "bg-yellow-100 text-yellow-700" :
-                        "bg-red-100 text-red-700"
+                    className={`px-3 py-1 text-sm font-semibold rounded-full self-start ${blog.Status === "Approved"
+                        ? "bg-green-100 text-green-700"
+                        : blog.Status === "Pending"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-red-100 text-red-700"
                       }`}
                   >
                     {blog.Status}
                   </span>
 
-                  {/* Admin Remark (Conditional Rendering) */}
+                  {/* Admin Remark (Only for Rejected Blogs) */}
                   {blog.Status === "Rejected" && blog.AdminRemark && (
                     <div className="text-sm text-gray-600 bg-gray-100 p-2 rounded-md">
-                      <span className="font-semibold">Admin Remark:</span> {event.AdminRemark}
+                      <span className="font-semibold">Admin Remark:</span> {blog.AdminRemark}
                     </div>
                   )}
 
@@ -127,6 +140,7 @@ const AddUserBlog = () => {
                     View Details
                   </button>
                 </div>
+
               ))
             ) : (
               <p className="text-gray-500 text-center w-full">No blogs found.</p>

@@ -87,10 +87,14 @@ export const validatePassword = (passwordInput, passwordValue) => {
     }
 }
 
+
 export const validateConfirmPassword = (passwordValue, confirmPasswordValue, confirmPasswordInput) => {
+    if (!confirmPasswordInput) return; 
     const conPasswordVerify = document.getElementById(confirmPasswordInput.id + 'Verify');
+    if (!conPasswordVerify) return; 
+
     if (confirmPasswordValue !== '') {
-        if (!(confirmPasswordValue === passwordValue)) {
+        if (confirmPasswordValue !== passwordValue) {
             confirmPasswordInput.classList.remove('is-valid');
             confirmPasswordInput.classList.add('is-invalid');
             conPasswordVerify.classList.remove(errorClass);
@@ -103,12 +107,11 @@ export const validateConfirmPassword = (passwordValue, confirmPasswordValue, con
             conPasswordVerify.classList.add(errorClass);
             conPasswordVerify.textContent = 'Very Good! Password Matched';
         }
-    }
-    else{
+    } else {
         confirmPasswordInput.classList.remove('is-valid');
         confirmPasswordInput.classList.add('is-invalid');
         conPasswordVerify.classList.remove(errorClass);
         conPasswordVerify.classList.add(validClass);
         conPasswordVerify.textContent = 'This field is required';
     }
-}
+};

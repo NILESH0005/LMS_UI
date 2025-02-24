@@ -144,25 +144,21 @@ const VerifyEmail = () => {
                       </p>
                     </div>
 
-                    <div className="relative mb-6">
+                    <div className="relative mb-4">
+                      <label htmlFor="email" className="block text-neutral-600 mb-1">Email address</label>
                       <input
                         type="email"
-                        className="peer block w-full rounded border border-DGXgreen bg-transparent px-3 py-2 leading-5 outline-none transition-all duration-200 ease-linear placeholder-transparent focus:placeholder-opacity-100"
+                        className="peer block w-full rounded border border-DGXgreen bg-transparent px-3 py-2 leading-5 outline-none transition-all duration-200 ease-linear focus:placeholder-opacity-100"
                         id="email"
                         value={email}
                         onChange={handleChangeEmail}
-                        placeholder="Email address"
                         required
                       />
-                      <label
-                        htmlFor="email"
-                        className="absolute left-3 top-2 mb-0 text-neutral-500 transition-all duration-200 ease-out origin-[0_0] -translate-y-6 scale-75 peer-focus:-translate-y-6 peer-focus:scale-75 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100"
-                      >
-                        Email address
-                      </label>
                     </div>
 
-                    <div className="relative mb-6">
+                    <div className="relative mb-4">
+                      <label htmlFor="userCaptcha" className="block text-neutral-600 mb-1">Enter Captcha</label>
+
                       <input
                         type="text"
                         className="peer block w-full rounded border border-DGXgreen bg-transparent px-3 py-2 leading-5 outline-none transition-all duration-200 ease-linear placeholder-transparent focus:placeholder-opacity-100"
@@ -172,12 +168,12 @@ const VerifyEmail = () => {
                         placeholder="Enter Captcha"
                         required
                       />
-                      <label
+                      {/* <label
                         htmlFor="userCaptcha"
                         className="absolute left-3 top-2 mb-0 text-neutral-500 transition-all duration-200 ease-out origin-[0_0] -translate-y-6 scale-75 peer-focus:-translate-y-6 peer-focus:scale-75 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100"
                       >
                         Enter Captcha
-                      </label>
+                      </label> */}
                     </div>
 
                     <div className="relative mb-4 flex justify-center items-center">

@@ -125,7 +125,7 @@ const EventWorkshopPage = () => {
         await navigator.share({
           title: event.EventTitle,
           text: `Check out this event: ${event.EventTitle}`,
-          url: window.location.href, // Share the current page's URL
+          url: window.location.href, 
         });
         alert("Event shared successfully!");
       } catch (error) {
@@ -271,7 +271,7 @@ const EventWorkshopPage = () => {
 
                   {/* More Info Button */}
                   <button
-                    // onClick={() => handleMoreInfoClick(event)}
+                    onClick={() => handleMoreInfoClick(event)}
                     className="mt-4 text-DGXblue hover:text-DGXgreen font-semibold text-sm sm:text-base"
                   >
                     More Info
