@@ -6,7 +6,6 @@ const Discussions = () => {
   const { fetchData } = useContext(ApiContext); // Assuming you're using ApiContext
   const [discussions, setDiscussions] = useState([]);
   const [users, setUsers] = useState([]); // State for users
-  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [loading, setLoading] = useState(false); // Add loading state
@@ -16,7 +15,6 @@ const Discussions = () => {
     setUsers([]);  // Reset users or any other state you want to clear
     setModalType('');  // Reset modal type
   };
-
 
   useEffect(() => {
     const fetchDiscussions = async () => {
@@ -32,21 +30,17 @@ const Discussions = () => {
 
         fetchData(endpoint, method, body, headers).then(result => {
           if (result && result.data) {
-            console.log(result);
-
             return result.data;
           } else {
             throw new Error("Invalid data format");
           }
         }).then(data => {
-          console.log(data);
-
           if (data && data.updatedDiscussions) {
             setDiscussions(data.updatedDiscussions);
           } else {
             throw new Error("Missing updatedDiscussions in response data");
           }
-        })
+        });
       } catch (error) {
         toast.error(`Something went wrong: ${error.message}`, {
           position: "top-center",
@@ -63,11 +57,8 @@ const Discussions = () => {
       }
     };
 
-
     fetchDiscussions();
   }, [fetchData]);
-
-
 
   const handleDeleteUser = async () => {
     const endpoint = "/user/deleteUser";
@@ -100,7 +91,6 @@ const Discussions = () => {
         <thead className="text-xs text-gray-700 uppercase bg-DGXgreen text-white dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" className="border px-6 py-3">Serial No.</th>
-            <th scope="col" className="border px-6 py-3">Discussion ID</th>
             <th scope="col" className="border px-6 py-3">Title</th>
             <th scope="col" className="border px-6 py-3">Content</th>
             <th scope="col" className="border px-6 py-3">Likes</th>
@@ -111,16 +101,14 @@ const Discussions = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="7" className="text-center">Loading...</td>
+              <td colSpan="6" className="text-center">Loading...</td>
             </tr>
           ) : discussions.length > 0 ? (
-            discussions.map((discussion) => (
+            discussions.map((discussion, index) => (
               <tr key={discussion.DiscussionID} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  {/* Display user ID from the discussions data */}
-                  {discussion.UserID}
+                  {index + 1} {/* Dynamic Serial No. */}
                 </th>
-                <td className="border px-6 py-4">{discussion.DiscussionID}</td>
                 <td className="border px-6 py-4">{discussion.Title}</td>
                 <td className="border px-6 py-4">{discussion.Content.substring(0, 50)}...</td>
                 <td className="border px-6 py-4">{discussion.likeCount}</td>
@@ -128,22 +116,9 @@ const Discussions = () => {
                 <td className="border px-6 py-4 text-right">
                   {!discussion.approved && (
                     <>
-                      {/* <button
-                        onClick={() => handleApprove(discussion.DiscussionID)}
-                        className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                      >
-                        Approve
-                      </button> */}
-                      {/* <button
-                        onClick={() => handleReject(discussion.DiscussionID)}
-                        className="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900"
-                      >
-                        Reject
-                      </button> */}
                       <button
                         onClick={() => {
                           setModalType('delete');
-                          // setSelectedUserId(user.UserID);
                           setShowModal(true);
                         }}
                         className="text-white bg-red-700 hover:bg-red-800 focus:outline-none
@@ -153,7 +128,6 @@ const Discussions = () => {
                       >
                         Delete
                       </button>
-
                     </>
                   )}
 
@@ -184,13 +158,12 @@ const Discussions = () => {
                       </div>
                     </div>
                   )}
-
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="7" className="text-center">No discussions found.</td>
+              <td colSpan="6" className="text-center">No discussions found.</td>
             </tr>
           )}
         </tbody>
@@ -200,5 +173,7 @@ const Discussions = () => {
 };
 
 export default Discussions;
+
+
 
 

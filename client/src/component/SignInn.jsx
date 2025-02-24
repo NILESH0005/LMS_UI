@@ -53,40 +53,19 @@ const SignIn = () => {
         setLoading(false);
         Swal.fire({
           icon: 'error',
-          title: 'Login Error',
-          text: `Error in Login: ${data.message}`,
+          title: 'Login',
+          text: `${data.message}`,
           confirmButtonColor: '#3085d6',
         });
       } else {
         logIn(data.data.authtoken);
         setLoading(false);
         if (data.data.flag === 0) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Welcome!',
-            text: 'Welcome for the first time. Please change your password.',
-            confirmButtonColor: '#3085d6',
-          }).then(() => {
-            navigate('/ChangePassword');
-          });
+          navigate('/ChangePassword');
         } else if (data.data.isAdmin) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Welcome Admin!',
-            text: 'Welcome to the admin panel.',
-            confirmButtonColor: '#3085d6',
-          }).then(() => {
-            navigate('/AdminDashboard');
-          });
+          navigate('/AdminDashboard');
         } else {
-          Swal.fire({
-            icon: 'success',
-            title: 'Welcome!',
-            text: 'Welcome to DGX Community.',
-            confirmButtonColor: '#3085d6',
-          }).then(() => {
-            navigate('/');
-          });
+          navigate('/');
         }
       }
     } catch (error) {

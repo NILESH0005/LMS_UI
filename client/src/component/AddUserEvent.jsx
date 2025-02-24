@@ -5,13 +5,14 @@ import EventForm from "../component/eventAndWorkshop/EventForm";
 import LoadPage from "./LoadPage";
 import ApiContext from "../context/ApiContext";
 import DetailsEventModal from "./eventAndWorkshop/DetailsEventModal";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddUserEvent = () => {
   const [showForm, setShowForm] = useState(false);
   const { fetchData, user, userToken } = useContext(ApiContext);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  // const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -20,7 +21,6 @@ const AddUserEvent = () => {
     setIsModalOpen(false);
     setSelectedEvent(null); // Clear selected event when closing
   };
-
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -32,16 +32,17 @@ const AddUserEvent = () => {
 
       try {
         const result = await fetchData(endpoint, method, {}, headers);
-        // console.log("result is :", result)
         if (result.success && Array.isArray(result.data)) {
           setEvents(result.data);
         } else {
           console.error("Invalid data format:", result);
           setEvents([]);
+          toast.error("Failed to fetch events. Please try again later.");
         }
       } catch (error) {
         console.error("Error fetching events:", error);
         setEvents([]);
+        toast.error("An error occurred while fetching events.");
       } finally {
         setLoading(false);
       }
@@ -59,76 +60,13 @@ const AddUserEvent = () => {
   console.log("user ID is :", user.UserID);
   console.log("filtered events is :", filteredEvents);
 
-  // Dummy event data (Replace with real API data)
-  // const userEvents = [
-  //   { 
-  //     id: 1, 
-  //     title: "AI Workshop", 
-  //     description: "Learn about AI advancements.", 
-  //     location: "Tech Hub, NY", 
-  //     time: "10:00 AM - 2:00 PM", 
-  //     date: "2025-02-25", 
-  //     status: "Approved", 
-  //     posterUrl: "https://via.placeholder.com/150" 
-  //   },
-  //   { 
-  //     id: 2, 
-  //     title: "Cyber Security Bootcamp", 
-  //     description: "Deep dive into cybersecurity.", 
-  //     location: "Online Webinar", 
-  //     time: "6:00 PM - 8:00 PM", 
-  //     date: "2025-03-10", 
-  //     status: "Pending", 
-  //     posterUrl: ""
-  //   },
-  //   { 
-  //     id: 3, 
-  //     title: "Blockchain Seminar", 
-  //     description: "Understanding blockchain and Web3.", 
-  //     location: "Silicon Valley, CA", 
-  //     time: "1:00 PM - 5:00 PM", 
-  //     date: "2025-04-05", 
-  //     status: "Rejected", 
-  //     posterUrl: "https://via.placeholder.com/150" 
-  //   },
-  //   { 
-  //     id: 1, 
-  //     title: "AI Workshop", 
-  //     description: "Learn about AI advancements.", 
-  //     location: "Tech Hub, NY", 
-  //     time: "10:00 AM - 2:00 PM", 
-  //     date: "2025-02-25", 
-  //     status: "Approved", 
-  //     posterUrl: "https://via.placeholder.com/150" 
-  //   },
-  //   { 
-  //     id: 2, 
-  //     title: "Cyber Security Bootcamp", 
-  //     description: "Deep dive into cybersecurity.", 
-  //     location: "Online Webinar", 
-  //     time: "6:00 PM - 8:00 PM", 
-  //     date: "2025-03-10", 
-  //     status: "Pending", 
-  //     posterUrl: ""
-  //   },
-  //   { 
-  //     id: 3, 
-  //     title: "Blockchain Seminar", 
-  //     description: "Understanding blockchain and Web3.", 
-  //     location: "Silicon Valley, CA", 
-  //     time: "1:00 PM - 5:00 PM", 
-  //     date: "2025-04-05", 
-  //     status: "Rejected", 
-  //     posterUrl: "https://via.placeholder.com/150" 
-  //   },
-  // ];
-
   if (loading) {
     return <LoadPage />;
   }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="w-full max-w-6xl mx-auto p-6">
+      <ToastContainer />
       {/* Toggle Button */}
       <div className="flex justify-center mb-6">
         <button
@@ -140,9 +78,10 @@ const AddUserEvent = () => {
         </button>
       </div>
 
-      <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+      <div className="max-w-5xl mx-auto">
         {showForm ? (
           <EventForm />
+          
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.length > 0 ? (

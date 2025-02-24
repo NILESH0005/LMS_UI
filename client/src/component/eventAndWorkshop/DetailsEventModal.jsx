@@ -214,3 +214,16 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange  })
 };
 
 export default DetailsEventModal;
+
+
+
+
+
+
+
+
+
+
+
+
+

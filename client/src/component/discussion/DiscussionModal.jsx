@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
-import { AiFillLike, AiOutlineLike } from "react-icons/ai"
+import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ApiContext from "../../context/ApiContext.jsx";
-import images, { } from "../../../public/images.js"
+import images from "../../../public/images.js";
 const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
   const [dissComments, setDissComments] = useState([]);
   const [demoDiscussions, setDemoDiscussions] = useState([]);
@@ -15,106 +15,18 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
 
   const [loading, setLoading] = useState(false);
 
-  // const handleAddComment = async (id) => {
-  //   if (userToken) {
-  //     const endpoint = "discussion/discussionpost";
-  //     const method = "POST";
-  //     const headers = {
-  //       'Content-Type': 'application/json',
-  //       'auth-token': userToken
-  //     };
-  //     const body = {
-  //       "reference": id,
-  //       "comment": newComment
-  //     };  
-  //     console.log("thsi is body:", body)
-  //     setLoading(true);
-  //     console.log(headers, endpoint)
-
-  //     try {
-  //       // console.log("Inside Try");
-
-  //       const data = await fetchData(endpoint, method, body, headers)
-  //       // console.log(data);
-  //       if (!data.success) {
-  //         setLoading(false);
-  //         toast.error(`Error in posting comment try again: ${data.message}`, {
-  //           position: "top-center",
-  //           autoClose: 3000,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: undefined,
-  //           theme: "light",
-  //         });
-  //       } else if (data.success) {
-  //         console.log(data.postId);
-
-  //         const newCommentObj = {
-  //           UserID: user.UserID,
-  //           UserName: user.Name,
-  //           DiscussionID: data.postId,
-  //           timestamp: new Date().toLocaleString(),
-  //           Comment: newComment,
-  //           comment: [],
-  //           likeCount: 0,
-  //           UserLike: 0,
-  //         };
-  //         // console.log(discussion.comment);
-  //         discussion.comment = [newCommentObj, ...discussion.comment]
-  //         console.log(discussion.comment);
-  //         setLoading(false);
-  //         toast.success("Comment Post Successfully", {
-  //           position: "top-center",
-  //           autoClose: 3000,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: undefined,
-  //           theme: "light",
-  //         });
-  //       }
-  //     } catch (error) {
-  //       setLoading(false);
-  //       toast.error(`Something went wrong`, {
-  //         position: "top-center",
-  //         autoClose: 3000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //         theme: "light",
-  //       });
-  //     }
-  //   }
-
-  //   if (newComment.trim() !== "") {
-  //     const newCommentObj = {
-  //       username: "New User",
-  //       discussion: discussion.DiscussionID,
-  //       timestamp: new Date().toLocaleString(),
-  //       commentData: newComment,
-  //       likes: 0,
-  //       replies: [],
-  //     };
-
-  //     setDissComments([...dissComments, newCommentObj]);
-  //     setNewComment("");
-  //   }
-  // };
-
   const handleAddComment = async (id) => {
-    if (!newComment.trim()) return;
+    if (!newComment.trim()) {
+      alert("Comment cannot be empty!");
+      return;
+    }
 
     if (userToken) {
-      const endpoint = "discussion/discussionpost";
+      const endpoint = "discussion/discussionpost"; // Ensure this is the correct API
       const method = "POST";
       const headers = {
-        'Content-Type': 'application/json',
-        'auth-token': userToken
+        "Content-Type": "application/json",
+        "auth-token": userToken,
       };
       const body = { reference: id, comment: newComment };
 
@@ -132,17 +44,17 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
         const newCommentObj = {
           UserID: user.UserID,
           UserName: user.Name,
-          DiscussionID: data.postId,
+          DiscussionID: id,
           timestamp: new Date().toLocaleString(),
           Comment: newComment,
           comment: [],
           likeCount: 0,
           UserLike: 0,
         };
-        console.log("ne comment", newCommentObj);
 
-        // Update the discussion comments in real-time
-        setDissComments(prev => [newCommentObj, ...prev]);
+        // Update the discussion's comments directly
+        setDissComments((prev) => [newCommentObj, ...prev]);
+        discussion.comment = [newCommentObj, ...discussion.comment]; // Update discussion prop reference
 
         setNewComment("");
         setLoading(false);
@@ -162,22 +74,27 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
   };
 
   const handleAddReply = async (commentIndex, replyText, id) => {
+    if (!replyText.trim()) {
+      alert("Reply cannot be empty!");
+      return;
+    }
+
     if (userToken) {
-      const endpoint = "discussion/discussionpost";
+      const endpoint = "discussion/discussionpost"; // Ensure correct API endpoint
       const method = "POST";
       const headers = {
-        'Content-Type': 'application/json',
-        'auth-token': userToken,
+        "Content-Type": "application/json",
+        "auth-token": userToken,
       };
       const body = {
-        reference: id,
+        reference: id, // Ensure this correctly refers to the parent comment
         comment: replyText,
       };
+
       setLoading(true);
 
       try {
         const data = await fetchData(endpoint, method, body, headers);
-        // console.log("the ddddaaaattaaa:",data)
 
         if (!data.success) {
           setLoading(false);
@@ -196,35 +113,38 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
           likeCount: 0,
           timestamp: new Date().toISOString(),
           userLike: 0,
-          comment: [],
+          comment: [], // Replies to replies (nested replies)
         };
-        // console.log("onjjjj:", newReplyObj)
 
-        const updatedDemoDiscussions = demoDiscussions.map((discussionItem) => {
-          if (discussionItem.DiscussionID === id) {
-            const updatedComments = discussionItem.comment.map((comment, index) => {
-              if (index === commentIndex) {
-                return {
-                  ...comment,
-                  comment: [...comment.comment, newReplyObj], // Add new reply to the comment's replies
-                };
-              }
-              return comment;
-            });
-
-            return {
-              ...discussionItem,
-              comment: updatedComments,
-            };
-          }
-          return discussionItem;
+        // Update the state with the new reply
+        setDemoDiscussions((prevDiscussions) => {
+          return prevDiscussions.map((discussionItem) => {
+            if (discussionItem.DiscussionID === id) {
+              return {
+                ...discussionItem,
+                comment: discussionItem.comment.map((comment, index) => {
+                  if (index === commentIndex) {
+                    return {
+                      ...comment,
+                      comment: [...comment.comment, newReplyObj], // Append reply
+                    };
+                  }
+                  return comment;
+                }),
+              };
+            }
+            return discussionItem;
+          });
         });
 
-        setDemoDiscussions(updatedDemoDiscussions);
-        setReplyTexts((prevState) => ({
-          ...prevState,
+        // Ensure the discussion prop is updated (if necessary)
+        discussion.comment[commentIndex].comment.push(newReplyObj);
+
+        setReplyTexts((prev) => ({
+          ...prev,
           [commentIndex]: "",
         }));
+
         setLoading(false);
         toast.success("Reply posted successfully", {
           position: "top-center",
@@ -249,7 +169,9 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 transition-opacity duration-300 flex justify-center items-center">
           {/* Modal */}
           <div
-            className={`w-[calc(100%-1rem)] h-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] sm:h-[calc(100%-2rem)] lg:w-[calc(100%-4rem)] lg:h-[calc(100%-4rem)] xl:w-[calc(100%-6rem)] xl:h-[calc(100%-6rem)] bg-DGXwhite transition-transform shadow-lg transform ${isOpen ? "translate-y-0" : "translate-y-full"} z-50 flex flex-col overflow-auto`}
+            className={`w-[calc(100%-1rem)] h-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] sm:h-[calc(100%-2rem)] lg:w-[calc(100%-4rem)] lg:h-[calc(100%-4rem)] xl:w-[calc(100%-6rem)] xl:h-[calc(100%-6rem)] bg-DGXwhite transition-transform shadow-lg transform ${
+              isOpen ? "translate-y-0" : "translate-y-full"
+            } z-50 flex flex-col overflow-auto`}
           >
             <div className="px-2 sm:px-5 w-full flex flex-col flex-grow overflow-auto">
               <div className="flex justify-between">
@@ -264,11 +186,14 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                     <div className="flex flex-col">
                       <span>{discussion.UserName}</span>
                       <span>
-                        {new Date(discussion.timestamp).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
+                        {new Date(discussion.timestamp).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
                       </span>
                     </div>
                   </div>
@@ -312,16 +237,20 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                   {/* Tags */}
                   {discussion.Tag && (
                     <div className="mb-2 sm:mb-4">
-                      <h3 className="text-md sm:text-lg font-semibold">Tags:</h3>
+                      <h3 className="text-md sm:text-lg font-semibold">
+                        Tags:
+                      </h3>
                       <ul className="flex flex-wrap mt-1 sm:mt-2">
-                        {discussion.Tag.split(',').filter(tag => tag).map((tag, index) => (
-                          <li
-                            key={index}
-                            className="bg-DGXblue text-DGXwhite py-1 px-2 rounded-full text-xs sm:text-sm mr-2 mb-2"
-                          >
-                            {tag}
-                          </li>
-                        ))}
+                        {discussion.Tag.split(",")
+                          .filter((tag) => tag)
+                          .map((tag, index) => (
+                            <li
+                              key={index}
+                              className="bg-DGXblue text-DGXwhite py-1 px-2 rounded-full text-xs sm:text-sm mr-2 mb-2"
+                            >
+                              {tag}
+                            </li>
+                          ))}
                       </ul>
                     </div>
                   )}
@@ -329,20 +258,24 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                   {/* Links */}
                   {discussion.ResourceUrl && (
                     <div>
-                      <h3 className="text-md sm:text-lg font-semibold">Links:</h3>
+                      <h3 className="text-md sm:text-lg font-semibold">
+                        Links:
+                      </h3>
                       <ul className="list-disc list-inside">
-                        {discussion.ResourceUrl.split(',').filter(link => link).map((link, index) => (
-                          <li key={index}>
-                            <a
-                              href={link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-DGXblue"
-                            >
-                              {link}
-                            </a>
-                          </li>
-                        ))}
+                        {discussion.ResourceUrl.split(",")
+                          .filter((link) => link)
+                          .map((link, index) => (
+                            <li key={index}>
+                              <a
+                                href={link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-DGXblue"
+                              >
+                                {link}
+                              </a>
+                            </li>
+                          ))}
                       </ul>
                     </div>
                   )}
@@ -359,13 +292,7 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                       placeholder="Add a comment..."
                     />
                     <button
-                      onClick={() => {
-                        if (newComment.trim() === "") {
-                          alert("Comment cannot be empty!");
-                          return;
-                        }
-                        handleAddComment(discussion.DiscussionID);
-                      }}
+                      onClick={() => handleAddComment(discussion.DiscussionID)}
                       className="flex-shrink-0 w-2/5 lg:w-1/5 bg-DGXgreen hover:bg-DGXblue rounded xs:text-sm md:text-base text-white text-xl p-2"
                     >
                       Add Comment
@@ -377,16 +304,28 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                   </h2>
                   <ul className="space-y-4 overflow-auto flex-grow">
                     {discussion.comment.map((comment, index) => (
-                      <li key={index} className="p-2 sm:p-4 rounded-lg space-y-2">
+                      <li
+                        key={index}
+                        className="p-2 sm:p-4 rounded-lg space-y-2"
+                      >
                         <div className="flex items-center justify-between">
-                          <span className="text-md sm:text-lg font-semibold">{comment.UserName}</span>
-                          <span className="text-xs sm:text-sm text-gray-500">{new Date(discussion.timestamp).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}</span>
+                          <span className="text-md sm:text-lg font-semibold">
+                            {comment.UserName}
+                          </span>
+                          <span className="text-xs sm:text-sm text-gray-500">
+                            {new Date(discussion.timestamp).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              }
+                            )}
+                          </span>
                         </div>
-                        <div className="text-md sm:text-lg">{comment.Comment}</div>
+                        <div className="text-md sm:text-lg">
+                          {comment.Comment}
+                        </div>
                         {/* <div className="flex items-center gap-2">
                           {comment.userLike == 1 ? <AiFillLike /> : <AiOutlineLike />}
                           <span>{comment.likeCount}</span>
@@ -396,12 +335,23 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                         <div>
                           {comment.comment &&
                             comment.comment.map((reply, replyIndex) => (
-                              <div key={replyIndex} className="ml-4 p-2 sm:p-4 border-l border-gray-200">
+                              <div
+                                key={replyIndex}
+                                className="ml-4 p-2 sm:p-4 border-l border-gray-200"
+                              >
                                 <div className="flex items-center justify-between">
-                                  <span className="text-md sm:text-lg font-semibold">{reply.UserName}</span>
-                                  <span className="text-xs sm:text-sm text-gray-500">{new Date(comment.timestamp).toLocaleDateString('en-GB')}</span>
+                                  <span className="text-md sm:text-lg font-semibold">
+                                    {reply.UserName}
+                                  </span>
+                                  <span className="text-xs sm:text-sm text-gray-500">
+                                    {new Date(
+                                      comment.timestamp
+                                    ).toLocaleDateString("en-GB")}
+                                  </span>
                                 </div>
-                                <div className="text-md sm:text-lg">{reply.Comment}</div>
+                                <div className="text-md sm:text-lg">
+                                  {reply.Comment}
+                                </div>
                                 {/* <div className="flex items-center gap-2">
                                   {reply.userLike == 1 ? <AiFillLike /> : <AiOutlineLike />}
                                   <span>{reply.likeCount}</span>
@@ -415,40 +365,38 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                           <textarea
                             rows={1}
                             value={replyTexts[index] || ""}
-                            onChange={(e) => handleReplyTextChange(index, e.target.value)}
+                            onChange={(e) =>
+                              handleReplyTextChange(index, e.target.value)
+                            }
                             className="w-2/3 sm:w-2/3  md:w-auto rounded border-2 border-DGXblue p-2 xl:w-full"
                             placeholder="Reply to this comment..."
                           />
                           <button
-                            onClick={() => {
-                              if (!replyTexts[index] || replyTexts[index].trim() === "") {
-                                alert("Reply cannot be empty!");
-                                return;
-                              }
-                              handleAddReply(index, replyTexts[index], comment.DiscussionID);
-                            }}
+                            onClick={() =>
+                              handleAddReply(
+                                index,
+                                replyTexts[index],
+                                comment.DiscussionID
+                              )
+                            }
                             className="w-1/3 sm:w-1/3 md:w-auto my-2 bg-DGXgreen hover:bg-DGXblue rounded text-white text-xl p-2 xs:text-sm"
                           >
                             Add Reply
                           </button>
                         </div>
-
                       </li>
                     ))}
                   </ul>
-
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
-
     </div>
-
   );
-
 };
 
-
 export default DiscussionModal;
+
+
