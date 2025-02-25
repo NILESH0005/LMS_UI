@@ -10,15 +10,15 @@ const AdminUsers = () => {
   const [error, setError] = useState(null);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [modalAction, setModalAction] = useState("");
+  const [modalAction, setModalAction] = useState('');
 
   const [newUser, setNewUser] = useState({
-    Name: "",
-    EmailId: "",
-    CollegeName: "",
-    Designation: "",
-    MobileNumber: "",
-    Category: "",
+    Name: '',
+    EmailId: '',
+    CollegeName: '',
+    Designation: '',
+    MobileNumber: '',
+    Category: '',
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -88,8 +88,7 @@ const AdminUsers = () => {
     if (!newUser.EmailId) errors.EmailId = "Email is required";
     if (!newUser.CollegeName) errors.CollegeName = "College name is required";
     if (!newUser.Designation) errors.Designation = "Designation is required";
-    if (!newUser.MobileNumber || !/^\d{10}$/.test(newUser.MobileNumber))
-      errors.MobileNumber = "Enter a valid 10-digit mobile number";
+    if (!newUser.MobileNumber || !/^\d{10}$/.test(newUser.MobileNumber)) errors.MobileNumber = "Enter a valid 10-digit mobile number";
     if (!newUser.Category) errors.Category = "Category is required";
 
     setFormErrors(errors);
@@ -199,9 +198,7 @@ const AdminUsers = () => {
       <table className="w-full text-sm text-left rtl:text-right text-gray-500">
         <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white">
           Admin - Manage Users
-          <p className="mt-1 text-sm font-normal text-gray-500">
-            Browse and manage DGX community users.
-          </p>
+          <p className="mt-1 text-sm font-normal text-gray-500">Browse and manage DGX community users.</p>
         </caption>
         <thead className="text-xs text-gray-700 uppercase bg-DGXgreen text-white">
           <tr>
@@ -245,119 +242,74 @@ const AdminUsers = () => {
             <h3 className="text-xl font-semibold mb-4">Add New User</h3>
             <form>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Name</label>
                 <input
                   type="text"
                   name="Name"
                   value={newUser.Name}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${
-                    formErrors.Name ? "border-red-500" : ""
-                  }`}
-                />
-                {formErrors.Name && (
-                  <p className="text-red-500 text-sm">{formErrors.Name}</p>
-                )}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${formErrors.Name ? 'border-red-500' : ''}`}/>
+                {formErrors.Name && <p className="text-red-500 text-sm">{formErrors.Name}</p>}
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Email
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
                 <input
                   type="email"
                   name="EmailId"
                   value={newUser.EmailId}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${
-                    formErrors.EmailId ? "border-red-500" : ""
-                  }`}
-                />
-                {formErrors.EmailId && (
-                  <p className="text-red-500 text-sm">{formErrors.EmailId}</p>
-                )}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${formErrors.EmailId ? 'border-red-500' : ''}`}/>
+                {formErrors.EmailId && <p className="text-red-500 text-sm">{formErrors.EmailId}</p>}
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  College Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700">College Name</label>
                 <input
                   type="text"
                   name="CollegeName"
                   value={newUser.CollegeName}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${
-                    formErrors.CollegeName ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${formErrors.CollegeName ? 'border-red-500' : ''}`}
                 />
-                {formErrors.CollegeName && (
-                  <p className="text-red-500 text-sm">
-                    {formErrors.CollegeName}
-                  </p>
-                )}
+                {formErrors.CollegeName && <p className="text-red-500 text-sm">{formErrors.CollegeName}</p>}
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Designation
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Designation</label>
                 <input
                   type="text"
                   name="Designation"
                   value={newUser.Designation}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${
-                    formErrors.Designation ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${formErrors.Designation ? 'border-red-500' : ''}`}
                 />
-                {formErrors.Designation && (
-                  <p className="text-red-500 text-sm">
-                    {formErrors.Designation}
-                  </p>
-                )}
+                {formErrors.Designation && <p className="text-red-500 text-sm">{formErrors.Designation}</p>}
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Mobile Number
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Mobile Number</label>
                 <input
                   type="text"
                   name="MobileNumber"
                   value={newUser.MobileNumber}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${
-                    formErrors.MobileNumber ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${formErrors.MobileNumber ? 'border-red-500' : ''}`}
                 />
-                {formErrors.MobileNumber && (
-                  <p className="text-red-500 text-sm">
-                    {formErrors.MobileNumber}
-                  </p>
-                )}
+                {formErrors.MobileNumber && <p className="text-red-500 text-sm">{formErrors.MobileNumber}</p>}
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Category
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Category</label>
                 <input
                   type="text"
                   name="Category"
                   value={newUser.Category}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${
-                    formErrors.Category ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-md ${formErrors.Category ? 'border-red-500' : ''}`}
                 />
-                {formErrors.Category && (
-                  <p className="text-red-500 text-sm">{formErrors.Category}</p>
-                )}
+                {formErrors.Category && <p className="text-red-500 text-sm">{formErrors.Category}</p>}
               </div>
-
               <div className="flex justify-between">
                 <button
                   type="button"
@@ -375,6 +327,30 @@ const AdminUsers = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirmationModal && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <h3 className="text-xl font-semibold mb-4">Are you sure?</h3>
+            <p>Do you want to {modalAction === 'submit' ? 'submit' : 'cancel'} the form?</p>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={modalAction === 'submit' ? confirmSubmit : confirmCancel}
+                className="px-4 py-2 bg-DGXblue text-white rounded-md"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setShowConfirmationModal(false)}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md"
+              >
+                No
+              </button>
+            </div>
           </div>
         </div>
       )}

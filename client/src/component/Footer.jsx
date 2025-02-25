@@ -3,7 +3,7 @@ import images from '../../public/images';
 
 const Footer = () => {
   return (
-      <footer className="bg-DGXblue text-DGXwhite py-10 ">
+    <footer className="bg-DGXblue text-DGXwhite py-10">
       <div className="container mx-auto px-4 lg:px-8 flex flex-col lg:flex-row justify-between">
         {/* Left Section - Logo and Description */}
         <div className="lg:w-1/4 mb-6 lg:mb-0">
@@ -12,10 +12,18 @@ const Footer = () => {
           </a>
          
           <div className="flex space-x-4 mt-4">
-            <a href="#" className="text-DGXwhite"><i className="fab fa-facebook"></i></a>
-            <a href="#" className="text-DGXwhite"><i className="fab fa-twitter"></i></a>
-            <a href="#" className="text-DGXwhite"><i className="fab fa-instagram"></i></a>
-            <a href="#" className="text-DGXwhite"><i className="fab fa-linkedin"></i></a>
+            <a href="#" className="text-DGXwhite hover:text-DGXgray transition duration-300">
+              <i className="fab fa-facebook"></i>
+            </a>
+            <a href="#" className="text-DGXwhite hover:text-DGXgray transition duration-300">
+              <i className="fab fa-twitter"></i>
+            </a>
+            <a href="#" className="text-DGXwhite hover:text-DGXgray transition duration-300">
+              <i className="fab fa-linkedin"></i>
+            </a>
+            <a href="#" className="text-DGXwhite hover:text-DGXgray transition duration-300">
+              <i className="fab fa-youtube"></i>
+            </a>
           </div>
         </div>
 
@@ -71,11 +79,16 @@ const Footer = () => {
       {/* Footer Bottom Section */}
       <div className="border-t border-gray-700 mt-10 pt-4 text-center text-sm">
         <p>
-          <a href="#" className="hover:underline">Privacy Policy</a> | 
-          <a href="#" className="hover:underline"> Legal Notice</a> | 
-          <a href="#" className="hover:underline"> Terms of Service</a>
+          <a href="#" className="hover:underline"> Community Guideline </a> | 
+          <a href="#" className="hover:underline"> Manage My Privacy </a> | 
+          <a href="#" className="hover:underline"> Do Not Sell or Share Our Data </a> | 
+          <a href="#" className="hover:underline"> Legal </a> | 
+          <a href="#" className="hover:underline"> Accessibility </a> | 
+          <a href="#" className="hover:underline"> Corporate Policies </a> | 
+          <a href="#" className="hover:underline"> Product Security </a> | 
+          <a href="#" className="hover:underline"> Contact </a>
         </p>
-        <p className="mt-2">© 2025 Global Infoventures Pvt. Ltd. All rights reserved.</p>
+        <p className="mt-2">Copyright © 2024 Global Infoventures Pvt. Ltd. All rights reserved.</p>
       </div>
     </footer>
   );

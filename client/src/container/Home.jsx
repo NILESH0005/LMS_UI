@@ -9,8 +9,7 @@ import CommunityHighlights from '../component/CommunityHighlights';
 
 const Home = () => {
     return (
-        <div className="min-h-screen overflow-x-hidden bg-gradient-to-b from-purple-900 to-blue-500">
-           
+        <div className="min-h-screen overflow-x-hidden bg-gradient-to-b from-black to-blue-500">
             <ParallaxSection />
             <ContentSection />
             <NewsSection/>

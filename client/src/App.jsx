@@ -39,6 +39,7 @@ import NewsSection from './component/NewsSection.jsx';
 import ProjectShowcase from './component/ProjectShowcase.jsx';
 import CommunityHighlights from './component/CommunityHighlights.jsx';
 import AddUserEvent from './component/AddUserEvent.jsx';
+import QuizInterface from './component/QuizInterface.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -88,6 +89,10 @@ function App() {
             <Route path='/NewsSection' element={<NewsSection />} />
             <Route path='/ProjectShowcase' element={<ProjectShowcase />} /> 
             <Route path='/CommunityHighlights' element={<CommunityHighlights />} />
+
+            {/* Added Quiz in Navbar */}
+            <Route path='/QuizInterface' element={<QuizInterface />} />
+           {/* <Route path='/CreateQuiz' element={<CreateQuiz />} />  */}
 
                      
 

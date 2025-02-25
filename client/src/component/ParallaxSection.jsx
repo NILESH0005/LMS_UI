@@ -21,13 +21,13 @@ const ParallaxSection = () => {
     return (
         <section className="relative w-full h-screen flex justify-center items-center overflow-hidden">
             <img src="stars.png" id="circuit_board" alt="Circuit Board" className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none" />
-            <img src="moon.png" id="ai_chip" alt="AI Chip" className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none" />
-            <img src="mountains_behind.png" id="data_center" alt="Data Center" className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none" />
+            {/* <img src="\.png" id="ai_chip" alt="AI Chip" className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none" />
+            <img src="\.png" id="data_center" alt="Data Center" className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none" /> */}
             <h2 id="text" className="absolute text-white text-8xl whitespace-nowrap z-10">Innovate. Collaborate. Transform.</h2>
             <a href="/VerifyEmail" id="btn" className="absolute bg-white text-purple-900 px-8 py-4 rounded-full text-xl z-10 transform translate-y-24">
              Join Us
             </a>
-            <img src="mountains_front.png" id="tech_wave" alt="Tech Wave" className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none" />
+            <img src="bg0.png" id="tech_wave" alt="Tech Wave" className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none" />
         </section>
     );
 };

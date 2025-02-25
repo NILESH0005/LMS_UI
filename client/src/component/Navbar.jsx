@@ -47,7 +47,8 @@ const Navbar = () => {
         { label: 'Event and Workshop', to: '/EventWorkshopPage', icon: faCalendar },
         { label: 'Blog', to: '/Blog', icon: faBlog },
         { label: 'Contact Us', to: '/ContactUs', icon: faEnvelope },
-        { label: 'Community Guidelines', to: '/CommunityGuidelines', icon: faBook }
+        { label: 'Community Guidelines', to: '/CommunityGuidelines', icon: faBook },
+        { label: 'Quiz', to: '/QuizInterface', icon: faBook }, 
     ];
 
 

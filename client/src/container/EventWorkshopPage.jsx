@@ -120,22 +120,31 @@ const EventWorkshopPage = () => {
   };
 
   const handleShare = async (event) => {
+    const shareData = {
+      title: event.EventTitle,
+      text: `Check out this event: ${event.EventTitle}`,
+      url: window.location.href, 
+    };
+  
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: event.EventTitle,
-          text: `Check out this event: ${event.EventTitle}`,
-          url: window.location.href, 
-        });
-        alert("Event shared successfully!");
+        await navigator.share(shareData);
+     
       } catch (error) {
         console.error("Error sharing event:", error);
+      }
+    } else if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(`${shareData.text} - ${shareData.url}`);
+        alert("Link copied to clipboard!");
+      } catch (error) {
+        console.error("Error copying link to clipboard:", error);
       }
     } else {
       alert("Sharing is not supported on this browser.");
     }
   };
-
+  
 
   const handleViewDetails = (event) => {
     setSelectedEvent(event);
@@ -214,11 +223,12 @@ const EventWorkshopPage = () => {
                     View Details
                   </button>
                   <button
-                    onClick={() => handleShare(event)}
-                    className="px-4 sm:px-6 py-2 bg-DGXgreen hover:bg-green-600 text-DGXwhite rounded-md transition flex items-center justify-center"
-                  >
-                    <FontAwesomeIcon icon={faShare} />
-                  </button>
+      onClick={handleShare}
+      className="px-4 sm:px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition flex items-center justify-center"
+    >
+      <FontAwesomeIcon icon={faShare} className="mr-2" />
+      Share
+    </button>
                 </div>
               </div>
             ))
