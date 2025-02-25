@@ -11,7 +11,7 @@ import BlogModal from "../component/BlogModal";
 
 
 const BlogPage = () => {
-    const { fetchData } = useContext(ApiContext);
+    const { fetchData, userToken } = useContext(ApiContext);
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
@@ -20,6 +20,8 @@ const BlogPage = () => {
     const [showAll, setShowAll] = useState(false);
     const [selectedBlog, setSelectedBlog] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [categories, setCategories] = useState([]);
+
     useEffect(() => {
         try {
             const fetchBlogs = () => {
@@ -67,7 +69,8 @@ const BlogPage = () => {
 
     }, [fetchData]);
 
-    const allCategories = [...new Set(blogs.map(blog => blog.category))];
+    // const allCategories = [...new Set(blogs.map(blog => blog.category))];
+    // console.log("Categories", allCategories);
 
     const handleCategorySelect = (category) => {
         setSelectedCategory(category);
@@ -84,22 +87,76 @@ const BlogPage = () => {
         setSelectedBlog(null);
     };
 
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const endpoint = `dropdown/getDropdownValues?category=blogCategory`;
+            const method = "GET";
+            const headers = {
+                "Content-Type": "application/json",
+                "auth-token": userToken, // Ensure userToken is defined
+            };
+
+            try {
+                const data = await fetchData(endpoint, method, headers);
+                console.log("Fetched blog categories:", data);
+                if (data.success) {
+                    setCategories(data.data); // Update the state with fetched categories
+                } else {
+                    Swal.fire("Error", "Failed to fetch categories.", "error");
+                }
+            } catch (error) {
+                console.error("Error fetching blog categories:", error);
+                Swal.fire("Error", "Error fetching categories.", "error");
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+
     const Blog = ({ blog }) => {
-        const { title, image, author, published_date } = blog || {};
+        const { title, image, author, publishedDate } = blog || {};
         return (
-            <div className="shadow-md shadow-gray-500 relative cursor-pointer" onClick={() => openModal(blog)}>
-                <div>
-                    <img className="w-full rounded" src={image} alt={title} />
+            <div
+                className="shadow-lg shadow-gray-400 bg-white rounded-lg overflow-hidden transition-transform transform hover:scale-105 cursor-pointer"
+                onClick={() => openModal(blog)}
+            >
+                {/* Image Container */}
+                <div className="w-full h-64 bg-gray-200">
+                    <img
+                        className="w-full h-full object-cover"
+                        src={image}
+                        alt={title}
+                    />
                 </div>
-                <div className="pb-10 px-5">
-                    <h3 className="mt-4 mb-2 font-bold hover:text-blue-600">{title}</h3>
-                    <p className="mb-2 flex items-center gap-2 text-gray-500">
-                        <TbUserSquareRounded className="text-black text-3xl" />
-                        {author}
+
+                {/* Content Container */}
+                <div className="p-5">
+                    <h3 className="text-lg font-bold text-gray-900 hover:text-blue-600 transition-colors">
+                        {title}
+                    </h3>
+
+                    {/* Author Section */}
+                    <p className="mt-2 flex items-center gap-2 text-gray-500">
+                        <TbUserSquareRounded className="text-gray-700 text-xl" />
+                        <span className="text-sm">{author}</span>
                     </p>
-                    <p className="text-sm text-gray-500 translate-x-6">Published: {published_date}</p>
+
+                    {/* Publish Date */}
+                    <p className="text-xs text-gray-500 mt-1">
+                        Published: {new Date(publishedDate).toLocaleString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            // hour: "2-digit",
+                            // minute: "2-digit",
+                            // hour12: true,
+                        })}
+                    </p>
                 </div>
             </div>
+
         );
     };
 
@@ -108,19 +165,14 @@ const BlogPage = () => {
             <BlogImage />
             <div className="flex justify-center items-center flex-wrap gap-3">
                 <div className=" flex items-center justify-center flex-wrap p-4 space-x-2 space-y-2" >
-                    <button
-                        className={`flex items-center justify-center px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 text-sm h-8 font-semibold ${selectedCategory === null ? 'bg-DGXgreen text-black' : 'bg-DGXblue text-white'} rounded-full transition-colors duration-300 ease-in-out hover:bg-DGXgreen hover:text-white`}
-                        onClick={() => handleCategorySelect(null)}
-                    >
-                        All
-                    </button>
-                    {allCategories.map((category, index) => (
+
+                    {categories.map((category, index) => (
                         <button
                             key={index}
-                            className={`flex items-center justify-center px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 h-8 text-sm font-semibold ${selectedCategory === category ? 'bg-DGXgreen text-black' : 'bg-DGXblue text-white'} rounded-full transition-colors duration-300 ease-in-out hover:bg-DGXgreen hover:text-white`}
-                            onClick={() => handleCategorySelect(category)}
+                            className={`flex items-center justify-center px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 h-8 text-sm font-semibold ${selectedCategory === category.ddValue ? 'bg-DGXgreen text-black' : 'bg-DGXblue text-white'} rounded-full transition-colors duration-300 ease-in-out hover:bg-DGXgreen hover:text-white`}
+                            onClick={() => handleCategorySelect(category.ddValue)}
                         >
-                            {category}
+                            {category.ddValue}
                         </button>
                     ))}
                 </div>

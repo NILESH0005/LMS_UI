@@ -16,7 +16,7 @@ import Cookies from 'js-cookie';
 import ApiContext from '../context/ApiContext.jsx';
 import { ToastContainer, toast, } from "react-toastify";
 import { LiaBlogSolid } from "react-icons/lia";
-
+import LoadPage from './LoadPage.jsx';
 import EditProfileModal from './EditProfileModal';
 import DiscussionModal from './discussion/DiscussionModal.jsx';
 import AddUserEvent from './AddUserEvent.jsx';
@@ -25,7 +25,7 @@ import AddUserBlog from './AddUserBlog.jsx';
 const UserProfile = () => {
 
   const [showEmailInput, setShowEmailInput] = useState(false);
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState('posts');
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -35,7 +35,12 @@ const UserProfile = () => {
   const navigate = useNavigate()
   const [backgroundImage, setBackgroundImage] = useState(images.NvidiaBackground);
   const [userDisscussions, setUserDisscussion] = useState([])
-  // Handle image upload
+  
+  const stripHtmlTags = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -86,28 +91,18 @@ const UserProfile = () => {
         const data = await fetchData(endpoint, method, body, headers);
         if (!data.success) {
           setLoading(false)
-          toast.error(`Error in send invite: ${data.message}`, {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: `Error in sending invite: ${data.message}`,
           });
         } else if (data.success) {
           setLoading(false)
 
-          toast.success("Invite send successfully ", {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Invite sent successfully!',
           });
         }
       } catch (error) {
@@ -194,7 +189,7 @@ const UserProfile = () => {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete it!',
     });
-  
+
     if (result.isConfirmed) {
       try {
         const endpoint = "discussion/deleteDiscussion";
@@ -204,7 +199,7 @@ const UserProfile = () => {
           'auth-token': userToken
         };
         const body = { discussionId: discussion.DiscussionID }; // Ensure the correct field name
-  
+
         const response = await fetchData(endpoint, method, body, headers);
         if (response && response.success) {
           Swal.fire({
@@ -212,12 +207,12 @@ const UserProfile = () => {
             title: 'Deleted!',
             text: 'The discussion has been deleted.',
           });
-  
+
           // Remove the deleted discussion from the local state
-          setUserDisscussion(prevDiscussions => 
+          setUserDisscussion(prevDiscussions =>
             prevDiscussions.filter(d => d.DiscussionID !== discussion.DiscussionID)
           );
-  
+
         } else {
           throw new Error("Failed to delete the discussion.");
         }
@@ -234,7 +229,7 @@ const UserProfile = () => {
 
   return (
 
-    !isLoggedIn ? <h1>login?</h1> : loading ? <h1>loading....</h1> :
+    !isLoggedIn ? <h1>login?</h1> : loading ? <LoadPage/> :
       <div className="bg-DGXwhite p-2 md:p-8">
         <ToastContainer />
         {modalIsOpen && selectedDiscussion && (
@@ -292,10 +287,10 @@ const UserProfile = () => {
               <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
                 <div className="flex-1 bg-DGXwhite rounded-lg shadow-xl p-8 border border-DGXgreen">
                   <ul>
-                    <div className={`flex items-center p-6 cursor-pointer ${activeTab === 'profile' ? 'bg-DGXgreen/40' : ''}`} onClick={() => setActiveTab('profile')}>
+                    {/* <div className={`flex items-center p-6 cursor-pointer ${activeTab === 'profile' ? 'bg-DGXgreen/40' : ''}`} onClick={() => setActiveTab('profile')}>
                       <CgProfile className='mr-4 text-2xl' />
                       <li className={`text-lg ${activeTab === 'profile' ? 'text-DGXblue font-bold' : ''}`}>My Profile</li>
-                    </div>
+                    </div> */}
                     <div className={`flex items-center p-6 cursor-pointer ${activeTab === 'posts' ? 'bg-DGXgreen/40' : ''}`} onClick={() => setActiveTab('posts')}>
                       <GoCommentDiscussion className='mr-4 text-2xl' />
                       <li className={`text-lg ${activeTab === 'posts' ? 'text-DGXblue font-bold' : ''}`}>My Discussions</li>
@@ -383,18 +378,10 @@ const UserProfile = () => {
             </div>
           </div>
           <div className="w-full lg:w-3/4 bg-DGXwhite rounded-lg shadow-xl md:p-4 md:border border-DGXgreen mx-auto">
-            {activeTab === 'profile' && (
+            {/* {activeTab === 'profile' && (
               <div className="flex flex-col w-full 2xl:w-3/3 ">
                 <div className="flex bg-DGXwhite rounded-lg shadow-xl p-2 md:p-4 border border-DGXgreen ">
-                  {/* <div className="flex-1">
-                      <h4 className="text-xl text-[#111827] font-bold">About</h4>
-                      <p className="mt-2 text-DGXgray">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt voluptates obcaecati numquam error et ut fugiat asperiores. Sunt nulla ad incidunt laboriosam, laudantium est unde natus cum numquam, neque facere. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, magni odio magnam commodi sunt ipsum eum! Voluptas eveniet aperiam at maxime, iste id dicta autem odio laudantium eligendi commodi distinctio!</p>
-                    </div> */}
-                  {/* <div className="flex items-end mt-4">
-                      <h1>Comming Soon.......</h1>
-                      <span className="badge">Achievements</span>
-                      <span className="badge">Badge 2</span>
-                    </div> */}
+                  
                 </div>
                 <div className="flex-1/2 bg-DGXwhite rounded-lg shadow-xl mt-4 p-2 md:p-8 border border-DGXgreen">
                   <h4 className="text-xl text-[#111827] font-bold">Statistics</h4>
@@ -471,7 +458,7 @@ const UserProfile = () => {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
             {activeTab === 'posts' && (
               <div>
                 <div className='post_bar pt-4 flex flex-col space-y-6'>
@@ -487,7 +474,7 @@ const UserProfile = () => {
                           </div>
                           <div className="w-full md:w-3/4 flex flex-col justify-between p-4 leading-normal">
                             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{discussion.Title}</h5>
-                            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{discussion.Content}</p>
+                            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{stripHtmlTags(discussion.Content)}</p>
                             <div className="flex justify-between items-center">
                               <span className="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
                                 onClick={() => handleClickDiscussion(discussion)}>

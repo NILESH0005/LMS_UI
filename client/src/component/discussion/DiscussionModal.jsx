@@ -4,15 +4,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ApiContext from "../../context/ApiContext.jsx";
 import images from "../../../public/images.js";
-const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
-  const [dissComments, setDissComments] = useState([]);
-  const [demoDiscussions, setDemoDiscussions] = useState([]);
 
+const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
+  const [dissComments, setDissComments] = useState(discussion.comment || []); // Initialize with discussion comments
   const [newComment, setNewComment] = useState("");
   const [replyTexts, setReplyTexts] = useState({});
-
   const { fetchData, userToken, user } = useContext(ApiContext);
-
   const [loading, setLoading] = useState(false);
 
   const handleAddComment = async (id) => {
@@ -25,8 +22,8 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
       const endpoint = "discussion/discussionpost"; // Ensure this is the correct API
       const method = "POST";
       const headers = {
-        "Content-Type": "application/json",
-        "auth-token": userToken,
+        'Content-Type': 'application/json',
+        'auth-token': userToken,
       };
       const body = { reference: id, comment: newComment };
 
@@ -41,20 +38,20 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
           return;
         }
 
+        // Create a new comment object
         const newCommentObj = {
           UserID: user.UserID,
           UserName: user.Name,
-          DiscussionID: id,
-          timestamp: new Date().toLocaleString(),
+          DiscussionID: data.postId,
+          timestamp: new Date().toISOString(),
           Comment: newComment,
-          comment: [],
+          comment: [], // Initialize with no replies
           likeCount: 0,
           UserLike: 0,
         };
 
-        // Update the discussion's comments directly
+        // Update the state immediately
         setDissComments((prev) => [newCommentObj, ...prev]);
-        discussion.comment = [newCommentObj, ...discussion.comment]; // Update discussion prop reference
 
         setNewComment("");
         setLoading(false);
@@ -105,6 +102,7 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
           return;
         }
 
+        // Create a new reply object
         const newReplyObj = {
           Comment: replyText,
           DiscussionID: id,
@@ -116,32 +114,18 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
           comment: [], // Replies to replies (nested replies)
         };
 
-        // Update the state with the new reply
-        setDemoDiscussions((prevDiscussions) => {
-          return prevDiscussions.map((discussionItem) => {
-            if (discussionItem.DiscussionID === id) {
-              return {
-                ...discussionItem,
-                comment: discussionItem.comment.map((comment, index) => {
-                  if (index === commentIndex) {
-                    return {
-                      ...comment,
-                      comment: [...comment.comment, newReplyObj], // Append reply
-                    };
-                  }
-                  return comment;
-                }),
-              };
-            }
-            return discussionItem;
-          });
+        // Update the state immediately
+        setDissComments((prev) => {
+          const updatedComments = [...prev];
+          updatedComments[commentIndex].comment = [
+            ...updatedComments[commentIndex].comment,
+            newReplyObj,
+          ];
+          return updatedComments;
         });
 
-        // Ensure the discussion prop is updated (if necessary)
-        discussion.comment[commentIndex].comment.push(newReplyObj);
-
-        setReplyTexts((prev) => ({
-          ...prev,
+        setReplyTexts((prevState) => ({
+          ...prevState,
           [commentIndex]: "",
         }));
 
@@ -303,33 +287,17 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                     Comments
                   </h2>
                   <ul className="space-y-4 overflow-auto flex-grow">
-                    {discussion.comment.map((comment, index) => (
-                      <li
-                        key={index}
-                        className="p-2 sm:p-4 rounded-lg space-y-2"
-                      >
+                    {dissComments.map((comment, index) => (
+                      <li key={index} className="p-2 sm:p-4 rounded-lg space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-md sm:text-lg font-semibold">
-                            {comment.UserName}
-                          </span>
-                          <span className="text-xs sm:text-sm text-gray-500">
-                            {new Date(discussion.timestamp).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              }
-                            )}
-                          </span>
+                          <span className="text-md sm:text-lg font-semibold">{comment.UserName}</span>
+                          <span className="text-xs sm:text-sm text-gray-500">{new Date(comment.timestamp).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}</span>
                         </div>
-                        <div className="text-md sm:text-lg">
-                          {comment.Comment}
-                        </div>
-                        {/* <div className="flex items-center gap-2">
-                          {comment.userLike == 1 ? <AiFillLike /> : <AiOutlineLike />}
-                          <span>{comment.likeCount}</span>
-                        </div> */}
+                        <div className="text-md sm:text-lg">{comment.Comment}</div>
 
                         {/* Rendering Replies */}
                         <div>
@@ -340,22 +308,10 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                                 className="ml-4 p-2 sm:p-4 border-l border-gray-200"
                               >
                                 <div className="flex items-center justify-between">
-                                  <span className="text-md sm:text-lg font-semibold">
-                                    {reply.UserName}
-                                  </span>
-                                  <span className="text-xs sm:text-sm text-gray-500">
-                                    {new Date(
-                                      comment.timestamp
-                                    ).toLocaleDateString("en-GB")}
-                                  </span>
+                                  <span className="text-md sm:text-lg font-semibold">{reply.UserName}</span>
+                                  <span className="text-xs sm:text-sm text-gray-500">{new Date(reply.timestamp).toLocaleDateString('en-GB')}</span>
                                 </div>
-                                <div className="text-md sm:text-lg">
-                                  {reply.Comment}
-                                </div>
-                                {/* <div className="flex items-center gap-2">
-                                  {reply.userLike == 1 ? <AiFillLike /> : <AiOutlineLike />}
-                                  <span>{reply.likeCount}</span>
-                                </div> */}
+                                <div className="text-md sm:text-lg">{reply.Comment}</div>
                               </div>
                             ))}
                         </div>

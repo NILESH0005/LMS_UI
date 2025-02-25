@@ -9,8 +9,6 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [modalAction, setModalAction] = useState('');
 
   const [newUser, setNewUser] = useState({
     Name: '',
@@ -59,30 +57,31 @@ const AdminUsers = () => {
   };
 
   const handleCancel = () => {
-    setModalAction('cancel');
-    setShowConfirmationModal(true);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will lose all unsaved changes!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, cancel it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setNewUser({
+          Name: '',
+          EmailId: '',
+          CollegeName: '',
+          Designation: '',
+          MobileNumber: '',
+          Category: '',
+        });
+        setFormErrors({});
+        setShowAddUserModal(false);
+      }
+    });
   };
 
   const handleSubmit = () => {
-    setModalAction('submit');
-    setShowConfirmationModal(true);
-  };
-
-  const confirmCancel = () => {
-    setNewUser({
-      Name: '',
-      EmailId: '',
-      CollegeName: '',
-      Designation: '',
-      MobileNumber: '',
-      Category: '',
-    });
-    setFormErrors({});
-    setShowAddUserModal(false);
-    setShowConfirmationModal(false);
-  };
-
-  const handleAddUser = async () => {
     const errors = {};
     if (!newUser.Name) errors.Name = "Name is required";
     if (!newUser.EmailId) errors.EmailId = "Email is required";
@@ -94,6 +93,22 @@ const AdminUsers = () => {
     setFormErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to add this user?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, add it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleAddUser();
+      }
+    });
+  };
+
+  const handleAddUser = async () => {
     const endpoint = "user/addUser";
     const method = "POST";
     const headers = {
@@ -105,17 +120,14 @@ const AdminUsers = () => {
     try {
       const result = await fetchData(endpoint, method, body, headers);
       if (result && result.success) {
-        // Show success alert
         Swal.fire({
           icon: 'success',
           title: 'Success!',
           text: 'User added successfully!',
         });
 
-        // Refetch users to update the table
         await fetchUsers();
 
-        // Close the modal and reset the form
         setShowAddUserModal(false);
         setNewUser({
           Name: '',
@@ -139,11 +151,6 @@ const AdminUsers = () => {
         text: 'Failed to add user',
       });
     }
-  };
-
-  const confirmSubmit = () => {
-    handleAddUser();
-    setShowConfirmationModal(false);
   };
 
   const handleDeleteUser = async (userId) => {
@@ -171,7 +178,7 @@ const AdminUsers = () => {
 
         if (response.success) {
           Swal.fire('Deleted!', 'User has been deleted.', 'success');
-          await fetchUsers(); // Refetch users after deletion
+          await fetchUsers();
         } else {
           Swal.fire('Error!', response.message || 'Failed to delete user', 'error');
         }
@@ -327,30 +334,6 @@ const AdminUsers = () => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Confirmation Modal */}
-      {showConfirmationModal && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-            <h3 className="text-xl font-semibold mb-4">Are you sure?</h3>
-            <p>Do you want to {modalAction === 'submit' ? 'submit' : 'cancel'} the form?</p>
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={modalAction === 'submit' ? confirmSubmit : confirmCancel}
-                className="px-4 py-2 bg-DGXblue text-white rounded-md"
-              >
-                Yes
-              </button>
-              <button
-                onClick={() => setShowConfirmationModal(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md"
-              >
-                No
-              </button>
-            </div>
           </div>
         </div>
       )}

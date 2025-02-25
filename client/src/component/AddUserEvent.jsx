@@ -22,6 +22,12 @@ const AddUserEvent = () => {
     setSelectedEvent(null);
   };
 
+  const stripHtmlTags = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
+
   useEffect(() => {
     const fetchEvents = async () => {
       const endpoint = "eventandworkshop/getEvent";
@@ -117,10 +123,10 @@ const AddUserEvent = () => {
                   <div className="flex flex-col gap-2">
                     <h3 className="text-xl font-bold text-gray-900">{event.EventTitle}</h3>
                     <p className="text-gray-600 line-clamp-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                    {event.EventDescription.split(" ").slice(0, 2).join(" ")}...  
+                      {stripHtmlTags(event.EventDescription).split(" ").slice(0, 2).join(" ")}...
                     </p>
 
-                    
+
                     <div className="flex flex-col text-gray-600 text-sm">
                       <span>📍 {event.Venue}</span>
                       <span>

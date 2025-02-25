@@ -66,7 +66,33 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
     }
   };
 
-
+  const handleConfirm = () => {
+    Swal.fire({
+      title: 'Confirmation',
+      text: `Are you sure you want to ${confirmationAction} this event?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      input: confirmationAction === 'reject' ? 'textarea' : null,
+      inputPlaceholder: 'Enter remark',
+      inputValue: remark,
+      preConfirm: (inputValue) => {
+        if (confirmationAction === 'reject' && !inputValue) {
+          Swal.showValidationMessage('Remark is required for rejection');
+        }
+        return inputValue;
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (confirmationAction === 'reject') {
+          setRemark(result.value); // Save the remark if rejecting
+        }
+        handleConfirmAction(); // Call the original function
+      }
+    });
+  };
 
   const handleConfirmation = (Status) => {
     setConfirmationAction(Status);
@@ -80,7 +106,7 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
       // Refresh the events list or close the modal
       onClose(); // Close the modal after successful Status
     } else {
-      // Display an error message (e.g., using a toast or alert)
+
       console.error(`Failed to ${confirmationAction} event.`);
     }
 

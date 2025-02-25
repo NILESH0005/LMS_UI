@@ -35,6 +35,11 @@ const Discussions = () => {
     }
   };
 
+  const stripHtmlTags = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
   useEffect(() => {
     fetchDiscussions();
   }, [fetchData]);
@@ -110,7 +115,7 @@ const Discussions = () => {
               <tr key={discussion.DiscussionID} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <td className="border px-6 py-4">{index + 1}</td>
                 <td className="border px-6 py-4">{discussion.Title}</td>
-                <td className="border px-6 py-4">{discussion.Content.substring(0, 50)}...</td>
+                <td className="border px-6 py-4">{stripHtmlTags(discussion.Content.substring(0, 50))}...</td>
                 <td className="border px-6 py-4">{discussion.likeCount}</td>
                 <td className="border px-6 py-4">{discussion.comment.length}</td>
                 <td className="border px-6 py-4 text-right">

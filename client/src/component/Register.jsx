@@ -232,7 +232,7 @@ const Register = () => {
                   className="text-DGXblack "
                   htmlFor="username"
                 >
-                  Username
+                  Name
                 </label>
                 <input
                   id="username"

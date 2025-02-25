@@ -84,7 +84,7 @@ const Discussion = () => {
             return result.data;
           } else {
             // return
-            throw new Error("Invalid data format");
+            // throw new Error("Invalid data format");
           }
         })
         .then(data => {
