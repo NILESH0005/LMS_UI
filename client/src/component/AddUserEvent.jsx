@@ -5,8 +5,6 @@ import EventForm from "../component/eventAndWorkshop/EventForm";
 import LoadPage from "./LoadPage";
 import ApiContext from "../context/ApiContext";
 import DetailsEventModal from "./eventAndWorkshop/DetailsEventModal";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const AddUserEvent = () => {
   const [showForm, setShowForm] = useState(false);
@@ -43,12 +41,12 @@ const AddUserEvent = () => {
         } else {
           console.error("Invalid data format:", result);
           setEvents([]);
-          toast.error("Failed to fetch events. Please try again later.");
+          console.error("Failed to fetch events. Please try again later.");
         }
       } catch (error) {
         console.error("Error fetching events:", error);
         setEvents([]);
-        toast.error("An error occurred while fetching events.");
+        console.error("An error occurred while fetching events.");
       } finally {
         setLoading(false);
       }
@@ -72,8 +70,7 @@ const AddUserEvent = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
-      <ToastContainer />
-      {/* Toggle Button */}
+     
       <div className="flex justify-center mb-6">
         <button
           onClick={() => setShowForm(!showForm)}

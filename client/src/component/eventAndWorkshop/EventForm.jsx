@@ -3,23 +3,17 @@ import { useState, useContext, useEffect } from "react";
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
+import Swal from 'sweetalert2';
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ApiContext from "../../context/ApiContext";
 import { compressImage } from "../../utils/compressImage.js";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 
 const EventForm = () => {
   const { user, fetchData, userToken } = useContext(ApiContext);
   const [events, setEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
-
-
-
   const [modalType, setModalType] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -72,14 +66,6 @@ const EventForm = () => {
 
 
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewEvent((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const [errors, setErrors] = useState({});
   const [newEvent, setNewEvent] = useState({
     title: "",
@@ -94,14 +80,45 @@ const EventForm = () => {
     registerLink: "",
   });
 
-  const handleCloseConfirmationModal = () => {
-    setShowCancelConfirmation(true); // Show the confirmation modal
+  const validateField = (name, value) => {
+    switch (name) {
+      case "title":
+        return value ? "" : "Event title is required.";
+      case "start":
+        return value ? "" : "Start date is required.";
+      case "end":
+        return value ? "" : "End date is required.";
+      case "categoryId":
+        return value !== "Select one" ? "" : "Please select a category.";
+      case "companyCategoryId":
+        return value !== "Select one" ? "" : "Please select a company category.";
+      case "venue":
+        return value ? "" : "Venue is required.";
+      case "description":
+        return value ? "" : "Description is required.";
+      case "host":
+        return value ? "" : "Host is required.";
+      case "registerLink":
+        return value ? "" : "Register link is required.";
+      case "poster":
+        return value ? "" : "Poster is required.";
+      default:
+        return "";
+    }
   };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewEvent((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
-  const handleAddEvent = () => {
-    resetForm(); // Clear the form
-    setModalType("add"); // Set modal type to "add"
-    setIsModalOpen(true); // Open the modal
+    // Validate the field and update errors
+    const error = validateField(name, value);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: error,
+    }));
   };
 
   useEffect(() => {
@@ -169,11 +186,11 @@ const EventForm = () => {
 
       if (errorMessage) {
         setErrors((prevErrors) => ({ ...prevErrors, poster: errorMessage }));
-        e.target.value = ""; // Reset the input field
+        e.target.value = "";
         return;
       }
 
-      setErrors((prevErrors) => ({ ...prevErrors, poster: "" })); // Clear previous errors
+      setErrors((prevErrors) => ({ ...prevErrors, poster: "" }));
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -196,7 +213,6 @@ const EventForm = () => {
     setNewEvent((prevEvent) => ({ ...prevEvent, description: value }));
   };
 
-  // Calculate font size based on the length of the description
   const calculateFontSize = (length) => {
     // Decrease font size as the text length increases
     if (length < 50) {
@@ -208,7 +224,7 @@ const EventForm = () => {
     }
   };
 
-  // Handle focus and blur of the input to display/hide the error message
+
   const handleFocus = () => {
     setIsFocused(true);
   };
@@ -217,7 +233,6 @@ const EventForm = () => {
     setIsFocused(false);
   };
 
-  // Character count below the input field
   const remainingChars = maxLength - newEvent.description.length;
 
   const handleImageChange = async (e) => {
@@ -229,13 +244,7 @@ const EventForm = () => {
       }
     }
   };
-  const formatDate = (isoString) => {
-    return moment(isoString).format("DD/MM/YYYY"); // Custom date format
-  };
 
-  const formatTime = (isoString) => {
-    return moment(isoString).format("HH:mm"); // Custom time format
-  };
 
   const handleSubmit = async () => {
     const errors = {};
@@ -327,22 +336,47 @@ const EventForm = () => {
         setEvents([...events, addedEvent]);
         resetForm();
         setIsModalOpen(false);
-        toast.success('Event added successfully!'); // Show success toast
-        console.log('Event added successfully!', data.message);
+        Swal.fire({
+          icon: 'success',
+          title: 'Event Added!',
+          text: 'Event added successfully!',
+        }); console.log('Event added successfully!', data.message);
       } else {
         console.error(`Server Error: ${data.message}`);
-        toast.error(`Error: ${data.message}`); // Show error toast
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: `Error: ${data.message}`,
+        });
       }
     } catch (error) {
       console.error('Error adding event:', error);
-      toast.error('An error occurred while adding the event. Please try again.'); // Show error toast
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'An error occurred while adding the event. Please try again.',
+      });
     }
   };
 
-  const handleCloseModal = () => {
-    resetForm();
-    setIsModalOpen(false);
+  const handleCancel = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Any unsaved changes will be lost.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, cancel!',
+      cancelButtonText: 'No, continue editing',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        resetForm(); // Reset the form
+        setIsModalOpen(false); // Close the modal
+      }
+    });
   };
+
   const resetForm = () => {
     setNewEvent({
       title: "",
@@ -402,11 +436,11 @@ const EventForm = () => {
 
   return (
     <div>
-      <div className=" inset-0 items-center justify-center">
+      <div className=" inset-0 items-center justify-center mv-4">
         <div className="bg-white rounded-lg p-5 max-w-7xl w-full max-h-[100vh]  ">
           <h2 className="text-xl font-bold mb-4">Add New Event</h2>
 
-          <div className="w-full md:max-w-5xl mx-auto bg-white shadow-lg p-4 md:p-6 rounded-lg">
+          <div className=" w-full md:max-w-5xl mx-auto bg-white shadow-lg p-4 md:p-6 rounded-lg">
             <div className="mb-2">
               <label className="block text-sm font-medium">Event Title</label>
               <input
@@ -424,7 +458,6 @@ const EventForm = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-2 mb-2">
-              {/* Start Date */}
               <div>
                 <label className="block text-sm font-medium">Start Date</label>
                 <input
@@ -555,9 +588,6 @@ const EventForm = () => {
               )}
             </div>
 
-
-
-
             <div className="mb-2 relative">
               <div className="mb-4 relative">
                 <label className="block text-sm font-medium">Event Poster</label>
@@ -590,10 +620,6 @@ const EventForm = () => {
                 )}
               </div>
             </div>
-
-
-
-
 
             <div className="mb-2 h-50">
               <label className="block text-sm font-medium">
@@ -641,22 +667,24 @@ const EventForm = () => {
                   "script",
                 ]}
               />
-
               {isFocused && errors.description && (
-                <p className="text-red-500 text-sm">{errors.description}</p>
+                <p className="text-red-500 text-sm pt-8 p-2">{errors.description}</p>
               )}
 
               <p className="text-sm text-gray-500 mt-1 pt-8 px-2">
                 {remainingChars} characters remaining
               </p>
             </div>
-            <div className="flex justify-end  ">
-              <button onClick={handleCloseConfirmationModal} className="bg-red-500 text-white p-2 rounded mr-2">Cancel</button>
+
+            <div className="flex justify-end">
               <button
-                onClick={async (events) => {
-                  await handleSubmit(events);
-                }}
-                onChange={handleAddEvent}
+                onClick={handleCancel}
+                className="bg-red-500 text-white p-2 rounded mr-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
                 className="bg-DGXgreen text-white p-2 rounded"
               >
                 Add Event
@@ -664,63 +692,6 @@ const EventForm = () => {
             </div>
           </div>
         </div>
-        {showModal && modalType === 'delete' && (
-          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-              <h3 className="text-xl font-semibold mb-4">Confirm Delete</h3>
-              <p>Are you sure you want to delete this Event?</p>
-              <div className="flex justify-between mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteUser}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        {showCancelConfirmation && (
-          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-              <h3 className="text-xl font-semibold mb-4">Confirm Cancel</h3>
-              <p>Are you sure you want to cancel? Any unsaved changes will be lost.</p>
-              <div className="flex justify-between mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowCancelConfirmation(false)} // Close the confirmation modal
-                  className="px-4 py-2 bg-DGXblue hover:bg-gray-500 text-white rounded-lg"
-                >
-                  No, Continue Editing
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    resetForm(); // Reset the form
-                    setIsModalOpen(false); // Close the add event modal
-                    setShowCancelConfirmation(false); // Close the confirmation modal
-                  }}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg"
-                >
-                  Yes, Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        <div className="container mx-auto mt-10">
-          <ToastContainer /> {/* Add this line */}
-          {/* ... rest of your JSX */}
-        </div>
-
       </div>
     </div>
   )

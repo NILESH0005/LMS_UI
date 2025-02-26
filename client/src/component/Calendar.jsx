@@ -7,8 +7,6 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ApiContext from '.././context/ApiContext';
 import { compressImage } from '../utils/compressImage.js';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import EventForm from './eventAndWorkshop/EventForm';
 // import EventDetailsModal from './EventDetailsModal'; // Import the modal component
 import DetailsEventModal from './eventAndWorkshop/DetailsEventModal.jsx';
