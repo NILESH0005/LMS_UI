@@ -19,6 +19,7 @@ const Discussions = () => {
       setLoading(true);
 
       const result = await fetchData(endpoint, method, body, headers);
+      console.log("result is ", result);
       if (result && result.data) {
         setDiscussions(result.data.updatedDiscussions || []);
       } else {
@@ -99,6 +100,7 @@ const Discussions = () => {
           <tr>
             <th scope="col" className="border px-6 py-3">#</th>
             <th scope="col" className="border px-6 py-3">Title</th>
+            <th scope="col" className="border px-6 py-3">Name</th>
             <th scope="col" className="border px-6 py-3">Content</th>
             <th scope="col" className="border px-6 py-3">Likes</th>
             <th scope="col" className="border px-6 py-3">Comments</th>
@@ -115,6 +117,7 @@ const Discussions = () => {
               <tr key={discussion.DiscussionID} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <td className="border px-6 py-4">{index + 1}</td>
                 <td className="border px-6 py-4">{discussion.Title}</td>
+                <td className="border px-6 py-4">{discussion.UserName }</td>
                 <td className="border px-6 py-4">{stripHtmlTags(discussion.Content.substring(0, 50))}...</td>
                 <td className="border px-6 py-4">{discussion.likeCount}</td>
                 <td className="border px-6 py-4">{discussion.comment.length}</td>
