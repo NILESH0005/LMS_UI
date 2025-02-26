@@ -19,7 +19,6 @@ const BlogForm = ({ setBlogs }) => {
 
   const { fetchData, userToken, user } = useContext(ApiContext);
 
-  // Fetch blog categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       const endpoint = `dropdown/getDropdownValues?category=blogCategory`;
@@ -33,7 +32,7 @@ const BlogForm = ({ setBlogs }) => {
         const data = await fetchData(endpoint, method, headers);
         console.log("Fetched blog categories:", data);
         if (data.success) {
-          setCategories(data.data); // Store fetched categories
+          setCategories(data.data);
         } else {
           Swal.fire("Error", "Failed to fetch categories.", "error");
         }

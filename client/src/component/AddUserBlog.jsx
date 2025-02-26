@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { MdAdd } from "react-icons/md";
 import { IoMdList } from "react-icons/io";
-import BlogForm from "../Admin/Components/BlogComponents/BlogForm.jsx"
-import LoadPage from "./LoadPage.jsx"
+import BlogForm from "../Admin/Components/BlogComponents/BlogForm.jsx";
+import LoadPage from "./LoadPage.jsx";
 import ApiContext from "../context/ApiContext";
-// import DetailsBlogModal from "./blog/DetailsBlogModal.jsx";
 import BlogModal from "./BlogModal.jsx";
 
 const AddUserBlog = () => {
@@ -15,11 +14,18 @@ const AddUserBlog = () => {
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = () => {
+  const stripHtmlTags = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
+  const openModal = (blog) => {
+    setSelectedBlog(blog);
     setIsModalOpen(true);
   };
+
   const closeModal = () => {
-    setIsModalOpen(false)
+    setIsModalOpen(false);
     setSelectedBlog(null);
   };
 
@@ -31,7 +37,6 @@ const AddUserBlog = () => {
 
       try {
         const result = await fetchData(endpoint, method, {}, headers);
-        console.log(result)
         if (result.success && Array.isArray(result.data)) {
           setBlogs(result.data);
         } else {
@@ -49,13 +54,7 @@ const AddUserBlog = () => {
     fetchBlogs();
   }, [fetchData]);
 
-
-
   const filteredBlogs = blogs.filter((blog) => blog.UserID === user.UserID);
-  console.log("user ID is :", user.UserID);
-  console.log("filtered blogs is ", filteredBlogs);
-
-
 
   if (loading) {
     return <LoadPage />;
@@ -63,7 +62,6 @@ const AddUserBlog = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {/* Toggle Button */}
       <div className="flex justify-center mb-6">
         <button
           onClick={() => setShowForm(!showForm)}
@@ -84,9 +82,8 @@ const AddUserBlog = () => {
                 <div
                   key={blog.BlogID}
                   className="p-5 rounded-xl shadow-lg border-2 border-gray-200 bg-white hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col gap-3"
-                  style={{ height: "400px" }} // Set a fixed height for the card
+                  style={{ height: "400px" }}
                 >
-                  {/* Blog Image */}
                   <div className="w-full h-44 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
                     {blog.image ? (
                       <img
@@ -99,40 +96,33 @@ const AddUserBlog = () => {
                     )}
                   </div>
 
-                  {/* Blog Details */}
                   <div className="flex flex-col gap-2 flex-grow">
                     <h3 className="text-lg font-bold text-gray-900">{blog.title}</h3>
-
-                    {/* Blog content preview with max 3 lines */}
                     <p className="text-gray-600 overflow-hidden line-clamp-3 h-[60px]">
-                      {blog.content}
+                    {stripHtmlTags(blog.content)}
                     </p>
-
                     <span className="text-gray-500 text-sm">
                       Published: {new Date(blog.publishedDate).toDateString()}
                     </span>
                   </div>
 
-                  {/* Status Badge */}
                   <span
                     className={`px-3 py-1 text-sm font-semibold rounded-full self-start ${blog.Status === "Approved"
-                        ? "bg-green-100 text-green-700"
-                        : blog.Status === "Pending"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-red-100 text-red-700"
+                      ? "bg-green-100 text-green-700"
+                      : blog.Status === "Pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-red-100 text-red-700"
                       }`}
                   >
                     {blog.Status}
                   </span>
 
-                  {/* Admin Remark (Only for Rejected Blogs) */}
                   {blog.Status === "Rejected" && blog.AdminRemark && (
                     <div className="text-sm text-gray-600 bg-gray-100 p-2 rounded-md">
                       <span className="font-semibold">Admin Remark:</span> {blog.AdminRemark}
                     </div>
                   )}
 
-                  {/* View Button */}
                   <button
                     onClick={() => openModal(blog)}
                     className="w-full bg-DGXblue text-white py-2 text-lg rounded-md hover:bg-indigo-700 transition-all"
@@ -140,7 +130,6 @@ const AddUserBlog = () => {
                     View Details
                   </button>
                 </div>
-
               ))
             ) : (
               <p className="text-gray-500 text-center w-full">No blogs found.</p>
@@ -149,11 +138,21 @@ const AddUserBlog = () => {
         )}
       </div>
 
-      {/* Render the Modal When Open */}
       {isModalOpen && (
         <BlogModal
           blog={selectedBlog}
-          onClose={() => setSelectedBlog(null)}
+          closeModal={closeModal}
+          updateBlogState={(blogId, status) => {
+            if (status === "delete") {
+              setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.BlogID !== blogId));
+            } else {
+              setBlogs((prevBlogs) =>
+                prevBlogs.map((blog) =>
+                  blog.BlogID === blogId ? { ...blog, Status: status } : blog
+                )
+              );
+            }
+          }}
         />
       )}
     </div>

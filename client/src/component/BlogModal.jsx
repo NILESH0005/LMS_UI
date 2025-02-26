@@ -6,9 +6,8 @@ import Swal from "sweetalert2";
 import ApiContext from '../context/ApiContext';
 
 const BlogModal = ({ blog, closeModal, updateBlogState }) => {
-
     const { title, image, author, published_date, content, Status, BlogID } = blog || {};
-    const { fetchData, userToken } = useContext(ApiContext);
+    const { fetchData, userToken, user } = useContext(ApiContext);
 
     const updateBlogStatus = async (blogId, Status, remark = "") => {
         const endpoint = `blog/updateBlog/${blogId}`;
@@ -74,6 +73,20 @@ const BlogModal = ({ blog, closeModal, updateBlogState }) => {
                     updateBlogStatus(BlogID, "reject", result.value);
                 }
             });
+        } else if (status === "delete") {
+            Swal.fire({
+                title: `Are you sure?`,
+                text: `You are about to delete this blog.`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#dc3545",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: `Yes, delete!`,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateBlogStatus(BlogID, "delete");
+                }
+            });
         } else {
             Swal.fire({
                 title: `Are you sure?`,
@@ -90,7 +103,6 @@ const BlogModal = ({ blog, closeModal, updateBlogState }) => {
             });
         }
     };
-
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
@@ -113,7 +125,7 @@ const BlogModal = ({ blog, closeModal, updateBlogState }) => {
 
                         {/* Buttons based on blog status */}
                         <div className="flex justify-center gap-4 mt-6">
-                            {Status === "Pending" && (
+                            {(user.isAdmin == '1') && Status === "Pending" && (
                                 <>
                                     <button
                                         className="bg-green-500 text-white p-2 rounded"
@@ -129,7 +141,7 @@ const BlogModal = ({ blog, closeModal, updateBlogState }) => {
                                     </button>
                                 </>
                             )}
-                            {(Status === "Approved" || Status === "Rejected") && (
+                            {(user.isAdmin == '1') && (Status === "Approved" || Status === "Rejected") && (
                                 <button
                                     className="bg-red-500 text-white p-2 rounded"
                                     onClick={() => handleAction("delete")}

@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import images from '../../public/images.js'; 
+import images from '../../public/images.js';
 import { FaEye } from "react-icons/fa";
 import { FaEyeLowVision } from "react-icons/fa6";
 import { ToastContainer, toast } from "react-toastify";
@@ -165,36 +165,22 @@ const SignIn = () => {
 
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="relative">
-                <label
-                  htmlFor="username"
-                  className={`absolute opacity-60 left-4 transition-all duration-300 ${usernameFocus ? 'top-0 text-xs text-DGXgreen' : 'top-1/2 transform -translate-y-1/2'}`}
-                >
-                Email address-:
-                </label>
+                <label htmlFor="username" className="block text-DGXgreen font-bold mb-1">Email address</label>
                 <input
                   id="username"
                   type="text"
                   className="w-full px-4 py-2 border border-DGXgreen rounded-md focus:outline-none focus:border-DGXgreen"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                   onChange={handleInputChange}
                   value={userID}
                 />
                 <div id="usernameVerify" className="invalid-feedback"></div>
               </div>
               <div className="relative">
-                <label
-                  htmlFor="password"
-                  className={`absolute opacity-60 left-4 transition-all duration-300 ${passwordFocus ? 'top-0 text-xs text-DGXgreen' : 'top-1/2 transform -translate-y-1/2'}`}
-                >
-                  Password-:
-                </label>
+                <label htmlFor="password" className="block text-DGXgreen font-bold mb-1">Password</label>
                 <input
                   id="password"
                   type={passwordVisible ? "text" : "password"}
                   className="w-full px-4 py-2 border border-DGXgreen rounded-md focus:outline-none focus:border-DGXgreen"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                   onChange={handleInputChange}
                   value={password}
                 />
@@ -202,10 +188,9 @@ const SignIn = () => {
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="absolute inset-y-0 right-0 flex items-center px-4 text-DGXgreen focus:outline-none"
+                  className="absolute inset-y-0 pt-6 right-0 flex items-center px-4 text-DGXgreen focus:outline-none"
                 >
-                  {passwordVisible ? <FaEye />
-                    : <FaEyeLowVision />}
+                  {passwordVisible ? <FaEye /> : <FaEyeLowVision />}
                 </button>
               </div>
               <div className="text-right mb-4">
