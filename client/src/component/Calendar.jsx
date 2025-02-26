@@ -146,6 +146,21 @@ const EventTable = ({ }) => {
     );
   };
 
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Approved":
+        return "bg-green-200 text-green-800";
+      case "Rejected":
+        return "bg-red-200 text-red-800";
+      case "Pending":
+        return "bg-yellow-200 text-yellow-800";
+      default:
+        return "bg-gray-200 text-gray-800";
+    }
+  };
+
+ 
+
   useEffect(() => {
     const fetchEvents = async () => {
       const endpoint = "eventandworkshop/getEvent";
@@ -269,7 +284,7 @@ const EventTable = ({ }) => {
             </thead>
             <tbody>
               {filteredEvents.map((event, index) => (
-                <tr className='text-center' key={index}>
+                <tr className={`text-center ${getStatusClass(event.Status)}`} key={index}>
                   <td className="border ">
                     {index+1}
                   </td>

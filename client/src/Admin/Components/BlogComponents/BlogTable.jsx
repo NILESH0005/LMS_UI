@@ -26,6 +26,19 @@ const BlogTable = ({ blogs, userToken }) => {
     }
   };
 
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Approved":
+        return "bg-green-200 text-green-800";
+      case "Rejected":
+        return "bg-red-200 text-red-800";
+      case "Pending":
+        return "bg-yellow-200 text-yellow-800";
+      default:
+        return "bg-gray-200 text-gray-800";
+    }
+  };
+
   const openModal = (blog) => {
     setSelectedBlog(blog);
     setIsModalOpen(true);
@@ -79,7 +92,7 @@ const BlogTable = ({ blogs, userToken }) => {
         </thead>
         <tbody>
           {filteredBlogs.map((blog, index) => (
-            <tr key={index} className="border-t">
+            <tr className={`text-center ${getStatusClass(blog.Status)}`} key={index}>
               <td className="border px-4 py-2">{index + 1}</td>
               <td className="border px-4 py-2">{blog.title}</td>
               <td className="border px-4 py-2">{blog.category}</td>

@@ -13,7 +13,10 @@ export default {
         'DGXblue': '#013D54',
         'DGXwhite': '#FFFFFF',
         'DGXblack': '#000000',
-        'DGXgray': '#6b7280'
+        'DGXgray': '#6b7280',
+        'Approved': '#76B900',
+        'Rejected': '#FF8989',
+        'Pending' : '#F8ED8C'
       },
       keyframes: {
         spin: {
