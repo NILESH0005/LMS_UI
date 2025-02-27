@@ -5,8 +5,7 @@ import EventForm from "../component/eventAndWorkshop/EventForm";
 import LoadPage from "./LoadPage";
 import ApiContext from "../context/ApiContext";
 import DetailsEventModal from "./eventAndWorkshop/DetailsEventModal";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 
 const AddUserEvent = () => {
   const [showForm, setShowForm] = useState(false);
@@ -43,12 +42,12 @@ const AddUserEvent = () => {
         } else {
           console.error("Invalid data format:", result);
           setEvents([]);
-          toast.error("Failed to fetch events. Please try again later.");
+          console.error("Failed to fetch events. Please try again later.");
         }
       } catch (error) {
         console.error("Error fetching events:", error);
         setEvents([]);
-        toast.error("An error occurred while fetching events.");
+        console.error("An error occurred while fetching events.");
       } finally {
         setLoading(false);
       }
@@ -57,14 +56,9 @@ const AddUserEvent = () => {
     fetchEvents();
   }, [fetchData]);
 
-  useEffect(() => {
-    console.log("Updated events:", events);
-    console.log("User:", user);
-  }, [events, user]);
+
 
   const filteredEvents = events.filter((event) => event.UserID === user.UserID);
-  console.log("user ID is :", user.UserID);
-  console.log("filtered events is :", filteredEvents);
 
   if (loading) {
     return <LoadPage />;
@@ -72,22 +66,21 @@ const AddUserEvent = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
-      <ToastContainer />
-      {/* Toggle Button */}
+
       <div className="flex justify-center mb-6">
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center gap-3 bg-DGXblue from-blue-500 to-indigo-600 text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-all duration-300 text-lg font-semibold"
         >
-          {showForm ? "My Events" : "Add Event"}
+          {showForm ? "My Event" : "Add Event"}
           {showForm ? <IoMdList className="size-6" /> : <MdAdd className="size-6" />}
         </button>
       </div>
 
       <div className="max-w-5xl mx-auto">
         {showForm ? (
-          <EventForm />
-          
+          // <EventForm />
+<EventForm events={events} setEvents={setEvents}/>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.length > 0 ? (
@@ -100,10 +93,11 @@ const AddUserEvent = () => {
                   <div className="text-center text-gray-600">
                     <span className="block text-4xl font-bold text-gray-800">
                       {new Date(event.StartDate).getDate()}
+                      <span className="text-lg font-semibold p-2 fs-6">
+                        {new Date(event.StartDate).toLocaleString("default", { month: "short" })}
+                      </span>
                     </span>
-                    <span className="text-lg font-semibold">
-                      {new Date(event.StartDate).toLocaleString("default", { month: "short" })}
-                    </span>
+
                   </div>
 
                   {/* Poster */}

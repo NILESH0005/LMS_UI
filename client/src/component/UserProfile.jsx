@@ -14,7 +14,6 @@ import { SlLogout } from "react-icons/sl";
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import ApiContext from '../context/ApiContext.jsx';
-import { ToastContainer, toast, } from "react-toastify";
 import { LiaBlogSolid } from "react-icons/lia";
 import LoadPage from './LoadPage.jsx';
 import EditProfileModal from './EditProfileModal';
@@ -35,7 +34,7 @@ const UserProfile = () => {
   const navigate = useNavigate()
   const [backgroundImage, setBackgroundImage] = useState(images.NvidiaBackground);
   const [userDisscussions, setUserDisscussion] = useState([])
-  
+
   const stripHtmlTags = (html) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
@@ -107,15 +106,10 @@ const UserProfile = () => {
         }
       } catch (error) {
         setLoading(false)
-        toast.error(`Something went wrong try again`, {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Something went wrong, try again.",
         });
       }
       // console.log('Email submitted:', email);
@@ -229,9 +223,8 @@ const UserProfile = () => {
 
   return (
 
-    !isLoggedIn ? <h1>login?</h1> : loading ? <LoadPage/> :
+    !isLoggedIn ? <h1>login?</h1> : loading ? <LoadPage /> :
       <div className="bg-DGXwhite p-2 md:p-8">
-        <ToastContainer />
         {modalIsOpen && selectedDiscussion && (
           <DiscussionModal
             isOpen={modalIsOpen}

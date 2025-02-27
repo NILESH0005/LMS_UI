@@ -1,9 +1,8 @@
 import React, { useState, useContext } from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import ApiContext from "../../context/ApiContext.jsx";
 import images from "../../../public/images.js";
+import Swal from 'sweetalert2';
 
 const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
   const [dissComments, setDissComments] = useState(discussion.comment || []); // Initialize with discussion comments
@@ -14,7 +13,11 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
 
   const handleAddComment = async (id) => {
     if (!newComment.trim()) {
-      alert("Comment cannot be empty!");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Comment cannot be empty!',
+      });
       return;
     }
 
@@ -34,8 +37,11 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
 
         if (!data.success) {
           setLoading(false);
-          toast.error(`Error posting comment: ${data.message}`);
-          return;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: `Error posting comment: ${data.message}`,
+          }); return;
         }
 
         // Create a new comment object
@@ -55,10 +61,18 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
 
         setNewComment("");
         setLoading(false);
-        toast.success("Comment posted successfully");
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Comment posted successfully!',
+        });
       } catch (error) {
         setLoading(false);
-        toast.error("Something went wrong. Try again.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong. Try again.',
+        });
       }
     }
   };
@@ -72,7 +86,11 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
 
   const handleAddReply = async (commentIndex, replyText, id) => {
     if (!replyText.trim()) {
-      alert("Reply cannot be empty!");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Reply cannot be empty!',
+      });
       return;
     }
 
@@ -95,9 +113,10 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
 
         if (!data.success) {
           setLoading(false);
-          toast.error(`Error in posting reply: ${data.message}`, {
-            position: "top-center",
-            autoClose: 3000,
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: `Error in posting reply: ${data.message}`,
           });
           return;
         }
@@ -130,15 +149,17 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
         }));
 
         setLoading(false);
-        toast.success("Reply posted successfully", {
-          position: "top-center",
-          autoClose: 3000,
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Reply posted successfully!',
         });
       } catch (error) {
         setLoading(false);
-        toast.error(`Error posting reply: ${error.message}`, {
-          position: "top-center",
-          autoClose: 3000,
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: `Error posting reply: ${error.message}`,
         });
       }
     }
@@ -146,16 +167,12 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
 
   return (
     <div>
-      {/* Background Overlay */}
-      <ToastContainer />
-
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 transition-opacity duration-300 flex justify-center items-center">
           {/* Modal */}
           <div
-            className={`w-[calc(100%-1rem)] h-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] sm:h-[calc(100%-2rem)] lg:w-[calc(100%-4rem)] lg:h-[calc(100%-4rem)] xl:w-[calc(100%-6rem)] xl:h-[calc(100%-6rem)] bg-DGXwhite transition-transform shadow-lg transform ${
-              isOpen ? "translate-y-0" : "translate-y-full"
-            } z-50 flex flex-col overflow-auto`}
+            className={`w-[calc(100%-1rem)] h-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] sm:h-[calc(100%-2rem)] lg:w-[calc(100%-4rem)] lg:h-[calc(100%-4rem)] xl:w-[calc(100%-6rem)] xl:h-[calc(100%-6rem)] bg-DGXwhite transition-transform shadow-lg transform ${isOpen ? "translate-y-0" : "translate-y-full"
+              } z-50 flex flex-col overflow-auto`}
           >
             <div className="px-2 sm:px-5 w-full flex flex-col flex-grow overflow-auto">
               <div className="flex justify-between">

@@ -1,7 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
 import ApiContext from "../context/ApiContext.jsx";
 import { decrypt } from "../utils/decrypt.js";
 import { images } from '../../public/index.js';
@@ -104,28 +102,21 @@ const ResetPassword = () => {
 
         if (!data.success) {
           setLoading(false);
-          toast.error("Error in Password Reset", {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+          Swal.fire({
+            icon: "error",
+            title: "Error in Password Reset",
+            text: "Something went wrong, please try again.",
           });
           return;
         } else if (data.success) {
           setLoading(false);
-          toast.success("Password Reset done successfully, go login", {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+          Swal.fire({
+            icon: "success",
+            title: "Password Reset Successful",
+            text: "Your password has been reset successfully. Please log in.",
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
           });
           setTimeout(() => {
             navigate("/SignInn");
@@ -133,28 +124,18 @@ const ResetPassword = () => {
         }
       } catch (error) {
         setLoading(false);
-        toast.error(`Something went wrong, try again`, {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Something went wrong, try again.",
         });
         return;
       }
     } else {
-      toast.error("Passwords do not match.", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      Swal.fire({
+        icon: "error",
+        title: "Mismatch",
+        text: "Passwords do not match.",
       });
       return;
     }
@@ -163,7 +144,6 @@ const ResetPassword = () => {
   return loading ? (
     < LoadPage />) : (
     <div className="min-h-screen flex flex-col lg:flex-row items-center justify-center relative">
-      <ToastContainer />
       <div className="w-full lg:w-1/2 min-h-screen py-20 px-8 lg:rounded-r-3xl bg-DGXblue flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="rounded-xl mx-auto shadow-lg overflow-hidden bg-DGXwhite shadow-DGXgreen p-8">

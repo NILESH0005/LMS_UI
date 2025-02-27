@@ -1,9 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useContext, useEffect } from "react";
 import { images } from '../../public/index.js';
-import { ToastContainer, toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
 import { validateConfirmPassword as confirmPassword, validatePassword, validateRequired } from "../utils/formValidation.js";
 import { FaEye } from "react-icons/fa";
 import { FaEyeLowVision } from "react-icons/fa6";
@@ -27,8 +25,8 @@ const Register = () => {
 
     if (encryptedEmail && encryptedReferCode) {
       const decryptedEmail = await decrypt(encryptedEmail);
-      console.log("decryptedEmail is", decryptedEmail );
-      
+      console.log("decryptedEmail is", decryptedEmail);
+
       const decryptedReferCode = await decrypt(encryptedReferCode);
 
       if (decryptedEmail && decryptedReferCode) {
@@ -130,20 +128,19 @@ const Register = () => {
 
 
     if (Object.values(messages).some((message) => message)) {
-      toast.error("Password does not meet the required criteria.");
+      Swal.fire({
+        icon: "error",
+        title: "Weak Password",
+        text: "Password does not meet the required criteria.",
+      });
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match.", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      Swal.fire({
+        icon: "error",
+        title: "Mismatch",
+        text: "Passwords do not match.",
       });
       return;
     }
@@ -171,28 +168,21 @@ const Register = () => {
 
       if (!data.success) {
         setLoading(false)
-        toast.error("Error in Registration", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+        Swal.fire({
+          icon: "error",
+          title: "Registration Error",
+          text: "Error in Registration",
         });
         return
       } else if (data.success) {
         setLoading(false)
-        toast.success("Registration done successfully go login", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+        Swal.fire({
+          icon: "success",
+          title: "Registration Successful",
+          text: "Registration done successfully. Go to login.",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
         });
         setTimeout(() => {
           navigate('/SignInn');
@@ -200,26 +190,20 @@ const Register = () => {
       }
     } catch (error) {
       setLoading(false)
-      toast.error(`Something went wrong try again`, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Something went wrong, try again.",
       });
       return
     }
 
   };
   if (emailLoading) {
-    return <LoadPage/>; // Show loading indicator while email is being extracted
+    return <LoadPage />; // Show loading indicator while email is being extracted
   }
   return (
-    loading ? <LoadPage/> : <div className="my-8">
-      <ToastContainer />
+    loading ? <LoadPage /> : <div className="my-8">
       <section className="max-w-4xl p-6 mx-auto bg-DGXwhite rounded-md shadow-2xl border border-DGXgreen ">
         <h1 className="text-xl font-bold text-DGXblack capitalize text-center ">
           Welcome to the <span className="text-DGXgreen">DGX Community</span>

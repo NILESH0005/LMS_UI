@@ -6,8 +6,8 @@ const ParallaxSection = () => {
         const handleScroll = () => {
             const value = window.scrollY;
             document.getElementById('circuit_board').style.left = value * 0.5 + 'px';
-            document.getElementById('ai_chip').style.top = value * 1.5 + 'px';
-            document.getElementById('data_center').style.top = value * 0.5 + 'px';
+            // document.getElementById('ai_chip').style.top = value * 1.5 + 'px';
+            // document.getElementById('data_center').style.top = value * 0.5 + 'px';
             document.getElementById('text').style.marginRight = value * 4 + 'px';
             document.getElementById('text').style.marginTop = value * 1.5 + 'px';
             document.getElementById('btn').style.marginTop = value * 1.5 + 'px';

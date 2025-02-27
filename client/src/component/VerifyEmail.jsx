@@ -29,7 +29,7 @@ const VerifyEmail = () => {
   };
 
   function isValidEmail(email) {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
   }
 
@@ -38,7 +38,7 @@ const VerifyEmail = () => {
 
     if (userCaptcha !== captcha) {
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Invalid Captcha',
         text: 'Please enter the correct captcha.',
         confirmButtonText: 'OK',
@@ -69,10 +69,11 @@ const VerifyEmail = () => {
         setLoading(false);
         Swal.fire({
           icon: 'error',
-          title: 'Error in Verification',
-          text: data.message,
+          title: 'Invalid Email Address',
+          text: 'The provided email address is not registered in our database. Please check and try again.',
           confirmButtonText: 'OK',
         });
+        
       } else if (data.success) {
         refreshCaptcha();
         setLoading(false);
@@ -142,12 +143,6 @@ const VerifyEmail = () => {
                         onChange={(e) => setUserCaptcha(e.target.value)}
                         required
                       />
-                      {/* <label
-                        htmlFor="userCaptcha"
-                        className="absolute left-3 top-2 mb-0 text-neutral-500 transition-all duration-200 ease-out origin-[0_0] -translate-y-6 scale-75 peer-focus:-translate-y-6 peer-focus:scale-75 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100"
-                      >
-                        Enter Captcha
-                      </label> */}
                     </div>
 
                     <div className="relative mb-4 flex justify-center items-center">

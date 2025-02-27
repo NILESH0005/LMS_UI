@@ -11,8 +11,32 @@ const ForgotPassword = () => {
   const { fetchData } = useContext(ApiContext);
   const [email, setEmail] = useState('');
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!email) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Email',
+        text: 'Please enter your email address.',
+      });
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Email Address',
+        text: 'Please enter a valid email address before proceeding.',
+      });
+      return;
+    }
+
     const endpoint = "user/passwordrecovery";
     const method = "POST";
     const body = { "email": email };
@@ -25,9 +49,9 @@ const ForgotPassword = () => {
 
       if (!data.success) {
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error in Password Reset, try again!',
+          icon: 'warning',
+          title: 'Invalid Email Address',
+          text: 'The email address entered does not match our records. Please verify and try again.',
         });
         return;
       } else {
@@ -42,9 +66,9 @@ const ForgotPassword = () => {
     } catch (error) {
       setLoading(false);
       Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Something went wrong, try again!',
+        icon: 'warning',
+        title: 'Invalid Email Address',
+        text: 'The email address entered does not match our records. Please verify and try again.',
       });
     }
   };
@@ -66,8 +90,8 @@ const ForgotPassword = () => {
             <h1 className="text-DGXblue text-3xl mb-10 font-bold text-center">Forgot Password</h1>
             <form onSubmit={handleSubmit} className="w-full">
               <div className="mb-4 relative">
-                <label htmlFor="email" className="block text-DGXgreen font-medium mb-2">Email or Username</label>
-                <input
+                <label htmlFor="email" className="block text-DGXgreen font-medium mb-2">Email</label>
+                <input 
                   id="email"
                   type="text"
                   className="border border-DGXgreen py-2 px-3 w-full rounded"

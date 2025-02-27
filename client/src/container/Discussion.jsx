@@ -102,16 +102,7 @@ const Discussion = () => {
         })
         .catch(error => {
           setLoading(false);
-          toast.error(`Something went wrong: ${error.message}`, {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
+          console.error(`Something went wrong: ${error.message}`);
         });
     } catch (error) {
       console.log(error)
@@ -143,12 +134,12 @@ const Discussion = () => {
       if (result && result.data && result.data.updatedDiscussions) {
         setDemoDiscussions(result.data.updatedDiscussions);
       } else {
-        toast.error("No discussions found.");
+        console.error("No discussions found.");
       }
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      toast.error(`Something went wrong: ${error.message}`);
+      console.error(`Something went wrong: ${error.message}`);
     }
   }, [fetchData]);
 

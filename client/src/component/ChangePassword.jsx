@@ -1,7 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { validatePassword, validateConfirmPassword } from "../utils/formValidation.js";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
 import ApiContext from '../context/ApiContext.jsx';
@@ -68,7 +66,7 @@ const ChangePassword = () => {
                 icon: "error",
                 title: "Mismatch",
                 text: "Passwords do not match.",
-            }); 
+            });
             return;
         }
 
@@ -90,27 +88,20 @@ const ChangePassword = () => {
             const data = await fetchData(endpoint, method, body, headers);
             if (!data.success) {
                 setLoading(false);
-                toast.error(`Error in password change: ${data.message}`, {
-                    position: "top-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: `Error in password change: ${data.message}`,
                 });
             } else if (data.success) {
                 setLoading(false);
-                toast.success("Password changed successfully. Log in again with new credentials.", {
-                    position: "top-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
+                Swal.fire({
+                    icon: "success",
+                    title: "Password Changed",
+                    text: "Password changed successfully. Log in again with new credentials.",
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
                 });
                 setTimeout(() => {
                     Cookies.remove('userToken');
@@ -120,15 +111,10 @@ const ChangePassword = () => {
             }
         } catch (error) {
             setLoading(false);
-            toast.error(`Something went wrong, try again`, {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Something went wrong, try again.",
             });
         }
     };
@@ -155,7 +141,6 @@ const ChangePassword = () => {
     };
     return (
         loading ? < LoadPage /> : <section className="h-screen">
-            <ToastContainer />
             <div className="h-full">
                 <div className="flex h-full flex-wrap md:w-250 items-center justify-center lg:justify-between">
                     <div className="shrink-1 hidden lg:block ml:10 mb-12 grow-0 basis-auto md:mb-0 md:w-5/12 sm:w-6/12 md:shrink-0 lg:w-4/12 xl:w-4/12">

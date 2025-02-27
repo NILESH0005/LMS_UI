@@ -5,7 +5,6 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import BlogImage from "../component/BlogImage";
 import blogData from "../json/blogsData.json"
 import ApiContext from "../context/ApiContext";
-import { toast } from "react-toastify";
 import BlogModal from "../component/BlogModal";
 
 
@@ -47,16 +46,7 @@ const BlogPage = () => {
                         })
                         .catch(error => {
                             setLoading(false);
-                            toast.error(`Something went wrong: ${error.message}`, {
-                                position: "top-center",
-                                autoClose: 3000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                                progress: undefined,
-                                theme: "light",
-                            });
+                            console.error(`Something went wrong: ${error.message}`);
                         });
                 } catch (error) {
                     console.log(error)

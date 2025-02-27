@@ -46,9 +46,10 @@ const Navbar = () => {
         { label: 'Discussions', to: '/Discussion', icon: faComments },
         { label: 'Event and Workshop', to: '/EventWorkshopPage', icon: faCalendar },
         { label: 'Blog', to: '/Blog', icon: faBlog },
+        { label: 'Quiz', to: '/QuizInterface', icon: faBook }, 
         { label: 'Contact Us', to: '/ContactUs', icon: faEnvelope },
         { label: 'Community Guidelines', to: '/CommunityGuidelines', icon: faBook },
-        { label: 'Quiz', to: '/QuizInterface', icon: faBook }, 
+       
     ];
 
 
