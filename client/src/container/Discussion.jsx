@@ -212,8 +212,8 @@ const Discussion = () => {
           <div className="sm:order-4 flex items-center w-full sm:w-auto mt-0 sm:mt-0 sm:ml-4 ">
             {isLoading ? (
               <Skeleton
-                height="2.16rem" // Adjusted to match the height of the input element
-                width={250} // Adjusted to match the width of the input element
+                height="2.16rem" 
+                width={250} 
                 className="w-full sm:w-1/2 bg-gray-500 rounded-lg mb-1"
               />
             ) : (
@@ -223,8 +223,8 @@ const Discussion = () => {
                   className="w-full py-2 pl-10 pr-4 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-DGXgreen focus:ring-DGXgreen"
                   placeholder="Search..."
                   value={searchQuery}
-                  onChange={handleSearchChange} // Trigger search dynamically on keydown
-                  onKeyDown={handleKeyDown} // Explicit search on Enter
+                  onChange={handleSearchChange} 
+                  onKeyDown={handleKeyDown} 
                   data-tooltip-id="search-tooltip"
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -241,7 +241,7 @@ const Discussion = () => {
           </div>
           {isLoading ? (
             <Skeleton
-              height={35} // Adjusted to match the height of the input element
+              height={35} 
               width={150}
               className="w-full xs:w-full sm:w-64 bg-lime-500 rounded-lg mb-1 sm:mt-4"
             />

@@ -19,7 +19,7 @@ import {
   FaEnvelope,
 } from 'react-icons/fa';
 
-const AdminDashboard = () => {
+const AdminDashboard = (props) => {
   const [activeComp, setActiveComp] = useState('users'); // Default to users
 
   const getComp = (comp) => {
@@ -31,9 +31,7 @@ const AdminDashboard = () => {
       case 'events':
         return <Events />;
       case 'blog_manager':
-        return <BlogManager />;
-      case 'quiz':
-        return <Quiz />;
+        return <BlogManager blogs={props.blogs} setBlogs={props.setBlogs} />;
       case 'guidelines':
         return <GuidelineManager />;
       case 'Home':

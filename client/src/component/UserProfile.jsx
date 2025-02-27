@@ -21,7 +21,7 @@ import DiscussionModal from './discussion/DiscussionModal.jsx';
 import AddUserEvent from './AddUserEvent.jsx';
 import AddUserBlog from './AddUserBlog.jsx';
 
-const UserProfile = () => {
+const UserProfile = (props) => {
 
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
@@ -504,7 +504,7 @@ const UserProfile = () => {
                 <div className='flex-col'>
                   <h4 className="text-xl text-[#0f172a] font-bold">My Events</h4>
                 </div>
-                <AddUserBlog />
+                <AddUserBlog blogs={props.blogs} setBlogs={props.setBlogs}/>
 
               </div>
             )}

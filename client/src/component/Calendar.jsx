@@ -10,7 +10,8 @@ import EventForm from './eventAndWorkshop/EventForm';
 import DetailsEventModal from './eventAndWorkshop/DetailsEventModal.jsx';
 import LoadPage from './LoadPage';
 
-const EventTable = ({ }) => {
+const EventTable = () => {
+
   const [selectedEvent, setSelectedEvent] = useState(null);
   const { fetchData, userToken } = useContext(ApiContext);
   const [events, setEvents] = useState([]);
