@@ -1,19 +1,16 @@
 import React, { useRef, useState, useContext, useEffect } from 'react';
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-// import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ApiContext from '.././context/ApiContext';
 import { compressImage } from '../utils/compressImage.js';
 import EventForm from './eventAndWorkshop/EventForm';
-// import EventDetailsModal from './EventDetailsModal'; // Import the modal component
 import DetailsEventModal from './eventAndWorkshop/DetailsEventModal.jsx';
-import LoadPage from './LoadPage'
+import LoadPage from './LoadPage';
 
 const EventTable = ({ }) => {
-
   const [selectedEvent, setSelectedEvent] = useState(null);
   const { fetchData, userToken } = useContext(ApiContext);
   const [events, setEvents] = useState([]);
@@ -22,21 +19,13 @@ const EventTable = ({ }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [statusFilter, setStatusFilter] = useState("");
-  const [showForm, setShowForm] = useState(false); // State to control form visibility
+  const [showForm, setShowForm] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
-  // const [selectedEvent, setSelectedEvent] = useState(null); // State for selected event in modal
-  // const [handleEventStatusChange, setHandleEventStatusChange] = useState(false);
-
-
   const [dropdownData, setDropdownData] = useState({
     categoryOptions: [],
     companyCategoryOptions: []
   });
 
-  // const handleEventAdded = (newEvent) => {
-  //   setEvents((prevEvents) => [...prevEvents, newEvent]);
-  // };
-  
   useEffect(() => {
     const fetchDropdownValues = async (category) => {
       try {
@@ -49,14 +38,13 @@ const EventTable = ({ }) => {
       }
     };
 
-
     const fetchCategories = async () => {
       const eventTypeOptions = await fetchDropdownValues('eventType');
       const eventHostOptions = await fetchDropdownValues('eventHost');
 
       const eventTypeDropdown = [
         { idCode: 'All', ddValue: 'All', ddCategory: 'eventType' },
-        ...eventTypeOptions, // These are fetched dynamically
+        ...eventTypeOptions,
       ];
 
       setDropdownData({
@@ -67,7 +55,6 @@ const EventTable = ({ }) => {
 
     fetchCategories();
   }, []);
-
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -83,7 +70,6 @@ const EventTable = ({ }) => {
         if (result.success && Array.isArray(result.data)) {
           setEvents(result.data);
           console.log(events);
-          
         } else {
           console.error("Invalid data format:", result);
           setEvents([]);
@@ -98,8 +84,6 @@ const EventTable = ({ }) => {
 
     fetchEvents();
   }, [fetchData]);
-  // console.log("events ::", fetchData)
-
 
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -115,15 +99,10 @@ const EventTable = ({ }) => {
   });
 
   const filteredEvents = events.filter((event) => {
-    // Filter by status
     const matchesStatus = statusFilter === "" || event.Status === statusFilter;
-
-    // Filter by event type (Workshop or Event)
     const matchesCategory = selectedCategory === "" || event.EventType === selectedCategory;
-
     return matchesStatus && matchesCategory;
   });
-
 
   const handleEventUpdate = (updatedEvent) => {
     setEvents((prevEvents) =>
@@ -152,10 +131,7 @@ const EventTable = ({ }) => {
     }
   };
 
- 
-
   const fileInputRef = useRef(null);
-
 
   const handleCloseModal = () => {
     resetForm();
@@ -185,9 +161,8 @@ const EventTable = ({ }) => {
     return <div><LoadPage /></div>;
   }
 
-
   return (
-    <div className="container mx-auto mt-10">
+    <div className="container overflow-y-auto max-h-[80vh]">
       <div>
         <h1 className='flex justify-center items-center font-bold text-3xl mb-10'>Events and Workshops Calendar</h1>
         <p className="mt-1 flex text-md justify-center items-center font-normal text-gray-500 dark:text-gray-400">Browse and manage discussions in the DGX community.</p>
@@ -212,8 +187,8 @@ const EventTable = ({ }) => {
           <label className="mr-2 text-lg font-medium">Filter by Event Type:</label>
           <select
             className="border px-3 py-2 rounded-lg"
-            value={selectedCategory}  // Update this to `selectedCategory`
-            onChange={(e) => setSelectedCategory(e.target.value)} // Update the state to selectedCategory
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">All</option>
             {dropdownData.categoryOptions.map((option) => (
@@ -231,16 +206,15 @@ const EventTable = ({ }) => {
         </button>
       </div>
       {showForm ? (
-        <EventForm events={events} setEvents={setEvents}/>
-        // <EventForm/>
+        <EventForm events={events} setEvents={setEvents} />
       ) : (
         <div className="event-table flex items-center justify-center">
           <table className="table-fixed border bottom-2 w-full mt-4">
             <thead className='bg-DGXgreen text-white'>
-              <tr >
-                <th className="border px-4 py-2 ">#</th>
-                <th className="border px-4 py-2 ">Title</th>
-                <th className="border px-4 py-2 ">Created By</th>
+              <tr>
+                <th className="border px-4 py-2">#</th>
+                <th className="border px-4 py-2">Title</th>
+                <th className="border px-4 py-2">Created By</th>
                 <th className="border px-4 py-2">Start Date</th>
                 <th className="border px-4 py-2">End Date</th>
                 <th className="border px-4 py-2">Status</th>
@@ -251,34 +225,22 @@ const EventTable = ({ }) => {
             <tbody>
               {filteredEvents.map((event, index) => (
                 <tr className={`text-center ${getStatusClass(event.Status)}`} key={index}>
-                  <td className="border ">
-                    {index+1}
-                  </td>
+                  <td className="border">{index + 1}</td>
                   <td className="border px-4 py-2 w-2/6">
                     {event.EventTitle && event.EventTitle.length > 50
                       ? `${event.EventTitle.slice(0, 50)}...`
                       : event.EventTitle}
                   </td>
-
+                  <td className="border px-4 py-2">{event.UserName}</td>
                   <td className="border px-4 py-2">
-                    {event.UserName}
-                  </td>
-
-                  {/* Start Date */}
-                  <td className="border px-4 py-2">
-                    <div>{moment.utc(event.StartDate).format("MMMM D, YYYY ")}</div>
+                    <div>{moment.utc(event.StartDate).format("MMMM D, YYYY")}</div>
                     <div>{moment.utc(event.StartDate).format("h:mm A")}</div>
                   </td>
-
-                  {/* End Date */}
                   <td className="border px-4 py-2">
-                    <div>{moment.utc(event.EndDate).format("MMMM D, YYYY ")}</div>
+                    <div>{moment.utc(event.EndDate).format("MMMM D, YYYY")}</div>
                     <div>{moment.utc(event.EndDate).format("h:mm A")}</div>
                   </td>
-
-                  <td className="border px-4 py-2">
-                    {event.Status}
-                  </td>
+                  <td className="border px-4 py-2">{event.Status}</td>
                   <td className="border px-4 py-2">{event.Venue}</td>
                   <td className="border px-4 py-2">
                     <button

@@ -40,6 +40,7 @@ import ProjectShowcase from './component/ProjectShowcase.jsx';
 import CommunityHighlights from './component/CommunityHighlights.jsx';
 import AddUserEvent from './component/AddUserEvent.jsx';
 import QuizInterface from './component/QuizInterface.jsx';
+import Quiz from './Admin/Components/Quiz.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -92,6 +93,7 @@ function App() {
 
             {/* Added Quiz in Navbar */}
             <Route path='/QuizInterface' element={<QuizInterface />} />
+            <Route path='/Quiz' element={<Quiz />} />
            {/* <Route path='/CreateQuiz' element={<CreateQuiz />} />  */}
 
                      

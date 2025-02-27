@@ -7,11 +7,13 @@ import Contact from './Components/Contact';
 import BlogManager from './Components/BlogManager';
 import HomeManager from './Components/HomeManager';
 import Home from './Components/home';
+import Quiz from './Components/Quiz';
 import {
   FaUsers,
   FaComments,
   FaCalendarAlt,
   FaBlog,
+  FaQuestionCircle,
   FaBook,
   FaHome,
   FaEnvelope,
@@ -30,6 +32,8 @@ const AdminDashboard = () => {
         return <Events />;
       case 'blog_manager':
         return <BlogManager />;
+      case 'quiz':
+        return <Quiz />;
       case 'guidelines':
         return <GuidelineManager />;
       case 'Home':
@@ -90,6 +94,17 @@ const AdminDashboard = () => {
               >
                 <FaBlog className="mr-4" /> {/* Increased margin */}
                 Blogs
+              </div>
+            </li>
+            <li>
+              <div
+                className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
+                  activeComp === 'quiz' ? 'bg-gray-700 text-yellow-300' : ''
+                }`}
+                onClick={() => setActiveComp('quiz')}
+              >
+                <FaQuestionCircle className="mr-4" /> {/* Increased margin */}
+                Quiz
               </div>
             </li>
             <li>
