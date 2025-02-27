@@ -4,8 +4,8 @@ import BlogTable from './BlogComponents/BlogTable';
 import ApiContext from '../../context/ApiContext';
 import { ToastContainer } from 'react-toastify';
 
-const BlogManager = () => {
-  const [blogs, setBlogs] = useState([]);
+const BlogManager = (props) => {
+  // const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { fetchData } = useContext(ApiContext);
@@ -24,14 +24,15 @@ const BlogManager = () => {
 
         const result = await fetchData(endpoint, method);
         if (result.success) {
-          setBlogs(result.data);
+          props.setBlogs(result.data);
+          // console.log("result is ",result.data);
         } else {
           setError(result.message);
         }
       } catch (err) {
         setError('Failed to fetch blogs. Please try again later.');
       } finally {
-        console.log(blogs);
+        // console.log(blogs);
         setLoading(false);
 
       }
@@ -39,8 +40,6 @@ const BlogManager = () => {
 
     fetchBlogs();
   }, []);
-
-
 
   if (loading) {
     return <div>Loading blogs...</div>;
@@ -51,7 +50,7 @@ const BlogManager = () => {
   }
 
   const updateBlogs = (newBlog) => {
-    setBlogs((prevBlogs) => [newBlog, ...prevBlogs]);
+    props.setBlogs((prevBlogs) => [newBlog, ...prevBlogs]);
   };
 
   return (
@@ -68,7 +67,7 @@ const BlogManager = () => {
       </div>
 
       {isTableView ? (
-        <BlogTable blogs={blogs} />
+        <BlogTable blogs={props.blogs} />
       ) : (
         <BlogForm updateBlogs={updateBlogs} setIsTableView={setIsTableView} />
       )}

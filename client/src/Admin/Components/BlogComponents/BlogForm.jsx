@@ -5,7 +5,7 @@ import ApiContext from "../../../context/ApiContext";
 import Swal from "sweetalert2";
 import { compressImage } from "../../../utils/compressImage.js";
 
-const BlogForm = ({ setBlogs }) => {
+const BlogForm = (props) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState("");
@@ -45,10 +45,6 @@ const BlogForm = ({ setBlogs }) => {
     fetchCategories();
   }, []);
 
-
-  const updateBlogs = (newBlog) => {
-    setBlogs((prevBlogs) => [newBlog, ...prevBlogs]);
-  };
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -130,8 +126,8 @@ const BlogForm = ({ setBlogs }) => {
       setLoading(false);
 
       if (data.success) {
-        if (typeof updateBlogs === "function") {
-          updateBlogs({
+        if (typeof props.updateBlogs === "function") {
+          props.updateBlogs({
             BlogId: data.data.postId,
             title,
             content,

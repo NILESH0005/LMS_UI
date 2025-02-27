@@ -6,10 +6,10 @@ import LoadPage from "./LoadPage.jsx";
 import ApiContext from "../context/ApiContext";
 import BlogModal from "./BlogModal.jsx";
 
-const AddUserBlog = () => {
+const AddUserBlog = (props) => {
   const [showForm, setShowForm] = useState(false);
   const { fetchData, user } = useContext(ApiContext);
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,14 +38,15 @@ const AddUserBlog = () => {
       try {
         const result = await fetchData(endpoint, method, {}, headers);
         if (result.success && Array.isArray(result.data)) {
-          setBlogs(result.data);
+          props.setBlogs(result.data);
+          console.log("result", result.data);
         } else {
           console.error("Invalid data format:", result);
-          setBlogs([]);
+          props.setBlogs([]);
         }
       } catch (error) {
         console.error("Error fetching blogs:", error);
-        setBlogs([]);
+        props.setBlogs([]);
       } finally {
         setLoading(false);
       }
@@ -53,8 +54,9 @@ const AddUserBlog = () => {
 
     fetchBlogs();
   }, [fetchData]);
+  console.log(props.blogs);
 
-  const filteredBlogs = blogs.filter((blog) => blog.UserID === user.UserID);
+  const filteredBlogs = props.blogs && props.blogs.filter((blog) => blog.UserID === user.UserID);
 
   if (loading) {
     return <LoadPage />;
@@ -74,7 +76,7 @@ const AddUserBlog = () => {
 
       <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-lg">
         {showForm ? (
-          <BlogForm setBlogs={setBlogs} />
+          <BlogForm setBlogs={props.setBlogs} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBlogs.length > 0 ? (
@@ -99,7 +101,7 @@ const AddUserBlog = () => {
                   <div className="flex flex-col gap-2 flex-grow">
                     <h3 className="text-lg font-bold text-gray-900">{blog.title}</h3>
                     <p className="text-gray-600 overflow-hidden line-clamp-3 h-[60px]">
-                    {stripHtmlTags(blog.content)}
+                      {stripHtmlTags(blog.content)}
                     </p>
                     <span className="text-gray-500 text-sm">
                       Published: {new Date(blog.publishedDate).toDateString()}
@@ -107,16 +109,17 @@ const AddUserBlog = () => {
                   </div>
 
                   <span
-                    className={`px-3 py-1 text-sm font-semibold rounded-full self-start ${blog.Status === "Approved"
-                      ? "bg-green-100 text-green-700"
-                      : blog.Status === "Pending"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
+                    className={`px-3 py-1 text-sm font-semibold rounded-full self-start ${user.isAdmin === 1
+                        ? "bg-green-100 text-green-700"
+                        : blog.Status === "Approved"
+                          ? "bg-green-100 text-green-700"
+                          : blog.Status === "Pending"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
                       }`}
                   >
-                    {blog.Status}
+                    {user.isAdmin === 1 ? "Approved" : blog.Status}
                   </span>
-
                   {blog.Status === "Rejected" && blog.AdminRemark && (
                     <div className="text-sm text-gray-600 bg-gray-100 p-2 rounded-md">
                       <span className="font-semibold">Admin Remark:</span> {blog.AdminRemark}

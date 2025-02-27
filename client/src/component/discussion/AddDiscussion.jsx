@@ -17,8 +17,6 @@ const AddDiscussion = ({ closeModal, demoDiscussions, setDemoDiscussions }) => {
     const [links, setLinks] = useState('');
     const [linkInput, setLinkInput] = useState('');
     const [errors, setErrors] = useState({});
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-    const [showCloseConfirmationModal, setShowCloseConfirmationModal] = useState(false);
 
     const handleTagInputChange = (e) => setTagInput(e.target.value);
 
@@ -107,11 +105,18 @@ const AddDiscussion = ({ closeModal, demoDiscussions, setDemoDiscussions }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setShowConfirmationModal(true); // Show confirmation modal when submit button is clicked
-    };
 
-    const handleConfirmation = async (confirmed) => {
-        if (confirmed) {
+        // Show SweetAlert for confirmation
+        const result = await Swal.fire({
+            title: 'Confirm Submission',
+            text: 'Are you sure you want to post this discussion?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, post it!',
+            cancelButtonText: 'No, cancel!',
+        });
+
+        if (result.isConfirmed) {
             // Proceed with form submission
             const endpoint = "discussion/discussionpost";
             const method = "POST";
@@ -180,30 +185,35 @@ const AddDiscussion = ({ closeModal, demoDiscussions, setDemoDiscussions }) => {
             setTagInput('');
             setLinkInput('');
             setPrivacy({ id: '', value: '' });
-        }
-
-        // Close the modal after confirmation
-        setShowConfirmationModal(false);
-        closeModal();
-    };
-
-    const handleCloseConfirmation = (confirmed) => {
-        if (confirmed) {
-            // Reset the form
-            setTitle('');
-            setContent('');
-            setTags('');
-            setLinks('');
-            setSelectedImage(null);
-            setTagInput('');
-            setLinkInput('');
-            setPrivacy({ id: '', value: '' });
-            setErrors({});
-
-            // Close the modal
             closeModal();
         }
-        setShowCloseConfirmationModal(false);
+    };
+
+    const handleCloseModal = () => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Any unsaved changes will be lost.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, close it!',
+            cancelButtonText: 'No, keep editing!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Reset the form
+                setTitle('');
+                setContent('');
+                setTags('');
+                setLinks('');
+                setSelectedImage(null);
+                setTagInput('');
+                setLinkInput('');
+                setPrivacy({ id: '', value: '' });
+                setErrors({});
+
+                // Close the modal
+                closeModal();
+            }
+        });
     };
 
     useEffect(() => {
@@ -213,10 +223,6 @@ const AddDiscussion = ({ closeModal, demoDiscussions, setDemoDiscussions }) => {
             console.error(error);
         }
     }, []);
-
-    const handleCloseModal = () => {
-        setShowCloseConfirmationModal(true);
-    };
 
     return (
         <>
@@ -359,50 +365,6 @@ const AddDiscussion = ({ closeModal, demoDiscussions, setDemoDiscussions }) => {
                     </button>
                 </div>
             </form>
-            {showConfirmationModal && (
-                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-                        <h3 className="text-lg font-bold mb-4">Confirm Submission</h3>
-                        <p>Are you sure you want to post this discussion?</p>
-                        <div className="flex justify-end space-x-4 mt-4">
-                            <button
-                                className="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg"
-                                onClick={() => setShowConfirmationModal(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="bg-DGXgreen text-white py-2 px-4 rounded-lg"
-                                onClick={() => handleConfirmation(true)}
-                            >
-                                Confirm
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-            {showCloseConfirmationModal && (
-                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-                        <h3 className="text-lg font-bold mb-4">Confirm Close</h3>
-                        <p>Are you sure you want to close the form? Any unsaved changes will be lost.</p>
-                        <div className="flex justify-end space-x-4 mt-4">
-                            <button
-                                className="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg"
-                                onClick={() => setShowCloseConfirmationModal(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="bg-DGXgreen text-white py-2 px-4 rounded-lg"
-                                onClick={() => handleCloseConfirmation(true)}
-                            >
-                                Confirm
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     );
 };

@@ -3,10 +3,11 @@ import BlogModal from '../../../component/BlogModal';
 import moment from 'moment';
 
 const BlogTable = ({ blogs, userToken }) => {
+  console.log("blogs are",blogs)
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState(""); // State for status filter
-  const [categoryFilter, setCategoryFilter] = useState(""); // State for category filter
+  const [statusFilter, setStatusFilter] = useState(""); 
+  const [categoryFilter, setCategoryFilter] = useState(""); 
   const [blogData, setBlogData] = useState(blogs); // Local state for blogs
 
   // Function to update blog state (status or delete)
@@ -48,7 +49,7 @@ const BlogTable = ({ blogs, userToken }) => {
     setIsModalOpen(false);
     setSelectedBlog(null);
   };
-
+// console.log(blog)
   // Filter blogs based on status and category
   const filteredBlogs = blogData.filter((blog) => {
     const matchesStatus = statusFilter === "" || blog.Status?.toLowerCase() === statusFilter.toLowerCase();

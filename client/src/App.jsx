@@ -1,4 +1,5 @@
 // src/App.jsx
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './container/Home.jsx';
 import Navbar from './component/Navbar.jsx';
@@ -48,9 +49,12 @@ import QuizInterface from './component/QuizInterface.jsx';
 
 function App() {
 
+  const [blogs, setBlogs] = useState([]);
+
+
   return (
     <>
-    <ToastContainer style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+      <ToastContainer style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <div className="flex-grow ">
@@ -61,7 +65,7 @@ function App() {
             <Route path="/SignInn" element={<SignInn />} />
             <Route path="/ForgotPassword" element={<ForgotPassword />} />
             <Route path="/ChangePassword" element={<ChangePassword />} />
-            <Route path="/UserProfile" element={<UserProfile />} />
+            <Route path="/UserProfile" element={<UserProfile blogs={blogs} setBlogs={setBlogs}/>} />
             <Route path='/Discussion' element={<Discussion />} />
             <Route path='/ContactUs' element={<ContactUs />} />
             <Route path='/Blog' element={<Blog />} />
@@ -72,37 +76,37 @@ function App() {
             <Route path='/404' element={<Notfound />} />
             {/* <Route path='/Quiz' element={<Quiz />} /> */}
             <Route path='/Survey' element={<Survey />} />
-            <Route path='/ConfirmationModal' element={<ConfirmationModal/>}/>
+            <Route path='/ConfirmationModal' element={<ConfirmationModal />} />
             {/* <Route path='/MyStoryboard' element={<MyStoryboard />} /> */}
             <Route path='/EventWorkshopPage' element={<EventWorkshopPage />} />
             <Route path='/EventRegistrationPage' element={<EventRegistrationPage />} />
             <Route path='/HomeAfterLoginComponent' element={<HomeAfterLoginComponent />} />
             {/* <Route path='/PostCode' element={<PostCode />} /> */}
             <Route path='/CreateICSFile' element={<CreateICSFile />} />
-            <Route path='/AddUserEvent' element={<AddUserEvent/>}/>
-         
-            
-            
+            <Route path='/AddUserEvent' element={<AddUserEvent />} />
+
+
+
             {/* //add path for dynamic  homepage */}
             <Route path='/ParallaxSection' element={<ParallaxSection />} />
             <Route path='/ContentSection' element={<ContentSection />} />
             <Route path='/NewsSection' element={<NewsSection />} />
-            <Route path='/ProjectShowcase' element={<ProjectShowcase />} /> 
+            <Route path='/ProjectShowcase' element={<ProjectShowcase />} />
             <Route path='/CommunityHighlights' element={<CommunityHighlights />} />
 
             {/* Added Quiz in Navbar */}
             <Route path='/QuizInterface' element={<QuizInterface />} />
-           {/* <Route path='/CreateQuiz' element={<CreateQuiz />} />  */}
+            {/* <Route path='/CreateQuiz' element={<CreateQuiz />} />  */}
 
-                     
+
 
 
             {  /*-----------ADMIN----------- */}
 
-            <Route path='/AdminDashboard' element={<AdminDashboard />} />
+            <Route path='/AdminDashboard' element={<AdminDashboard blogs={blogs} setBlogs={setBlogs}/>} />
             {/* <Route path='/Admin/Sidebar' element={<Sidebar />} /> */}
             <Route path='/LoadPage' element={<LoadPage />} />
-            
+
             <Route path='/Calendar' element={<Calendar />} />
             <Route path='/GeneralUserCalendar' element={<GeneralUserCalendar />} />
             {/* <Route path='/BlogManager' element={<BlogManager/>}/> */}
