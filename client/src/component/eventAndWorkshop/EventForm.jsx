@@ -10,9 +10,8 @@ import ApiContext from "../../context/ApiContext";
 import { compressImage } from "../../utils/compressImage.js";
 
 
-const EventForm = () => {
+const EventForm = ({events, setEvents}) => {
   const { user, fetchData, userToken } = useContext(ApiContext);
-  const [events, setEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -22,9 +21,9 @@ const EventForm = () => {
     companyCategoryOptions: [],
   });
 
-  const filteredEvents = events.filter(
-    (event) => statusFilter === "" || event.Status === statusFilter
-  );
+  // const filteredEvents = events.filter(
+  //   (event) => statusFilter === "" || event.Status === statusFilter
+  // );
 
   useEffect(() => {
     const fetchDropdownValues = async (category) => {
@@ -121,33 +120,6 @@ const EventForm = () => {
     }));
   };
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      const endpoint = "eventandworkshop/getEvent";
-      const method = "GET";
-      const headers = {
-        "Content-Type": "application/json",
-      };
-
-      try {
-        const result = await fetchData(endpoint, method, {}, headers);
-        console.log("event result:", result);
-        if (result.success && Array.isArray(result.data)) {
-          setEvents(result.data);
-        } else {
-          console.error("Invalid data format:", result);
-          setEvents([]);
-        }
-      } catch (error) {
-        console.error("Error fetching events:", error);
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, [fetchData]);
 
   const fileInputRef = useRef(null);
 
@@ -247,6 +219,7 @@ const EventForm = () => {
 
 
   const handleSubmit = async () => {
+  
     const errors = {};
     if (!newEvent.title) errors.title = 'Event title is required.';
     if (!newEvent.start) errors.start = 'Start date is required.';
@@ -301,16 +274,9 @@ const EventForm = () => {
       poster: newEvent.poster,
       description: newEvent.description,
     };
-    console.log("companyCategory:", newEvent.companyCategoryId);
-    console.log("companyCategory Type:", typeof newEvent.companyCategoryId);
-    console.log("title Type:", typeof newEvent.title);
-    console.log("start Type:", typeof newEvent.start);
-    console.log("end Type:", typeof newEvent.end);
-    console.log("body is ", body)
 
     try {
       const data = await fetchData(endpoint, method, body, headers);
-      console.log("data is ", data);
       if (data.success) {
         const addedEvent = {
           EventTitle: newEvent.title,
@@ -325,22 +291,28 @@ const EventForm = () => {
           EventDescription: newEvent.description,
         };
         console.log("add event", addedEvent);
-        // setEvents([
-        //   ...events,
-        //   {
-        //     ...newEvent,
-        //     start: new Date(newEvent.start),
-        //     end: new Date(newEvent.end),
-        //   },
-        // ]);
-        setEvents([...events, addedEvent]);
+        setEvents((prevEvent)=>[
+          ...prevEvent,
+          {
+            ...addedEvent,
+            start: new Date(newEvent.start),
+            end: new Date(newEvent.end),
+          },
+        ]);
+
+        console.log("ADded Event", events)
+        // onEventAdded(addedEvent);
         resetForm();
         setIsModalOpen(false);
         Swal.fire({
           icon: 'success',
           title: 'Event Added!',
           text: 'Event added successfully!',
-        }); console.log('Event added successfully!', data.message);
+        })
+
+        // .then(() => {
+        //   window.location.href = ""; 
+        //         });
       } else {
         console.error(`Server Error: ${data.message}`);
         Swal.fire({

@@ -39,9 +39,9 @@ import { body, validationResult } from "express-validator";
             // Set event approval details based on admin status
             const status = isAdmin ? "Approved" : "Pending";
             const approvedBy = isAdmin ? user.Name : null;
-            const approvedOn = isAdmin ? new Date() : null;
+            const approvedOn = isAdmin ? new Date() : null; 
             // const UserId = user.UserId; 
-console.log(user.UserID);
+console.log(user.UserID); 
 
             // Insert event into the Events table
             const insertEventQuery = `INSERT INTO Community_Event 

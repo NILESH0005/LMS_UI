@@ -28,14 +28,15 @@ const EventTable = ({ }) => {
   // const [handleEventStatusChange, setHandleEventStatusChange] = useState(false);
 
 
-
-
   const [dropdownData, setDropdownData] = useState({
     categoryOptions: [],
     companyCategoryOptions: []
   });
 
-
+  // const handleEventAdded = (newEvent) => {
+  //   setEvents((prevEvents) => [...prevEvents, newEvent]);
+  // };
+  
   useEffect(() => {
     const fetchDropdownValues = async (category) => {
       try {
@@ -48,14 +49,6 @@ const EventTable = ({ }) => {
       }
     };
 
-    // const handleEventStatusChange = (eventId, newStatus) => {
-    //   // Update event status logic (e.g., updating status in the state)
-    //   setEvents((prevEvents) =>
-    //     prevEvents.map((event) =>
-    //       event.EventID === eventId ? { ...event, Status: newStatus } : event
-    //     )
-    //   );
-    // };
 
     const fetchCategories = async () => {
       const eventTypeOptions = await fetchDropdownValues('eventType');
@@ -89,6 +82,8 @@ const EventTable = ({ }) => {
         console.log("event result:", result);
         if (result.success && Array.isArray(result.data)) {
           setEvents(result.data);
+          console.log(events);
+          
         } else {
           console.error("Invalid data format:", result);
           setEvents([]);
@@ -158,34 +153,6 @@ const EventTable = ({ }) => {
   };
 
  
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      const endpoint = "eventandworkshop/getEvent";
-      const method = "GET";
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-
-      try {
-        const result = await fetchData(endpoint, method, {}, headers);
-        console.log("event result:", result);
-        if (result.success && Array.isArray(result.data)) {
-          setEvents(result.data);
-        } else {
-          console.error("Invalid data format:", result);
-          setEvents([]);
-        }
-      } catch (error) {
-        console.error("Error fetching events:", error);
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, [fetchData]);
 
   const fileInputRef = useRef(null);
 
@@ -264,7 +231,8 @@ const EventTable = ({ }) => {
         </button>
       </div>
       {showForm ? (
-        <EventForm />
+        <EventForm events={events} setEvents={setEvents}/>
+        // <EventForm/>
       ) : (
         <div className="event-table flex items-center justify-center">
           <table className="table-fixed border bottom-2 w-full mt-4">
@@ -327,7 +295,6 @@ const EventTable = ({ }) => {
         </div>
       )}
 
-      {/* Render the EventDetailsModal */}
       {selectedEvent && (
         <DetailsEventModal
           selectedEvent={selectedEvent}
