@@ -4,17 +4,15 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import ApiContext from '.././context/ApiContext';
-import { compressImage } from '../utils/compressImage.js';
-import EventForm from './eventAndWorkshop/EventForm';
+import ApiContext from '../context/ApiContext.jsx';
+import EventForm from './eventAndWorkshop/EventForm.jsx';
 import DetailsEventModal from './eventAndWorkshop/DetailsEventModal.jsx';
-import LoadPage from './LoadPage';
+import LoadPage from './LoadPage.jsx';
 
-const EventTable = () => {
+const EventTable = (props) => {
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const { fetchData, userToken } = useContext(ApiContext);
-  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -69,15 +67,15 @@ const EventTable = () => {
         const result = await fetchData(endpoint, method, {}, headers);
         console.log("event result:", result);
         if (result.success && Array.isArray(result.data)) {
-          setEvents(result.data);
-          console.log(events);
+          props.setEvents(result.data);
+          // console.log(events);
         } else {
           console.error("Invalid data format:", result);
-          setEvents([]);
+          props.setEvents([]);
         }
       } catch (error) {
         console.error("Error fetching events:", error);
-        setEvents([]);
+        props.setEvents([]);
       } finally {
         setLoading(false);
       }
@@ -99,14 +97,14 @@ const EventTable = () => {
     registerLink: '',
   });
 
-  const filteredEvents = events.filter((event) => {
+  const filteredEvents = props.events.filter((event) => {
     const matchesStatus = statusFilter === "" || event.Status === statusFilter;
     const matchesCategory = selectedCategory === "" || event.EventType === selectedCategory;
     return matchesStatus && matchesCategory;
   });
 
   const handleEventUpdate = (updatedEvent) => {
-    setEvents((prevEvents) =>
+    props.setEvents((prevEvents) =>
       prevEvents.map((event) =>
         event.EventID === updatedEvent.EventID ? updatedEvent : event
       )
@@ -114,7 +112,7 @@ const EventTable = () => {
   };
 
   const handleEventDelete = (eventId) => {
-    setEvents((prevEvents) =>
+    props.setEvents((prevEvents) =>
       prevEvents.filter((event) => event.EventID !== eventId)
     );
   };
@@ -207,7 +205,7 @@ const EventTable = () => {
         </button>
       </div>
       {showForm ? (
-        <EventForm events={events} setEvents={setEvents} />
+        <EventForm events={props.events} setEvents={props.setEvents} />
       ) : (
         <div className="event-table flex items-center justify-center">
           <table className="table-fixed border bottom-2 w-full mt-4">

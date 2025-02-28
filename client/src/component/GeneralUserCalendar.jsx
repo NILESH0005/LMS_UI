@@ -13,19 +13,19 @@ const eventColors = {
   "Global Infoventures Event": '#76B900', // DGXgreen
 };
 
-const GeneralUserCalendar = ({ events }) => {
+const GeneralUserCalendar = (props) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Updated events list :", events);
+    console.log("Updated events list :", );
     const loadEvents = async () => {
       setIsLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setIsLoading(false);
     };
     loadEvents();
-  }, [events]);
+  }, [props.events]);
 
   const handleSelectEvent = (event) => {
     console.log("Selected Event:", event); // Debug selected event
@@ -55,7 +55,7 @@ const GeneralUserCalendar = ({ events }) => {
     };
   };
 
-  const formattedEvents = events?.map(event => ({
+  const formattedEvents = props.events?.map(event => ({
     ...event,
     start: moment.utc(event.StartDate).local().toDate(), // Convert UTC to local time
     end: moment.utc(event.EndDate).local().toDate(),     // Convert UTC to local time

@@ -10,7 +10,7 @@ import ApiContext from "../../context/ApiContext";
 import { compressImage } from "../../utils/compressImage.js";
 
 
-const EventForm = ({events, setEvents}) => {
+const EventForm = (props) => {
   const { user, fetchData, userToken } = useContext(ApiContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
@@ -219,7 +219,6 @@ const EventForm = ({events, setEvents}) => {
 
 
   const handleSubmit = async () => {
-  
     const errors = {};
     if (!newEvent.title) errors.title = 'Event title is required.';
     if (!newEvent.start) errors.start = 'Start date is required.';
@@ -232,7 +231,7 @@ const EventForm = ({events, setEvents}) => {
     if (!newEvent.registerLink) errors.registerLink = 'Register link is required.';
     if (!newEvent.poster) errors.poster = 'Poster is required.';
 
-    // Check for errors
+    // Handle validation errors
     if (Object.keys(errors).length > 0) {
       setErrors(errors);
       const firstErrorField = Object.keys(errors)[0];
@@ -247,7 +246,7 @@ const EventForm = ({events, setEvents}) => {
         description: descriptionRef,
         registerLink: registerLinkRef,
       };
-      const element = refMap[firstErrorField].current;
+      const element = refMap[firstErrorField]?.current;
       if (element) {
         element.focus();
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -261,8 +260,11 @@ const EventForm = ({events, setEvents}) => {
       'Content-Type': 'application/json',
       'auth-token': userToken,
     };
+    console.log(user)
+
     const body = {
       userID: user.UserID,
+      userName: user.userName, // Add the userName here
       title: newEvent.title,
       start: newEvent.start,
       end: newEvent.end,
@@ -277,8 +279,11 @@ const EventForm = ({events, setEvents}) => {
 
     try {
       const data = await fetchData(endpoint, method, body, headers);
+      console.log("API Response:", body);
+
       if (data.success) {
         const addedEvent = {
+          EventId: data.data.eventId, // Ensure it aligns with API response
           EventTitle: newEvent.title,
           StartDate: newEvent.start,
           EndDate: newEvent.end,
@@ -290,46 +295,32 @@ const EventForm = ({events, setEvents}) => {
           EventImage: newEvent.poster,
           EventDescription: newEvent.description,
         };
-        console.log("add event", addedEvent);
-        setEvents((prevEvent)=>[
-          ...prevEvent,
-          {
-            ...addedEvent,
-            start: new Date(newEvent.start),
-            end: new Date(newEvent.end),
-          },
-        ]);
 
-        console.log("ADded Event", events)
-        // onEventAdded(addedEvent);
+        if (typeof props.setEvents === "function") {
+          props.setEvents((prevEvent) => [
+            ...prevEvent,
+            {
+              ...addedEvent,
+              start: new Date(newEvent.start),
+              end: new Date(newEvent.end),
+            },
+          ]);
+        } else {
+          console.warn("setEvents is not a function!");
+        }
+
+        Swal.fire("Success", "Event Added Successfully", "success");
         resetForm();
         setIsModalOpen(false);
-        Swal.fire({
-          icon: 'success',
-          title: 'Event Added!',
-          text: 'Event added successfully!',
-        })
-
-        // .then(() => {
-        //   window.location.href = ""; 
-        //         });
       } else {
-        console.error(`Server Error: ${data.message}`);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error!',
-          text: `Error: ${data.message}`,
-        });
+        Swal.fire("Error", `Error: ${data.message}`, "error");
       }
     } catch (error) {
-      console.error('Error adding event:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'An error occurred while adding the event. Please try again.',
-      });
+      console.error("Error adding event:", error);
+      Swal.fire("Error", "An error occurred while adding the event. Please try again.", "error");
     }
   };
+
 
   const handleCancel = () => {
     Swal.fire({
