@@ -24,7 +24,7 @@ import EventWorkshopPage from './container/EventWorkshopPage.jsx';
 // import MyStoryboard from './component/MyStoryboard.jsx';
 // import LoadPage from './component/LoadPage.jsx';
 import LoadPage from './component/LoadPage.jsx';
-import Calendar from './component/Calendar.jsx';
+// import Calendar from './component/Calendar.jsx';
 import EventRegistrationPage from './component/EventRegistrationPage.jsx';
 import GeneralUserCalendar from './component/GeneralUserCalendar.jsx';
 import AdminDashboard from './Admin/AdminDashboard.jsx';
@@ -51,6 +51,8 @@ import Quiz from './Admin/Components/Quiz.jsx';
 function App() {
 
   const [blogs, setBlogs] = useState([]);
+  const [events, setEvents] = useState([]); 
+
 
 
   return (
@@ -66,7 +68,9 @@ function App() {
             <Route path="/SignInn" element={<SignInn />} />
             <Route path="/ForgotPassword" element={<ForgotPassword />} />
             <Route path="/ChangePassword" element={<ChangePassword />} />
-            <Route path="/UserProfile" element={<UserProfile blogs={blogs} setBlogs={setBlogs}/>} />
+            <Route path="/UserProfile" element={<UserProfile 
+            blogs={blogs} setBlogs={setBlogs} 
+            events={events} setEvents={setEvents}/>} />
             <Route path='/Discussion' element={<Discussion />} />
             <Route path='/ContactUs' element={<ContactUs />} />
             <Route path='/Blog' element={<Blog />} />
@@ -104,11 +108,13 @@ function App() {
 
             {  /*-----------ADMIN----------- */}
 
-            <Route path='/AdminDashboard' element={<AdminDashboard blogs={blogs} setBlogs={setBlogs}/>} />
+            <Route path='/AdminDashboard' element={<AdminDashboard 
+            blogs={blogs} setBlogs={setBlogs}
+            events={events} setEvents={setEvents}/>} />
             {/* <Route path='/Admin/Sidebar' element={<Sidebar />} /> */}
             <Route path='/LoadPage' element={<LoadPage />} />
 
-            <Route path='/Calendar' element={<Calendar />} />
+            {/* <Route path='/Calendar' element={<Calendar />} /> */}
             <Route path='/GeneralUserCalendar' element={<GeneralUserCalendar />} />
             {/* <Route path='/BlogManager' element={<BlogManager/>}/> */}
           </Routes>

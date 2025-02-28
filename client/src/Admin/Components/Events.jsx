@@ -1,20 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
 import GeneralUserCalendar from "../../component/GeneralUserCalendar";
 import ApiContext from "../../context/ApiContext";
-import EventTable from "../../component/Calendar";
+import EventTable from "../../component/EventTable";
 import { MdTableChart } from "react-icons/md";
 import { FaCalendarAlt } from "react-icons/fa";
 
-const Events = () => {
+const Events = (props) => {
   const { fetchData } = useContext(ApiContext);
-  const [events, setEvents] = useState([]);
+  // const [events, setEvents] = useState([]);
   const [showTable, setShowTable] = useState(false);
 
   useEffect(() => {
     const fetchEventData = async () => {
       const endpoint = "eventandworkshop/getEvent";
       const eventData = await fetchData(endpoint);
-      setEvents(eventData.data || []);
+      props.setEvents(eventData.data || []);
       console.log("event data:", eventData.data);
     };
     fetchEventData();
@@ -33,7 +33,7 @@ const Events = () => {
 
       {/* Display Event Table or Calendar */}
       <div className="mt-4">
-        {showTable ? <EventTable /> : <GeneralUserCalendar events={events} />}
+        {showTable ? <EventTable events={props.events} setEvents={props.setEvents} /> : <GeneralUserCalendar events={props.events} setEvents={props.setEvents}/>}
       </div>
     </div>
   );
