@@ -5,7 +5,6 @@ import Events from './Components/Events';
 import GuidelineManager from './Components/GuidelineManager';
 import Contact from './Components/Contact';
 import BlogManager from './Components/BlogManager';
-import HomeManager from './Components/HomeManager';
 import Home from './Components/home';
 import Quiz from './Components/Quiz';
 import {
@@ -32,6 +31,8 @@ const AdminDashboard = (props) => {
         return <Events />;
       case 'blog_manager':
         return <BlogManager blogs={props.blogs} setBlogs={props.setBlogs} />;
+      case 'quiz':
+        return <Quiz />;
       case 'guidelines':
         return <GuidelineManager />;
       case 'Home':
