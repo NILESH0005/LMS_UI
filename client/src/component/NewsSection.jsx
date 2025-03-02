@@ -6,28 +6,28 @@ import "slick-carousel/slick/slick-theme.css";
 const newsData = [
   {
     title: "AI Workshop for Beginners",
-    date: "January 15, 2025",
+    // date: "January 15, 2025",
     location: "GL Bajaj, Training Room 1",
     image: "https://picsum.photos/seed/picsum/200/300",
     link: "#",
   },
   {
     title: "Advanced Data Science Seminar",
-    date: "February 20, 2025",
+    // date: "February 20, 2025",
     location: "KIET Hall 2",
     image: "https://picsum.photos/200/300",
     link: "#",
   },
   {
     title: "Machine Learning Bootcamp",
-    date: "March 10, 2025",
+    // date: "March 10, 2025",
     location: "IIT Delhi, Seminar Hall",
     image: "https://picsum.photos/id/237/200/300",
     link: "#",
   },
   {
     title: "Neural Networks Workshop",
-    date: "April 5, 2025",
+    // date: "April 5, 2025",
     location: "BITS Pilani, Tech Auditorium",
     image: "https://picsum.photos/200/300?grayscale",
     link: "#",
@@ -76,11 +76,11 @@ const NewsSection = () => {
               )}
               <div className="p-4">
                 <h3 className="text-xl font-semibold">{news.title}</h3>
-                <p className="text-gray-300 text-sm mt-2"><strong>Date:</strong> {news.date}</p>
+                {/* <p className="text-gray-300 text-sm mt-2"><strong>Date:</strong> {news.date}</p> */}
                 <p className="text-gray-300 text-sm"><strong>Location:</strong> {news.location}</p>
-                <a href={news.link} className="mt-3 inline-block text-green-400 hover:underline">
+                {/* <a href={news.link} className="mt-3 inline-block text-green-400 hover:underline">
                   More Info →
-                </a>
+                </a> */}
               </div>
             </div>
           </div>

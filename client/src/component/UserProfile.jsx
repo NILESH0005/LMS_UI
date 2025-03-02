@@ -242,7 +242,7 @@ const UserProfile = (props) => {
               </div>
               <div className="flex flex-col items-center -mt-20">
                 {/* <div className="w-40 h-40 border-4 border-DGXgreen rounded-full">
-                  <img src={images.Globe} className='rounded-full' alt="Profile" />
+                  <img src={images.Glo  be} className='rounded-full' alt="Profile" />
                   <input
                     type="file"
                     accept="image/*"
@@ -495,7 +495,7 @@ const UserProfile = (props) => {
                 <div className='flex-col'>
                   <h4 className="text-xl text-[#0f172a] font-bold">My Events</h4>
                 </div>
-                <AddUserEvent />
+                <AddUserEvent events={props.events} setEvents={props.setEvents} />
 
               </div>
             )}

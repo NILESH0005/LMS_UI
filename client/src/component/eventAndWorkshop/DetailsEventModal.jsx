@@ -103,14 +103,13 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
     const success = await updateEventStatus(selectedEvent.EventID, confirmationAction, remark);
 
     if (success) {
-      // Refresh the events list or close the modal
-      onClose(); // Close the modal after successful Status
+      
+      onClose(); 
     } else {
 
       console.error(`Failed to ${confirmationAction} event.`);
     }
 
-    // Close the confirmation modal
     setShowConfirmationModal(false);
   };
 
@@ -118,11 +117,11 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
     <div
       id="event-detail"
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-      onClick={onClose} // Close modal on outside click
+      onClick={onClose} 
     >
       <div
         className="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto z-50 transform transition-transform duration-300 ease-in-out"
-        onClick={(e) => e.stopPropagation()} // Prevent modal close on inside click
+        onClick={(e) => e.stopPropagation()} 
       >
         <h2 className="text-4xl font-bold mb-6 text-center">Event Details</h2>
         <div className="space-y-4">

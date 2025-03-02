@@ -7,7 +7,6 @@ import { FaCalendarAlt } from "react-icons/fa";
 
 const Events = (props) => {
   const { fetchData } = useContext(ApiContext);
-  // const [events, setEvents] = useState([]);
   const [showTable, setShowTable] = useState(false);
 
   useEffect(() => {
@@ -19,6 +18,9 @@ const Events = (props) => {
     };
     fetchEventData();
   }, []);
+
+  
+
 
   return (
     <div className="p-4">

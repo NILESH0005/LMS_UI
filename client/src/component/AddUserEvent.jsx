@@ -7,10 +7,9 @@ import ApiContext from "../context/ApiContext";
 import DetailsEventModal from "./eventAndWorkshop/DetailsEventModal";
 
 
-const AddUserEvent = () => {
+const AddUserEvent = (props) => {
   const [showForm, setShowForm] = useState(false);
   const { fetchData, user, userToken } = useContext(ApiContext);
-  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -38,30 +37,32 @@ const AddUserEvent = () => {
       try {
         const result = await fetchData(endpoint, method, {}, headers);
         if (result.success && Array.isArray(result.data)) {
-          setEvents(result.data);
+          props.setEvents(result.data);
         } else {
           console.error("Invalid data format:", result);
-          setEvents([]);
           console.error("Failed to fetch events. Please try again later.");
         }
       } catch (error) {
         console.error("Error fetching events:", error);
-        setEvents([]);
         console.error("An error occurred while fetching events.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchEvents();
-  }, [fetchData]);
+  }, []);
 
 
 
-  const filteredEvents = events.filter((event) => event.UserID === user.UserID);
+  const filteredEvents = props.events.filter((event) => event.UserID === user.UserID);
+  console.log("filtered events are ", filteredEvents);
 
   if (loading) {
     return <LoadPage />;
+  }
+
+  const updateEvents = (newBlog) => {
+    props.setEvents((prevEvents) => [newEvent, ...prevEvents]);
   }
 
   return (
@@ -80,13 +81,13 @@ const AddUserEvent = () => {
       <div className="max-w-5xl mx-auto">
         {showForm ? (
           // <EventForm />
-<EventForm events={events} setEvents={setEvents}/>
+          <EventForm updateEvents={updateEvents} setEvents={props.setEvents} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.length > 0 ? (
               filteredEvents.map((event) => (
                 <div
-                  key={event.id}
+                  key={event.EventID}
                   className="p-5 rounded-xl shadow-lg border-2 border-gray-200 bg-white hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col gap-3"
                 >
                   {/* Date Section */}

@@ -20,8 +20,7 @@ const ProjectShowcase = () => {
           <motion.div
             key={index}
             className="relative bg-gray-800 text-white rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl"
-            whileHover={{ scale: 1.05 }} // Add a hover animation
-          >
+            whileHover={{ scale: 1.05 }}>
             <div className="relative w-full h-[250px] flex items-center justify-center bg-black">
               <img src={project.gif} alt={project.title} className="w-full h-full object-cover opacity-80" />
             </div>
