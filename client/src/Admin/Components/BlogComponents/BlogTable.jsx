@@ -4,14 +4,12 @@ import moment from 'moment';
 import ApiContext from '../../../context/ApiContext';
 
 const BlogTable = ({ blogs, userToken }) => {
-  console.log("blogs are", blogs)
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [blogData, setBlogData] = useState(blogs); // Local state for blogs
   const { user } = useContext(ApiContext);
-
 
   // Function to update blog state (status or delete)
   const updateBlogState = (blogId, newStatus) => {
@@ -55,7 +53,7 @@ const BlogTable = ({ blogs, userToken }) => {
     setIsModalOpen(false);
     setSelectedBlog(null);
   };
-  // console.log(blog)
+
   // Filter blogs based on status and category
   const filteredBlogs = blogData.filter((blog) => {
     const matchesStatus = statusFilter === "" || blog.Status?.toLowerCase() === statusFilter.toLowerCase();
@@ -98,28 +96,36 @@ const BlogTable = ({ blogs, userToken }) => {
           </tr>
         </thead>
         <tbody>
-          {filteredBlogs.map((blog, index) => (
-            <tr key={index} className={`text-center ${getStatusClass(blog.Status)}`}>
-              <td className="border px-4 py-2">{index + 1}</td>
-              <td className="border px-4 py-2">{blog.title}</td>
-              <td className="border px-4 py-2">{blog.category}</td>
-              <td className="border px-4 py-2">{blog.UserName}</td>
-              <td className="border px-4 py-2">
-                {moment.utc(blog.publishedDate).format("MMMM D, YYYY h:mm A")}
-              </td>
-              <td className="border px-4 py-2">{
-                user.isAdmin === 1 ? "Approved" : blog.Status || "Pending"
-              }</td>
-              <td className="border px-4 py-2">
-                <button
-                  className="bg-DGXblue text-white px-4 py-1 rounded-lg"
-                  onClick={() => openModal(blog)}
-                >
-                  View
-                </button>
+          {filteredBlogs.length > 0 ? (
+            filteredBlogs.map((blog, index) => (
+              <tr key={index} className={`text-center ${getStatusClass(blog.Status)}`}>
+                <td className="border px-4 py-2">{index + 1}</td>
+                <td className="border px-4 py-2">{blog.title}</td>
+                <td className="border px-4 py-2">{blog.category}</td>
+                <td className="border px-4 py-2">{blog.UserName}</td>
+                <td className="border px-4 py-2">
+                  {moment.utc(blog.publishedDate).format("MMMM D, YYYY h:mm A")}
+                </td>
+                <td className="border px-4 py-2">{
+                  user.isAdmin === 1 ? "Approved" : blog.Status || "Pending"
+                }</td>
+                <td className="border px-4 py-2">
+                  <button
+                    className="bg-DGXblue text-white px-4 py-1 rounded-lg"
+                    onClick={() => openModal(blog)}
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="7" className="text-center py-4">
+                No record found
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 

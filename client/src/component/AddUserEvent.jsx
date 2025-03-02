@@ -7,10 +7,11 @@ import ApiContext from "../context/ApiContext";
 import DetailsEventModal from "./eventAndWorkshop/DetailsEventModal";
 
 
-const AddUserEvent = () => {
+const AddUserEvent = (props) => {
   const [showForm, setShowForm] = useState(false);
   const { fetchData, user, userToken } = useContext(ApiContext);
-  const [events, setEvents] = useState([]);
+  // const [events, setEvents] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -38,15 +39,17 @@ const AddUserEvent = () => {
       try {
         const result = await fetchData(endpoint, method, {}, headers);
         if (result.success && Array.isArray(result.data)) {
-          setEvents(result.data);
+     
+          props.setEvents(result.data);
+          console.log(result.data)
         } else {
           console.error("Invalid data format:", result);
-          setEvents([]);
+          props.setEvents([]);
           console.error("Failed to fetch events. Please try again later.");
         }
       } catch (error) {
         console.error("Error fetching events:", error);
-        setEvents([]);
+        props.setEvents([]);
         console.error("An error occurred while fetching events.");
       } finally {
         setLoading(false);
@@ -56,9 +59,9 @@ const AddUserEvent = () => {
     fetchEvents();
   }, [fetchData]);
 
+  // console.log(typeof props.event);
 
-
-  const filteredEvents = events.filter((event) => event.UserID === user.UserID);
+  const filteredEvents = props.events.filter((event) => event.UserID === user.UserID);
 
   if (loading) {
     return <LoadPage />;
@@ -80,7 +83,7 @@ const AddUserEvent = () => {
       <div className="max-w-5xl mx-auto">
         {showForm ? (
           // <EventForm />
-<EventForm events={events} setEvents={setEvents}/>
+<EventForm events={props.events} setEvents={props.setEvents}/>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.length > 0 ? (
@@ -118,9 +121,7 @@ const AddUserEvent = () => {
                     <h3 className="text-xl font-bold text-gray-900">{event.EventTitle}</h3>
                     <p className="text-gray-600 line-clamp-1 overflow-hidden text-ellipsis whitespace-nowrap">
                       {stripHtmlTags(event.EventDescription).split(" ").slice(0, 2).join(" ")}...
-                    </p>
-
-
+                       </p>
                     <div className="flex flex-col text-gray-600 text-sm">
                       <span>📍 {event.Venue}</span>
                       <span>

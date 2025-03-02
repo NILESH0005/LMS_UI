@@ -4,17 +4,10 @@ import Swal from 'sweetalert2';
 import ApiContext from '../../context/ApiContext';
 
 const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) => {
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const { user, userToken, fetchData } = useContext(ApiContext);
-  const [confirmationAction, setConfirmationAction] = useState(null); // 'approve', 'reject', 'delete'
   const [remark, setRemark] = useState('');
 
   const updateEventStatus = async (eventId, Status, remark = '') => {
-    // const eventId = Number(selectedEvent.EventID);
-    // if (isNaN(eventId)) {
-    //   console.error("Invalid EventID:", selectedEvent.EventID);
-    //   return;
-    // }
     const endpoint = `eventandworkshop/updateEvent/${eventId}`;
     const method = "POST";
     const headers = {
@@ -22,10 +15,9 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
       'auth-token': userToken
     };
 
-    // Request body
     const body = {
-      Status, // 'approve', 'reject', or 'delete'
-      remark, // Only required for 'reject'
+      Status,
+      remark,
     };
 
     try {
@@ -33,7 +25,6 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
       console.log("Update event result:", result);
 
       if (result.success) {
-        // handleEventStatusChange(selectedEvent.EventID, confirmationAction);
         Swal.fire({
           title: "Success!",
           text: `Event ${Status}ed successfully!`,
@@ -41,7 +32,7 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
           confirmButtonText: "OK",
         });
 
-        return true; // Indicate success
+        return true;
       } else {
         Swal.fire({
           title: "Error!",
@@ -49,9 +40,9 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
           icon: "error",
           confirmButtonText: "OK",
         });
-        console.log("error", result.message)
+        console.log("error", result.message);
 
-        return false; // Indicate failure
+        return false;
       }
     } catch (error) {
       Swal.fire({
@@ -60,69 +51,109 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
         icon: "error",
         confirmButtonText: "OK",
       });
-      console.log("error", result.message)
+      console.log("error", error.message);
 
-      return false; // Indicate failure
+      return false;
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirmation = (Status) => {
+    if (!selectedEvent) {
+      Swal.fire({
+        title: "Error!",
+        text: "No event selected.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     Swal.fire({
       title: 'Confirmation',
-      text: `Are you sure you want to ${confirmationAction} this event?`,
+      text: `Are you sure you want to ${Status} this event?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Confirm',
+      confirmButtonText: 'OK',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
-      input: confirmationAction === 'reject' ? 'textarea' : null,
+      input: Status === 'reject' ? 'textarea' : null,
       inputPlaceholder: 'Enter remark',
       inputValue: remark,
       preConfirm: (inputValue) => {
-        if (confirmationAction === 'reject' && !inputValue) {
+        if (Status === 'reject' && !inputValue) {
           Swal.showValidationMessage('Remark is required for rejection');
         }
         return inputValue;
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        if (confirmationAction === 'reject') {
-          setRemark(result.value); // Save the remark if rejecting
+        if (Status === 'reject') {
+          setRemark(result.value);
         }
-        handleConfirmAction(); // Call the original function
+        handleConfirmAction(Status, result.value);
       }
     });
   };
 
-  const handleConfirmation = (Status) => {
-    setConfirmationAction(Status);
-    setShowConfirmationModal(true);
-  };
-
-  const handleConfirmAction = async () => {
-    const success = await updateEventStatus(selectedEvent.EventID, confirmationAction, remark);
-
-    if (success) {
-      // Refresh the events list or close the modal
-      onClose(); // Close the modal after successful Status
-    } else {
-
-      console.error(`Failed to ${confirmationAction} event.`);
+  const handleConfirmAction = async (Status, remark = '') => {
+    console.log("Selected Event:", selectedEvent); // Debug log
+    if (!selectedEvent) {
+      Swal.fire({
+        title: "Error!",
+        text: "No event selected.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
     }
 
-    // Close the confirmation modal
-    setShowConfirmationModal(false);
+    const success = await updateEventStatus(selectedEvent.EventID, Status, remark);
+
+    if (success) {
+      handleEventStatusChange(selectedEvent.EventID, Status);
+      onClose();
+    } else {
+      console.error(`Failed to ${Status} event.`);
+    }
   };
+
+  if (!selectedEvent) {
+    return (
+      <div
+        id="event-detail"
+        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        onClick={onClose}
+      >
+        <div
+          className="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto z-50 transform transition-transform duration-300 ease-in-out"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h2 className="text-4xl font-bold mb-6 text-center">Event Details</h2>
+          <div className="space-y-4">
+            <div className="text-center text-xl">No record found</div>
+          </div>
+          <div className="flex justify-center gap-4 mt-4">
+            <button
+              onClick={onClose}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-300"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
       id="event-detail"
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-      onClick={onClose} // Close modal on outside click
+      onClick={onClose}
     >
       <div
         className="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto z-50 transform transition-transform duration-300 ease-in-out"
-        onClick={(e) => e.stopPropagation()} // Prevent modal close on inside click
+        onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-4xl font-bold mb-6 text-center">Event Details</h2>
         <div className="space-y-4">
@@ -202,54 +233,8 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
           </button>
         </div>
       </div>
-
-      {/* Confirmation Modal */}
-      {showConfirmationModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full transform transition-transform duration-300 ease-in-out">
-            <h2 className="text-2xl font-bold mb-4">Confirmation</h2>
-            <p>Are you sure you want to {confirmationAction} this event?</p>
-            {confirmationAction === 'reject' && (
-              <textarea
-                className="w-full mt-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter remark"
-                value={remark}
-                onChange={(e) => setRemark(e.target.value)}
-                required
-              />
-            )}
-            <div className="flex justify-end gap-4 mt-6">
-              <button
-                onClick={() => setShowConfirmationModal(false)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-300"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmAction}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-300"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default DetailsEventModal;
-
-
-
-
-
-
-
-
-
-
-
-
-

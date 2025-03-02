@@ -11,7 +11,9 @@ import { compressImage } from "../../utils/compressImage.js";
 
 
 const EventForm = (props) => {
+  
   const { user, fetchData, userToken } = useContext(ApiContext);
+  console.log(user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -219,6 +221,7 @@ const EventForm = (props) => {
 
 
   const handleSubmit = async () => {
+    
     const errors = {};
     if (!newEvent.title) errors.title = 'Event title is required.';
     if (!newEvent.start) errors.start = 'Start date is required.';
@@ -264,7 +267,7 @@ const EventForm = (props) => {
 
     const body = {
       userID: user.UserID,
-      userName: user.userName, // Add the userName here
+      userName: user.Name, // Add the userName here
       title: newEvent.title,
       start: newEvent.start,
       end: newEvent.end,
@@ -282,7 +285,9 @@ const EventForm = (props) => {
       console.log("API Response:", body);
 
       if (data.success) {
+        
         const addedEvent = {
+          
           EventId: data.data.eventId, // Ensure it aligns with API response
           EventTitle: newEvent.title,
           StartDate: newEvent.start,
@@ -295,15 +300,17 @@ const EventForm = (props) => {
           EventImage: newEvent.poster,
           EventDescription: newEvent.description,
         };
-
         if (typeof props.setEvents === "function") {
           props.setEvents((prevEvent) => [
-            ...prevEvent,
             {
               ...addedEvent,
+              UserName: user.Name,
+              Status : user.isAdmin === 1 ? "Approved" : "Pending",
+              
               start: new Date(newEvent.start),
               end: new Date(newEvent.end),
             },
+            ...prevEvent
           ]);
         } else {
           console.warn("setEvents is not a function!");

@@ -477,7 +477,6 @@ const UserProfile = (props) => {
                               <div className="flex items-center gap-x-4">
                                 {/* <FaEdit className="text-gray-600 hover:text-blue-600 cursor-pointer text-xl transition-transform transform hover:scale-110"
                                   onClick={() => handleEditDiscussion(discussion)} /> */}
-
                                 <FaTrash className="text-gray-600 hover:text-red-600 cursor-pointer text-xl transition-transform transform hover:scale-110"
                                   onClick={() => handleDeleteDiscussion(discussion)} />
                               </div>
@@ -493,16 +492,15 @@ const UserProfile = (props) => {
             {activeTab === 'events' && (
               <div className='w-full'>
                 <div className='flex-col'>
-                  <h4 className="text-xl text-[#0f172a] font-bold">My Events</h4>
+                <h4 className="text-xl text-[#0f172a] font-bold">My Events</h4>
                 </div>
-                <AddUserEvent />
-
-              </div>
+                <AddUserEvent events={props.events} setEvents={props.setEvents} />
+                </div>
             )}
             {activeTab === 'blogs' && (
               <div className='w-full'>
                 <div className='flex-col'>
-                  <h4 className="text-xl text-[#0f172a] font-bold">My Events</h4>
+                  <h4 className="text-xl text-[#0f172a] font-bold">My Blogs</h4>
                 </div>
                 <AddUserBlog blogs={props.blogs} setBlogs={props.setBlogs}/>
 

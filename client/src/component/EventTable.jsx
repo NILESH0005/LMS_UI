@@ -55,6 +55,39 @@ const EventTable = (props) => {
     fetchCategories();
   }, []);
 
+    const validateDates = () => {
+    const { start, end } = newEvent;
+    if (!start || !end) {
+      Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please select both start and end dates and times.' });
+      return false;
+    }
+
+    const startDateTime = new Date(start);
+    const endDateTime = new Date(end);
+    const currentDateTime = new Date();
+
+    if (startDateTime < currentDateTime) {
+      Swal.fire({ icon: 'error', title: 'Invalid Start Date/Time', text: 'Start time cannot be in the past.' });
+      return false;
+    }
+
+    if ((endDateTime - startDateTime) / (1000 * 60) < 30) {
+      Swal.fire({ icon: 'error', title: 'Invalid End Date/Time', text: 'End time must be at least 30 minutes after the start time.' });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateDates()) return;
+
+    console.log('Event Data Submitted:', newEvent);
+  };
+
+
+
   useEffect(() => {
     const fetchEvents = async () => {
       const endpoint = "eventandworkshop/getEvent";
@@ -243,7 +276,7 @@ const EventTable = (props) => {
                   <td className="border px-4 py-2">{event.Venue}</td>
                   <td className="border px-4 py-2">
                     <button
-                      className='font-medium hover:text-DGXblue bg-DGXblue text-white px-6 py-1 rounded-lg'
+                      className='font-medium text-DGXblue bg-DGXblue text-white px-6 py-1 rounded-lg'
                       onClick={() => setSelectedEvent(event)}
                     >
                       View

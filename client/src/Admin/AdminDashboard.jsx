@@ -7,7 +7,7 @@ import Contact from './Components/Contact';
 import BlogManager from './Components/BlogManager';
 
 import Home from './Components/home';
-import Quiz from './Components/Quiz';
+import QuizPanel from './Components/QuizPanel';
 import {
   FaUsers,
   FaComments,
@@ -32,8 +32,8 @@ const AdminDashboard = (props) => {
         return <Events events = {props.events} setEvents= {props.setEvents} />;
       case 'blog_manager':
         return <BlogManager blogs={props.blogs} setBlogs={props.setBlogs} />;
-      case 'quiz':
-        return <Quiz />;
+      case 'quizpanel':
+        return <QuizPanel />;
       case 'guidelines':
         return <GuidelineManager />;
       case 'Home':
@@ -99,12 +99,12 @@ const AdminDashboard = (props) => {
             <li>
               <div
                 className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
-                  activeComp === 'quiz' ? 'bg-gray-700 text-yellow-300' : ''
+                  activeComp === 'quizpanel' ? 'bg-gray-700 text-yellow-300' : ''
                 }`}
-                onClick={() => setActiveComp('quiz')}
+                onClick={() => setActiveComp('quizpanel')}
               >
                 <FaQuestionCircle className="mr-4" /> {/* Increased margin */}
-                Quiz
+                QuizPanel
               </div>
             </li>
             <li>
