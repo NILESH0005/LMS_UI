@@ -7,13 +7,12 @@ import Cookies from "js-cookie";
 
 const ApiProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [userToken, setUserToken] = useState(null)
+  const [ userToken, setUserToken] = useState(null)
 
   const fetchData = async (endpoint, method, body, headers) => {
     try {
+      console.log("Fetch Data: ", {endpoint, method, body, headers});
       const result = await apiRequest(endpoint, method, body, headers);
-      console.log("fetch Data");
-      
       return result;
     } catch (error) {
       console.error("Error fetching data:", error);

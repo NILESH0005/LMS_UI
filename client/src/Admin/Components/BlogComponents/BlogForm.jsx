@@ -109,55 +109,10 @@ const BlogForm = (props) => {
     }
   };
 
-  // const handleConfirmSubmit = async () => {
-  //   setLoading(true);
+    const handleConfirmSubmit = async () => {
+      setLoading(true);
 
-  //   const blogStatus = user.role === "admin" ? "approved" : "pending";
-
-  //   const endpoint = "blog/blogpost";
-  //   const method = "POST";
-  //   const headers = { "Content-Type": "application/json", "auth-token": userToken };
-  //   const body = { title, content, image: selectedImage, author, category, Status: blogStatus, publishedDate };
-
-  //   try {
-  //     const data = await fetchData(endpoint, method, body, headers);
-  //     console.log("API Response:", data);
-  //     setLoading(false);
-
-  //     if (data.success) {
-  //       if (typeof props.updateBlogs === "function") {
-  //         props.updateBlogs({
-  //           BlogId: data.data.postId,
-  //           title,
-  //           content,
-  //           category,
-  //           image: selectedImage,
-  //           author,
-  //           publishedDate,
-  //           Status: blogStatus, // Default status for new blogs
-  //           UserID: user.UserID,
-  //           UserName: user.Name // Add userName here
-
-  //         });
-  //       } else {
-  //         console.warn("updateBlogs is not a function!");
-  //       }
-  //       Swal.fire("Success", "Blog Posted Successfully", "success");
-  //       resetForm();
-  //     } else {
-  //       Swal.fire("Error", `Error: ${data.message}`, "error");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     setLoading(false);
-  //     Swal.fire("Error", "Something went wrong, please try again.", "error");
-  //   }
-  // };
-
-  const handleConfirmSubmit = async () => {
-    setLoading(true);
-
-    const blogStatus = user.role === "admin" ? "approved" : "pending";
+      const blogStatus = user.role === "admin" ? "approved" : "pending";
 
     const endpoint = "blog/blogpost";
     const method = "POST";

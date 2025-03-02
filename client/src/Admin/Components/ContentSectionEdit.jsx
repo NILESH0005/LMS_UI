@@ -1,4 +1,4 @@
-import React, { useState } from "react"; 
+import React, { useState } from "react";
 import Swal from "sweetalert2";
 import ContentSection from "../../component/ContentSection";
 
@@ -19,10 +19,48 @@ const ContentManager = () => {
 
   const toggleView = () => setIsTableView(!isTableView);
 
-  const handleEdit = (content) => {
-    setFormData(content);
-    setCharCount(800 - content.text.length);
-    setIsTableView(false);
+  // const handleEdit = (content) => {
+  //   setFormData(content);
+  //   setCharCount(800 - content.text.length);
+  //   setIsTableView(false);
+  // };
+
+  const addContent = async () => {
+    if (!userToken) {
+      Swal.fire("Error", "User is not authenticated. Please log in again.", "error");
+      console.error("userToken is missing!");
+      return;
+    }
+
+    const endpoint = "content/addContentSection"; // Adjust the endpoint as needed
+    const method = "POST";
+    const headers = {
+      "Content-Type": "application/json",
+      "auth-token": userToken,
+    };
+    const body = {
+      componentName: "ContentSection", // Adjust as needed
+      componentIdName: "contentSection", // Adjust as needed
+      title: formData.title,
+      text: formData.text,
+      image: formData.image,
+    };
+
+    try {
+      const response = await fetchData(endpoint, method, body, headers);
+
+      if (response.success) {
+        Swal.fire({ icon: "success", title: "Added!", text: "New content has been added.", timer: 1500, showConfirmButton: false });
+        // Optionally, you can update the local state or refresh the content list
+        setContentData([{ ...formData, id: response.data.id }]);
+        setIsTableView(true);
+      } else {
+        Swal.fire("Error", response.message, "error");
+      }
+    } catch (error) {
+      console.error("API Request Error:", error);
+      Swal.fire("Error", "Something went wrong!", "error");
+    }
   };
 
   const handleSave = () => {
@@ -36,9 +74,7 @@ const ContentManager = () => {
       confirmButtonText: "Yes, save it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        setContentData([{ ...formData, id: 1 }]);
-        setIsTableView(true);
-        Swal.fire("Saved!", "Your content has been saved.", "success");
+        addContent(); // Call the API to add content
       }
     });
   };

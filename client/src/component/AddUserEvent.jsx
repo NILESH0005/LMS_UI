@@ -8,6 +8,7 @@ import DetailsEventModal from "./eventAndWorkshop/DetailsEventModal";
 
 
 const AddUserEvent = (props) => {
+const AddUserEvent = (props) => {
   const [showForm, setShowForm] = useState(false);
   const { fetchData, user, userToken } = useContext(ApiContext);
   // const [events, setEvents] = useState([]);
@@ -55,9 +56,8 @@ const AddUserEvent = (props) => {
         setLoading(false);
       }
     };
-
     fetchEvents();
-  }, [fetchData]);
+  }, []);
 
   // console.log(typeof props.event);
 
@@ -65,6 +65,10 @@ const AddUserEvent = (props) => {
 
   if (loading) {
     return <LoadPage />;
+  }
+
+  const updateEvents = (newBlog) => {
+    props.setEvents((prevEvents) => [newEvent, ...prevEvents]);
   }
 
   return (
@@ -89,7 +93,7 @@ const AddUserEvent = (props) => {
             {filteredEvents.length > 0 ? (
               filteredEvents.map((event) => (
                 <div
-                  key={event.id}
+                  key={event.EventID}
                   className="p-5 rounded-xl shadow-lg border-2 border-gray-200 bg-white hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col gap-3"
                 >
                   {/* Date Section */}

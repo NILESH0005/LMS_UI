@@ -263,8 +263,6 @@ const EventForm = (props) => {
       'Content-Type': 'application/json',
       'auth-token': userToken,
     };
-    console.log(user)
-
     const body = {
       userID: user.UserID,
       userName: user.Name, // Add the userName here
@@ -282,7 +280,7 @@ const EventForm = (props) => {
 
     try {
       const data = await fetchData(endpoint, method, body, headers);
-      console.log("API Response:", body);
+      console.log("API Response:", data);
 
       if (data.success) {
         

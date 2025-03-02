@@ -126,13 +126,13 @@ const NewsSection = () => {
             placeholder="Enter event title"
             className="w-full p-2 bg-gray-700 rounded text-white"
           />
-          <input
+          {/* <input
             type="date"
             name="date"
             value={formData.date}
             onChange={handleChange}
             className="w-full p-2 bg-gray-700 rounded text-white"
-          />
+          /> */}
           <input
             type="text"
             name="location"

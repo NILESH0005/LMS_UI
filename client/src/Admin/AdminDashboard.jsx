@@ -29,7 +29,7 @@ const AdminDashboard = (props) => {
       case 'discussions':
         return <Discussions />;
       case 'events':
-        return <Events events = {props.events} setEvents= {props.setEvents} />;
+        return <Events events={props.events} setEvents={props.setEvents} />;
       case 'blog_manager':
         return <BlogManager blogs={props.blogs} setBlogs={props.setBlogs} />;
       case 'quizpanel':

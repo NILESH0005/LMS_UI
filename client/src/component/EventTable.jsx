@@ -117,6 +117,10 @@ const EventTable = (props) => {
     fetchEvents();
   }, [fetchData]);
 
+  const updateEvents = (newEvent) => {
+    props.setEvents((prevEvents) => [newEvent, ...prevEvents]);
+  };
+
   const [newEvent, setNewEvent] = useState({
     title: '',
     start: '',
@@ -165,10 +169,10 @@ const EventTable = (props) => {
 
   const fileInputRef = useRef(null);
 
-  const handleCloseModal = () => {
-    resetForm();
-    setIsModalOpen(false);
-  };
+  // const handleCloseModal = () => {
+  //   resetForm();
+  //   setIsModalOpen(false);
+  // };
 
   const resetForm = () => {
     setNewEvent({
@@ -238,7 +242,7 @@ const EventTable = (props) => {
         </button>
       </div>
       {showForm ? (
-        <EventForm events={props.events} setEvents={props.setEvents} />
+        <EventForm updateEvents={updateEvents} setEvents={props.setEvents} />
       ) : (
         <div className="event-table flex items-center justify-center">
           <table className="table-fixed border bottom-2 w-full mt-4">
