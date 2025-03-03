@@ -7,7 +7,7 @@ import ApiContext from "../context/ApiContext";
 import DetailsEventModal from "./eventAndWorkshop/DetailsEventModal";
 
 
-const AddUserEvent = (props) => {
+
 const AddUserEvent = (props) => {
   const [showForm, setShowForm] = useState(false);
   const { fetchData, user, userToken } = useContext(ApiContext);
@@ -173,6 +173,8 @@ const AddUserEvent = (props) => {
       )}
     </div>
   );
+
+
 };
 
 export default AddUserEvent;

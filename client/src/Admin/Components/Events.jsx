@@ -7,13 +7,9 @@ import { FaCalendarAlt } from "react-icons/fa";
 
 const Events = (props) => {
   const { fetchData } = useContext(ApiContext);
-<<<<<<< HEAD
   const [showTable, setShowTable] = useState(() => {
     return sessionStorage.getItem("showTable") === "true"; // Restore state from sessionStorage
   });
-=======
-  const [showTable, setShowTable] = useState(false);
->>>>>>> 844417e5091423ac53fb78b179f811a3ac613d02
 
   // Fetch event data
   const fetchEventData = async () => {
@@ -40,17 +36,12 @@ const Events = (props) => {
     };
   }, []);
 
-<<<<<<< HEAD
   // Handle toggle & update sessionStorage
   const handleToggleView = () => {
     const newShowTable = !showTable;
     sessionStorage.setItem("showTable", newShowTable);
     setShowTable(newShowTable);
   };
-=======
-  
-
->>>>>>> 844417e5091423ac53fb78b179f811a3ac613d02
 
   return (
     <div className="p-4">
