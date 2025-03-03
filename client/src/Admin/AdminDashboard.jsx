@@ -5,8 +5,7 @@ import Events from './Components/Events';
 import GuidelineManager from './Components/GuidelineManager';
 import Contact from './Components/Contact';
 import BlogManager from './Components/BlogManager';
-
-import Home from './Components/home';
+import Home from './Components/Home';
 import QuizPanel from './Components/QuizPanel';
 import {
   FaUsers,

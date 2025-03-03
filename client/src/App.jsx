@@ -42,6 +42,7 @@ import CommunityHighlights from './component/CommunityHighlights.jsx';
 import AddUserEvent from './component/AddUserEvent.jsx';
 import QuizInterface from './component/QuizInterface.jsx';
 import QuizPanel from './Admin/Components/QuizPanel.jsx';
+import BeforeLogin from './container/BeforeLogin.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -63,6 +64,7 @@ function App() {
         <div className="flex-grow ">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/" element={<BeforeLogin />} />
             <Route exact path="/VerifyEmail" element={<VerifyEmail />} />
             <Route exact path="/Register" element={<Register />} />
             <Route path="/SignInn" element={<SignInn />} />

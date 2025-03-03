@@ -83,11 +83,6 @@ export default {
     DGX,
     AnimatedDGX,
     ABESIT,
-    // KIET,
-    // SHARDA,
-    // GLBAJAJ,
-    // SharadSir,
-    // SugandhMaam,
     PatrickSir,
     AshwiniSir,
 
