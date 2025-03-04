@@ -1,83 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Swal from "sweetalert2";
-import ContentSection from "../../component/ContentSection";
-
-const initialContent = [
-  {
-    id: 1,
-    title: "Welcome to DGX Community",
-    text: "The DGX Community is a global network of innovators, developers, and tech enthusiasts dedicated to pushing the boundaries of technology.",
-    image: null,
-  },
-];
+import ApiContext from "../../context/ApiContext";
 
 const ContentManager = () => {
-  const [isTableView, setIsTableView] = useState(true);
-  const [contentData, setContentData] = useState(initialContent);
+  const [contentData, setContentData] = useState([]); 
   const [formData, setFormData] = useState({ title: "", text: "", image: null });
   const [charCount, setCharCount] = useState(800);
+  const [isTableView, setIsTableView] = useState(true);
+  const { fetchData, userToken } = useContext(ApiContext);
 
-  const toggleView = () => setIsTableView(!isTableView);
-
-  // const handleEdit = (content) => {
-  //   setFormData(content);
-  //   setCharCount(800 - content.text.length);
-  //   setIsTableView(false);
-  // };
-
-  const addContent = async () => {
-    if (!userToken) {
-      Swal.fire("Error", "User is not authenticated. Please log in again.", "error");
-      console.error("userToken is missing!");
-      return;
+  useEffect(() => {
+    if (userToken) {
+      fetchContentData();
     }
+  }, [userToken]);
 
-    const endpoint = "content/addContentSection"; // Adjust the endpoint as needed
-    const method = "POST";
+  const fetchContentData = async () => {
+    const endpoint = "home/getContent";
+    const method = "GET";
     const headers = {
       "Content-Type": "application/json",
       "auth-token": userToken,
     };
-    const body = {
-      componentName: "ContentSection", // Adjust as needed
-      componentIdName: "contentSection", // Adjust as needed
-      title: formData.title,
-      text: formData.text,
-      image: formData.image,
-    };
+    const body = {};
 
     try {
       const response = await fetchData(endpoint, method, body, headers);
+      console.log("API Response:", response);
 
       if (response.success) {
-        Swal.fire({ icon: "success", title: "Added!", text: "New content has been added.", timer: 1500, showConfirmButton: false });
-        // Optionally, you can update the local state or refresh the content list
-        setContentData([{ ...formData, id: response.data.id }]);
-        setIsTableView(true);
+        
+        const transformedData = response.data.map((item) => {
+          const contentObj = JSON.parse(item.Content); 
+          return {
+            id: item.idCode,
+            title: contentObj.title,  
+            text: contentObj.text,    
+            image: item.Image, 
+          };
+        });
+        setContentData(transformedData);
       } else {
         Swal.fire("Error", response.message, "error");
       }
     } catch (error) {
-      console.error("API Request Error:", error);
-      Swal.fire("Error", "Something went wrong!", "error");
+      console.error("Error fetching content:", error);
+      Swal.fire("Error", "Failed to fetch content", "error");
     }
   };
 
-  const handleSave = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You are about to save the content!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, save it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        addContent(); // Call the API to add content
-      }
-    });
-  };
+  const toggleView = () => setIsTableView(!isTableView);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -107,6 +79,67 @@ const ContentManager = () => {
     }
   };
 
+  const handleSave = async () => {
+    if (!formData.title || !formData.text) {
+      Swal.fire("Error", "Title and Text fields cannot be empty!", "error");
+      return;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to save the content!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, save it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        if (!userToken) {
+          Swal.fire("Error", "User is not authenticated. Please log in again.", "error");
+          return;
+        }
+
+        const endpoint = "content/addContentSection";
+        const method = "POST";
+        const headers = {
+          "Content-Type": "application/json",
+          "auth-token": userToken,
+        };
+
+        const body = {
+          componentName: "ContentSection",
+          componentIdName: "contentSection",
+          title: formData.title,
+          text: formData.text,
+          image: formData.image, // Ensure it's base64 or URL if required by the backend
+        };
+
+        try {
+          const response = await fetchData(endpoint, method, body, headers);
+          if (response.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Added!",
+              text: "New content has been added.",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+
+            // Update the content data with the new entry
+            setContentData([...contentData, { ...formData, id: response.data.id }]);
+            setIsTableView(true);
+          } else {
+            Swal.fire("Error", response.message, "error");
+          }
+        } catch (error) {
+          console.error("API Request Error:", error);
+          Swal.fire("Error", "Something went wrong!", "error");
+        }
+      }
+    });
+  };
+
   return (
     <div className="container mx-auto p-6 bg-white rounded-2xl shadow-lg">
       <div className="flex justify-between items-center mb-4">
@@ -120,17 +153,23 @@ const ContentManager = () => {
       </div>
       {isTableView ? (
         <div className="flex flex-col md:flex-row items-center bg-white p-6 rounded-xl shadow-lg">
-          <div className="w-full md:w-1/2 p-4">
-            <h2 className="text-xl font-bold text-gray-800">{contentData[0].title}</h2>
-            <p className="text-gray-700 mt-2">{contentData[0].text}</p>
-          </div>
-          <div className="w-full md:w-1/2 p-4 flex justify-center">
-            {contentData[0].image ? (
-              <img src={contentData[0].image} alt="Content" className="w-80 h-80 object-cover rounded-lg shadow-2xl" />
-            ) : (
-              <div className="w-80 h-80 bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg shadow-2xl">No Image</div>
-            )}
-          </div>
+          {contentData.length > 0 ? (
+            <>
+              <div className="w-full md:w-1/2 p-4">
+                <h2 className="text-xl font-bold text-gray-800">{contentData[0].title}</h2>
+                <p className="text-gray-700 mt-2">{contentData[0].text}</p>
+              </div>
+              <div className="w-full md:w-1/2 p-4 flex justify-center">
+                {contentData[0].image ? (
+                  <img src={contentData[0].image} alt="Content" className="w-80 h-80 object-cover rounded-lg shadow-2xl" />
+                ) : (
+                  <div className="w-80 h-80 bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg shadow-2xl">No Image</div>
+                )}
+              </div>
+            </>
+          ) : (
+            <p className="text-gray-700">No content available.</p>
+          )}
         </div>
       ) : (
         <div className="p-6 bg-white rounded-xl shadow-lg">

@@ -285,7 +285,7 @@ console.log(user.UserID);
   export const updateEvent = async (req, res) => {
     let success = false;
 
-    // Extract user ID from the authenticated request
+  
     const userId = req.user.id;
     console.log("user ID:", userId);
 
