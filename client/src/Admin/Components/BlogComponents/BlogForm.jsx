@@ -32,7 +32,10 @@ const BlogForm = (props) => {
         const data = await fetchData(endpoint, method, headers);
         console.log("Fetched blog categories:", data);
         if (data.success) {
-          setCategories(data.data);
+          const sortedCategories = data.data.sort((a, b) =>
+            a.ddValue.localeCompare(b.ddValue)
+          );
+          setCategories(sortedCategories);
         } else {
           Swal.fire("Error", "Failed to fetch categories.", "error");
         }
@@ -93,7 +96,7 @@ const BlogForm = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    console.log("Selected Category:", category); 
     if (validateForm()) {
       Swal.fire({
         title: "Confirm Submission",
@@ -208,7 +211,7 @@ const BlogForm = (props) => {
             className="border w-full p-2">
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat.idCode} value={cat.idCode}>
+              <option key={cat.idCode} value={cat.ddValue}>
                 {cat.ddValue}
               </option>
             ))}

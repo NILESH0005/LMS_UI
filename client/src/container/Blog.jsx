@@ -84,14 +84,14 @@ const BlogPage = () => {
             const method = "GET";
             const headers = {
                 "Content-Type": "application/json",
-                "auth-token": userToken, // Ensure userToken is defined
+                "auth-token": userToken, 
             };
 
             try {
                 const data = await fetchData(endpoint, method, headers);
                 console.log("Fetched blog categories:", data);
                 if (data.success) {
-                    setCategories(data.data); // Update the state with fetched categories
+                    setCategories(data.data); 
                 } else {
                     Swal.fire("Error", "Failed to fetch categories.", "error");
                 }
