@@ -54,6 +54,14 @@ const AdminUsers = () => {
       ...prevUser,
       [name]: value,
     }));
+
+    // Remove validation error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: '',
+      }));
+    }
   };
 
   const handleCancel = () => {
@@ -64,7 +72,7 @@ const AdminUsers = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, cancel it!'
+      confirmButtonText: 'OK'
     }).then((result) => {
       if (result.isConfirmed) {
         setNewUser({
@@ -81,10 +89,16 @@ const AdminUsers = () => {
     });
   };
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
   const handleSubmit = () => {
+    handleAddUser();
     const errors = {};
     if (!newUser.Name) errors.Name = "Name is required";
-    if (!newUser.EmailId) errors.EmailId = "Email is required";
+    if (!newUser.EmailId || !validateEmail(newUser.EmailId)) errors.EmailId = "Enter a valid email address";
     if (!newUser.CollegeName) errors.CollegeName = "College name is required";
     if (!newUser.Designation) errors.Designation = "Designation is required";
     if (!newUser.MobileNumber || !/^\d{10}$/.test(newUser.MobileNumber)) errors.MobileNumber = "Enter a valid 10-digit mobile number";
@@ -93,19 +107,7 @@ const AdminUsers = () => {
     setFormErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you want to add this user?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, add it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        handleAddUser();
-      }
-    });
+   
   };
 
   const handleAddUser = async () => {
@@ -139,8 +141,8 @@ const AdminUsers = () => {
         });
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'Error!',
+          icon: 'warning',
+          title: 'Fields can not be Empty!',
           text: result?.message || 'Failed to add user',
         });
       }
@@ -161,7 +163,7 @@ const AdminUsers = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'OK'
     });
 
     if (result.isConfirmed) {
@@ -216,8 +218,8 @@ const AdminUsers = () => {
             <th scope="col" className="border px-6 py-3">Designation</th>
             <th scope="col" className="border px-6 py-3">Mobile Number</th>
             <th scope="col" className="border px-6 py-3">Category</th>
-            <th scope="col" className="border px-6 py-3"><span className="sr-only">Delete</span></th>
-          </tr>
+            <th scope="col" className="border px-6 py-3">Action</th>
+          </tr> 
         </thead>
         <tbody>
           {users.map((user, index) => (
@@ -308,13 +310,16 @@ const AdminUsers = () => {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">Category</label>
-                <input
-                  type="text"
+                <select
                   name="Category"
                   value={newUser.Category}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-2 border border-gray-300 rounded-md ${formErrors.Category ? 'border-red-500' : ''}`}
-                />
+                >
+                  <option value="">Select Category</option>
+                  <option value="Faculty">Faculty</option>
+                  <option value="Student">Student</option>
+                </select>
                 {formErrors.Category && <p className="text-red-500 text-sm">{formErrors.Category}</p>}
               </div>
               <div className="flex justify-between">

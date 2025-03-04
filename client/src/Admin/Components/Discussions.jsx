@@ -45,7 +45,7 @@ const Discussions = () => {
     fetchDiscussions();
   }, [fetchData]);
 
-  const handleDeleteDiscussion = async (discussionId) => {
+  const handleDeleteDiscussion = async (discussionId) => {  
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -53,7 +53,7 @@ const Discussions = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonText: 'OK',
     });
 
     if (result.isConfirmed) {

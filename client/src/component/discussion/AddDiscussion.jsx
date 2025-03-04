@@ -112,8 +112,8 @@ const AddDiscussion = ({ closeModal, demoDiscussions, setDemoDiscussions }) => {
             text: 'Are you sure you want to post this discussion?',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Yes, post it!',
-            cancelButtonText: 'No, cancel!',
+            confirmButtonText: 'OK',
+            cancelButtonText: 'CANCEL',
         });
 
         if (result.isConfirmed) {

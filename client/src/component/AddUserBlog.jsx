@@ -147,9 +147,9 @@ const AddUserBlog = (props) => {
           closeModal={closeModal}
           updateBlogState={(blogId, status) => {
             if (status === "delete") {
-              setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.BlogID !== blogId));
+              props.setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.BlogID !== blogId));
             } else {
-              setBlogs((prevBlogs) =>
+              props.setBlogs((prevBlogs) =>
                 prevBlogs.map((blog) =>
                   blog.BlogID === blogId ? { ...blog, Status: status } : blog
                 )

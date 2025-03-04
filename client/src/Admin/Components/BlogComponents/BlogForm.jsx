@@ -48,7 +48,6 @@ const BlogForm = (props) => {
     fetchCategories();
   }, []);
 
-
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
 
@@ -118,19 +117,33 @@ const BlogForm = (props) => {
 
       const blogStatus = user.role === "admin" ? "approved" : "pending";
 
-      const endpoint = "blog/blogpost";
-      const method = "POST";
-      const headers = { "Content-Type": "application/json", "auth-token": userToken };
-      const body = { title, content, image: selectedImage, author, category, Status: blogStatus, publishedDate };
+    const endpoint = "blog/blogpost";
+    const method = "POST";
+    const headers = {
+      "Content-Type": "application/json",
+      "auth-token": userToken,
+    };
 
-      try {
-        const data = await fetchData(endpoint, method, body, headers);
-        console.log("API Response:", data);
-        setLoading(false);
+    // Include userName in the body
+    const body = {
+      title,
+      content,
+      image: selectedImage,
+      author,
+      category,
+      Status: blogStatus,
+      publishedDate,
+      UserName: user.Name, // Add userName here
+    };
 
-        if (data.success) {
-          if (typeof props.updateBlogs === "function") {
-            props.updateBlogs({
+    try {
+      const data = await fetchData(endpoint, method, body, headers);
+      setLoading(false);
+
+      if (data.success) {
+        if (typeof props.setBlogs === "function") {
+          props.setBlogs((prevBlogs) => [
+            {
               BlogId: data.data.postId,
               title,
               content,
@@ -140,21 +153,24 @@ const BlogForm = (props) => {
               publishedDate,
               Status: blogStatus, // Default status for new blogs
               UserID: user.UserID,
-            });
-          } else {
-            console.warn("updateBlogs is not a function!");
-          }
-          Swal.fire("Success", "Blog Posted Successfully", "success");
-          resetForm();
+              UserName: user.Name, // Include userName here as well if needed
+            },
+            ...prevBlogs,
+          ]);
         } else {
-          Swal.fire("Error", `Error: ${data.message}`, "error");
+          console.warn("updateBlogs is not a function!");
         }
-      } catch (error) {
-        console.error("Error:", error);
-        setLoading(false);
-        Swal.fire("Error", "Something went wrong, please try again.", "error");
+        Swal.fire("Success", "Blog Posted Successfully", "success");
+        resetForm();
+      } else {
+        Swal.fire("Error", `Error: ${data.message}`, "error");
       }
-    };
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+      Swal.fire("Error", "Something went wrong, please try again.", "error");
+    }
+  };
 
   const resetForm = () => {
     setTitle("");
@@ -168,7 +184,10 @@ const BlogForm = (props) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="mx-auto mt-4 bg-white p-6 rounded shadow border-2">
+      <form
+        onSubmit={handleSubmit}
+        className="mx-auto mt-4 bg-white p-6 rounded shadow border-2"
+      >
         <div className="mb-4">
           <label>Blog Title</label>
           <input
@@ -200,7 +219,9 @@ const BlogForm = (props) => {
             max={new Date().toISOString().split("T")[0]} // Restricts future dates
             className="border w-full p-2"
           />
-          {errors.publishedDate && <p className="text-red-500">{errors.publishedDate}</p>}
+          {errors.publishedDate && (
+            <p className="text-red-500">{errors.publishedDate}</p>
+          )}
         </div>
 
         <div className="mb-4">
@@ -208,7 +229,8 @@ const BlogForm = (props) => {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="border w-full p-2">
+            className="border w-full p-2"
+          >
             <option value="">Select Category</option>
             {categories.map((cat) => (
               <option key={cat.idCode} value={cat.ddValue}>
@@ -221,7 +243,11 @@ const BlogForm = (props) => {
 
         <div className="mb-4">
           <label>Blog Content</label>
-          <ReactQuill value={content} onChange={(value) => setContent(value)} className="h-48" />
+          <ReactQuill
+            value={content}
+            onChange={(value) => setContent(value)}
+            className="h-48"
+          />
           {errors.content && <p className="text-red-500">{errors.content}</p>}
         </div>
 
@@ -236,8 +262,9 @@ const BlogForm = (props) => {
             onChange={handleImageChange}
             className="border w-full p-2"
           />
-          {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
-
+          {errors.image && (
+            <p className="text-red-500 text-sm">{errors.image}</p>
+          )}
         </div>
 
         <div className="flex justify-between">

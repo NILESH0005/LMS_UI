@@ -5,6 +5,7 @@ import { decrypt } from "../utils/decrypt.js";
 import { images } from '../../public/index.js';
 import Cookies from "js-cookie";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import Swal from "sweetalert2";
 import {
   validateConfirmPassword,
   validatePassword,

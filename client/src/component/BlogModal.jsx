@@ -81,7 +81,7 @@ const BlogModal = ({ blog, closeModal, updateBlogState }) => {
                 showCancelButton: true,
                 confirmButtonColor: "#dc3545",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: `Yes, delete!`,
+                confirmButtonText: `OK `,
             }).then((result) => {
                 if (result.isConfirmed) {
                     updateBlogStatus(BlogID, "delete");

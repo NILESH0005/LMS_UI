@@ -41,7 +41,8 @@ import ProjectShowcase from './component/ProjectShowcase.jsx';
 import CommunityHighlights from './component/CommunityHighlights.jsx';
 import AddUserEvent from './component/AddUserEvent.jsx';
 import QuizInterface from './component/QuizInterface.jsx';
-import Quiz from './Admin/Components/Quiz.jsx';
+import QuizPanel from './Admin/Components/QuizPanel.jsx';
+import BeforeLogin from './container/BeforeLogin.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -63,6 +64,7 @@ function App() {
         <div className="flex-grow ">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/" element={<BeforeLogin />} />
             <Route exact path="/VerifyEmail" element={<VerifyEmail />} />
             <Route exact path="/Register" element={<Register />} />
             <Route path="/SignInn" element={<SignInn />} />
@@ -101,6 +103,7 @@ function App() {
 
             {/* Added Quiz in Navbar */}
             <Route path='/QuizInterface' element={<QuizInterface />} />
+            <Route path='/QuizPanel' element={<QuizPanel />} />
             {/* <Route path='/CreateQuiz' element={<CreateQuiz />} />  */}
 
 

@@ -69,7 +69,7 @@ const BlogManager = (props) => {
       {isTableView ? (
         <BlogTable blogs={props.blogs} />
       ) : (
-        <BlogForm updateBlogs={updateBlogs} setIsTableView={setIsTableView} />
+        <BlogForm updateBlogs={updateBlogs} setBlogs={props.setBlogs} setIsTableView={setIsTableView} />
       )}
     </div>
   );
