@@ -230,7 +230,7 @@ const BlogForm = (props) => {
           >
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat.idCode} value={cat.idCode}>
+              <option key={cat.idCode} value={cat.ddValue}>
                 {cat.ddValue}
               </option>
             ))}
