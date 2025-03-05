@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CalendarIcon, ClockIcon } from "@heroicons/react/24/outline";
-import EditQuiz from "./EditQuiz";
+ 
 
 const EventCMS = () => {
   const [events, setEvents] = useState([
@@ -77,7 +77,6 @@ const EventCMS = () => {
 
   return (
     <>
-      <EditQuiz />
       <div className="p-6 bg-gray-100 min-h-screen">
         <h1 className="text-3xl font-bold mb-4">Manage Upcoming Events</h1>
         <div className="mb-4 flex gap-2">
@@ -172,66 +171,6 @@ const EventCMS = () => {
               />
             </div>
           ))}
-        </div>
-
-        {/* Create Quiz Section  */}
-         <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">Create a Quiz</h2>
-          <div className="mb-4">
-            <input
-              type="text"
-              name="title"
-              placeholder="Quiz Title"
-              value={quiz.title}
-              onChange={handleQuizInputChange}
-              className="p-2 border rounded w-full mb-4"
-            />
-            <div className="mb-4">
-              <input
-                type="text"
-                name="question"
-                placeholder="Question"
-                value={newQuestion.question}
-                onChange={handleQuestionInputChange}
-                className="p-2 border rounded w-full mb-2"
-              />
-              {[0, 1, 2, 3].map((index) => (
-                <input
-                  key={index}
-                  type="text"
-                  placeholder={`Option ${index + 1}`}
-                  value={newQuestion.options[index] || ""}
-                  onChange={(e) => handleOptionChange(e, index)}
-                  className="p-2 border rounded w-full mb-2"
-                />
-              ))}
-              <input
-                type="text"
-                name="correctAnswer"
-                placeholder="Correct Answer"
-                value={newQuestion.correctAnswer}
-                onChange={handleQuestionInputChange}
-                className="p-2 border rounded w-full mb-2"
-              />
-              <button onClick={addQuestion} className="bg-green-500 text-white p-2 rounded">
-                Add Question
-              </button>
-            </div>
-          </div>
-          <div>
-            <h3 className="text-xl font-bold mb-2">Quiz Questions</h3>
-            {quiz.questions.map((question, index) => (
-              <div key={index} className="bg-white shadow-lg rounded-lg overflow-hidden p-4 mb-4">
-                <p className="font-bold">{question.question}</p>
-                <ul className="list-disc pl-5">
-                  {question.options.map((option, i) => (
-                    <li key={i}>{option}</li>
-                  ))}
-                </ul>
-                <p className="text-sm text-green-600">Correct Answer: {question.correctAnswer}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </>

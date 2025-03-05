@@ -41,7 +41,7 @@ import ProjectShowcase from './component/ProjectShowcase.jsx';
 import CommunityHighlights from './component/CommunityHighlights.jsx';
 import AddUserEvent from './component/AddUserEvent.jsx';
 import QuizInterface from './component/QuizInterface.jsx';
-import QuizPanel from './Admin/Components/QuizPanel.jsx';
+import QuizPanel from './Admin/Components/Quiz/QuizPanel.jsx';
 import BeforeLogin from './container/BeforeLogin.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
@@ -103,7 +103,7 @@ function App() {
 
             {/* Added Quiz in Navbar */}
             <Route path='/QuizInterface' element={<QuizInterface />} />
-            <Route path='/QuizPanel' element={<QuizPanel />} />
+            <Route path='../Quiz/QuizPanel' element={<QuizPanel />} />
             {/* <Route path='/CreateQuiz' element={<CreateQuiz />} />  */}
 
 

@@ -6,7 +6,7 @@ import GuidelineManager from './Components/GuidelineManager';
 import Contact from './Components/Contact';
 import BlogManager from './Components/BlogManager';
 import Home from './Components/Home';
-import QuizPanel from './Components/QuizPanel';
+import QuizPanel from './Components/Quiz/QuizPanel';
 import {
   FaUsers,
   FaComments,
