@@ -332,7 +332,7 @@ export const getContent = async (req, res) => {
         return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
       }
       try {
-        const query = `SELECT idCode, ComponentName, ComponentIdName, Content, Image,isActive  FROM tblCMSContent  WHERE ComponentName = 'ContentSection' AND ISNULL(delStatus, 0) = 0 `;
+        const query = `SELECT idCode, ComponentName, ComponentIdName, Title, Content, Image, isActive  FROM tblCMSContent  WHERE ComponentName = 'ContentSection' AND ISNULL(delStatus, 0) = 0 `;
         const results = await queryAsync(conn, query);
         console.log("Query result:", results);
 
@@ -360,7 +360,8 @@ export const getContent = async (req, res) => {
 export const updateContentSection = async (req, res) => {
   let success = false;
   console.log("Headers:", req.headers);
-  const userId = req.user.id; // Ensure user authentication
+  const userId = req.user.id;
+  console.log("User Object:", req.user);
   console.log("User ID:", userId);
 
   const errors = validationResult(req);
@@ -369,7 +370,8 @@ export const updateContentSection = async (req, res) => {
   }
 
   try {
-    const { id, title, text, image } = req.body; // Extract content details
+    const { id, title, text, image } = req.body;
+    console.log("Request Body:", req.body);
 
     if (!id) {
       return res.status(400).json({ success, message: "Content ID is required" });
@@ -381,28 +383,33 @@ export const updateContentSection = async (req, res) => {
       }
 
       try {
+        // Check if the content exists
         const checkQuery = `SELECT * FROM tblCMSContent WHERE idCode = ? AND ISNULL(delStatus, 0) = 0`;
         const checkRows = await queryAsync(conn, checkQuery, [id]);
+        console.log("Existing content check result:", checkRows);
 
         if (checkRows.length === 0) {
           return res.status(404).json({ success, message: "Content not found or already deleted" });
         }
+        const updateQuery = `UPDATE tblCMSContent SET Title = ?, [Content] = ?, Image = ?, editOnDt = GETDATE() 
+          WHERE idCode = ?`;
+        console.log("Update query:", updateQuery);
+        console.log("Parameters:", [title, text, image, id]);
 
-        const updatedContent = JSON.stringify({ title, text });
-        const updateQuery = `
-         UPDATE tblCMSContent SET  Content = ?, Image = ?, editOnDt = GETDATE() WHERE idCode = ? AND ISNULL(delStatus, 0) = 0`;
+        const updateResult = await queryAsync(conn, updateQuery, [title, text, image, id]);
+        console.log("Update result:", updateResult);
 
-        const updateResult = await queryAsync(conn, updateQuery, [updatedContent, image, id]);
-
-        if (updateResult.affectedRows > 0) {
-          success = true;
+        if  (success = true) {
+         
           return res.status(200).json({ success, message: "Content updated successfully" });
         } else {
-          return res.status(400).json({ success, message: "Failed to update content" });
+          return res.status(400).json({ success, message: "Failed to update content. No rows affected." });
         }
       } catch (error) {
         console.error("Database Query Error:", error);
         return res.status(500).json({ success: false, message: "Internal server error", error });
+      } finally {
+        closeConnection();
       }
     });
   } catch (error) {
@@ -410,3 +417,4 @@ export const updateContentSection = async (req, res) => {
     return res.status(500).json({ success: false, message: "Something went wrong", error });
   }
 };
+

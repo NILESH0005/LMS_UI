@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { CalendarIcon, ClockIcon } from "@heroicons/react/24/outline";
+// import { CalendarIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { FaCalendarCheck, FaClock  } from "react-icons/fa";
+
 import EditQuiz from "./EditQuiz";
 
 const EventCMS = () => {
@@ -115,7 +117,7 @@ const EventCMS = () => {
               {event.image && <img src={event.image} alt="Event" className="w-full h-40 object-cover rounded mb-2" />}
               <input type="file" onChange={(e) => handleImageUpload(e, index)} className="mb-2" />
               <div className="flex items-center gap-4">
-                <CalendarIcon className="h-10 w-10 text-blue-500" />
+                <FaCalendarCheck className="h-10 w-10 text-blue-500" />
                 <div>
                   <input
                     type="text"
@@ -130,7 +132,7 @@ const EventCMS = () => {
                     className="text-lg font-bold w-full border-b mb-2"
                   />
                   <div className="text-gray-600 text-sm flex items-center gap-2">
-                    <ClockIcon className="h-5 w-5 text-gray-500" />
+                    <FaClock  className="h-5 w-5 text-gray-500" />
                     <input
                       type="date"
                       value={event.date}
