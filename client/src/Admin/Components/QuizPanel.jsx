@@ -176,8 +176,8 @@ const EventCMS = () => {
           ))}
         </div>
 
-        {/* Create Quiz Section */}
-        {/* <div className="mt-8">
+        {/* Create Quiz Section  */}
+         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Create a Quiz</h2>
           <div className="mb-4">
             <input
@@ -234,7 +234,7 @@ const EventCMS = () => {
               </div>
             ))}
           </div>
-        </div> */}
+        </div>
       </div>
     </>
   );
