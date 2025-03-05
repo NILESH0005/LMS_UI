@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import ApiContext from "../../context/ApiContext";
 
 const ContentManager = () => {
-  const [contentData, setContentData] = useState([]); 
+  const [contentData, setContentData] = useState([]);
   const [formData, setFormData] = useState({ title: "", text: "", image: null });
   const [charCount, setCharCount] = useState(800);
   const [isTableView, setIsTableView] = useState(true);
@@ -29,17 +29,18 @@ const ContentManager = () => {
       console.log("API Response:", response);
 
       if (response.success) {
-        
+
         const transformedData = response.data.map((item) => {
-          const contentObj = JSON.parse(item.Content); 
           return {
             id: item.idCode,
-            title: contentObj.title,  
-            text: contentObj.text,    
-            image: item.Image, 
+            title: item.Title,
+            text: item.Content,
+            image: item.Image,
           };
         });
+
         setContentData(transformedData);
+        console.log("data is-:", transformedData);
       } else {
         Swal.fire("Error", response.message, "error");
       }
@@ -49,7 +50,16 @@ const ContentManager = () => {
     }
   };
 
-  const toggleView = () => setIsTableView(!isTableView);
+  const toggleView = () => {
+    if (contentData.length > 0 && isTableView) {
+      setFormData({
+        title: contentData[0].title,
+        text: contentData[0].text,
+        image: contentData[0].image,
+      });
+    }
+    setIsTableView(!isTableView);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -100,19 +110,21 @@ const ContentManager = () => {
           return;
         }
 
-        const endpoint = "content/addContentSection";
+        const endpoint = "home/updateContentSection";
         const method = "POST";
         const headers = {
           "Content-Type": "application/json",
           "auth-token": userToken,
         };
 
+
+        const contentId = contentData[0]?.id;
+
         const body = {
-          componentName: "ContentSection",
-          componentIdName: "contentSection",
+          id: contentId,
           title: formData.title,
           text: formData.text,
-          image: formData.image, // Ensure it's base64 or URL if required by the backend
+          image: formData.image,
         };
 
         try {
@@ -120,14 +132,14 @@ const ContentManager = () => {
           if (response.success) {
             Swal.fire({
               icon: "success",
-              title: "Added!",
-              text: "New content has been added.",
+              title: "Updated!",
+              text: "Content has been updated successfully.",
               timer: 1500,
               showConfirmButton: false,
             });
 
-            // Update the content data with the new entry
-            setContentData([...contentData, { ...formData, id: response.data.id }]);
+            // Optionally, refresh the content data after update
+            fetchContentData();
             setIsTableView(true);
           } else {
             Swal.fire("Error", response.message, "error");
