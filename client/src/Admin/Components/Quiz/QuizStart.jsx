@@ -1,37 +1,42 @@
-import React, { useState } from 'react';
-import QuizStartHeader from './QuizStartHeader';
-import QuizStartQuestions from './QuizStartQuestions';
-import QuizTimer from './QuizTimer';
-import QuizResult from './QuizResult';
-import QuizQuestion from './QuizQuestion';
-import QuizPanel from './QuizPanel';
-import EditQuiz from './EditQuiz';
+import React, { useState } from "react";
+import QuizStartHeader from "./QuizStartHeader";
+import QuizTable from "./QuizTable.jsx";
+import QuizQuestions from "./QuizQuestions";
+import QuizResult from "./QuizResult";
+import QuizReview from "./QuizReview";
+import QuizTimer from "./QuizTimer";
 
-function QuizStart() {
-  const [parentTimer, setParentTimer] = useState(30);
+const QuizStart = () => {
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+
+  // Function to start the timer
+  const startTimer = () => {
+    setIsTimerRunning(true);
+  };
 
   return (
-    <div className="w-full flex flex-col items-center p-6">
-      {/* Header Section */}
-      <div className="w-full max-w-3xl border-b-2 pb-4 mb-4">
-        <QuizStartHeader parentTimer={parentTimer} />
-      </div>
+    <>
+      {/* Pass isTimerRunning and startTimer to QuizStartHeader */}
+      <QuizStartHeader startTimer={startTimer} isTimerRunning={isTimerRunning} />
       
-      {/* Quiz Panel Section */}
-      <QuizPanel />
-      
-      {/* Quiz Questions Section */}
-      <div className="w-full max-w-3xl">
-        <QuizStartQuestions onUpdateTime={setParentTimer} />
-      </div>
-
-      {/* Timer Section */}
-      <QuizTimer time={parentTimer} />
-
-      {/* Result Section */}
+      <QuizQuestions />
       <QuizResult />
-    </div>
+      <QuizReview />
+
+
+      {/* Start Quiz Button (Moved here)                                  IMPORTANT CODE
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={startTimer}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          Start Quiz
+        </button>
+      </div> */}
+
+     
+    </>
   );
-}
+};
 
 export default QuizStart;

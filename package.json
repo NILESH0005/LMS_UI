@@ -4,6 +4,7 @@
     "express-session": "^1.18.1",
     "moment-timezone": "^0.5.47",
     "react-big-calendar": "^1.17.1",
-    "sweetalert2": "^11.17.2"
+    "sweetalert2": "^11.17.2",
+    "uuid": "^11.1.0"
   }
 }
