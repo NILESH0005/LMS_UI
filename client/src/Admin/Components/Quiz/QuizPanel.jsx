@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import EditQuiz from "./EditQuiz";
+import CreateQuiz from "./CreateQuiz";
 import QuizTable from "./QuizTable";
 import UpcomingQuiz from "./UpcomingQuiz";
 
@@ -8,8 +8,8 @@ const QuizPanel = () => {
 
   const renderComponent = () => {
     switch (activeComponent) {
-      case 'EditQuiz':
-        return <EditQuiz />;
+      case 'CreateQuiz':
+        return <CreateQuiz />;
       case 'UpcomingQuiz':
         return <UpcomingQuiz />;
       default:
@@ -59,12 +59,12 @@ const QuizPanel = () => {
           Show Quiz Table
         </button>
         <button
-          style={activeComponent === 'EditQuiz' ? activeButtonStyle : inactiveButtonStyle}
-          onClick={() => setActiveComponent('EditQuiz')}
+          style={activeComponent === 'CreateQuiz' ? activeButtonStyle : inactiveButtonStyle}
+          onClick={() => setActiveComponent('CreateQuiz')}
           onMouseOver={(e) => e.target.style.backgroundColor = hoverStyle.backgroundColor}
-          onMouseOut={(e) => e.target.style.backgroundColor = activeComponent === 'EditQuiz' ? activeButtonStyle.backgroundColor : inactiveButtonStyle.backgroundColor}
+          onMouseOut={(e) => e.target.style.backgroundColor = activeComponent === 'CreateQuiz' ? activeButtonStyle.backgroundColor : inactiveButtonStyle.backgroundColor}
         >
-          Edit Quiz
+          Create Quiz
         </button>
         <button
           style={activeComponent === 'UpcomingQuiz' ? activeButtonStyle : inactiveButtonStyle}

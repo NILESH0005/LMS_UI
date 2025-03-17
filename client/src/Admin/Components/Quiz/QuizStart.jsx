@@ -1,41 +1,83 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import QuizStartHeader from "./QuizStartHeader";
-import QuizTable from "./QuizTable.jsx";
 import QuizQuestions from "./QuizQuestions";
-import QuizResult from "./QuizResult";
-import QuizReview from "./QuizReview";
-import QuizTimer from "./QuizTimer";
+import QuizResults from "./QuizResults";
 
 const QuizStart = () => {
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const location = useLocation();
+  const { quizData } = location.state || {};
+  const [isQuizStarted, setIsQuizStarted] = useState(false);
 
-  // Function to start the timer
-  const startTimer = () => {
-    setIsTimerRunning(true);
+  // Example quiz details (replace with actual data from quizData)
+  const quizTitle = quizData?.title || "General Knowledge Quiz";
+  const startTime = "10:00 AM";
+  const endTime = "11:00 AM";
+  const isNegativeMarkingEnabled = quizData?.negativeMarking || false;
+
+  const handleStartQuiz = () => {
+    setIsQuizStarted(true);
   };
 
   return (
-    <>
-      {/* Pass isTimerRunning and startTimer to QuizStartHeader */}
-      <QuizStartHeader startTimer={startTimer} isTimerRunning={isTimerRunning} />
-      
-      <QuizQuestions />
-      <QuizResult />
-      <QuizReview />
+    <div className="min-h-screen bg-white text-gray-900">
+      {/* Navbar (Placeholder) */}
+      <nav className="w-full bg-white shadow-lg">
+        <div className="max-w-6xl mx-auto px-4 py-2">
+        <h1 className="text-2xl font-bold text-gray-800">{quizTitle}</h1>
 
 
-      {/* Start Quiz Button (Moved here)                                  IMPORTANT CODE
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={startTimer}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Start Quiz
-        </button>
-      </div> */}
+        </div>
+      </nav>
 
-     
-    </>
+      {/* Main Content */}
+      <div className="w-full flex flex-col items-center mt-8">
+        {/* Quiz Title and Details */}
+        <div className="w-full max-w-6xl px-4">
+          <h1 className="text-4xl font-extrabold text-gray-800">{quizTitle}</h1>
+          <div className="mt-4 flex flex-col space-y-2 text-gray-600">
+            <p>
+              <span className="font-semibold">Start Time:</span> {startTime}
+            </p>
+            <p>
+              <span className="font-semibold">End Time:</span> {endTime}
+            </p>
+            <p>
+              <span className="font-semibold">Negative Marking:</span>{" "}
+              {isNegativeMarkingEnabled ? (
+                <span className="text-green-600">Enabled</span>
+              ) : (
+                <span className="text-red-600">Disabled</span>
+              )}
+            </p>
+          </div>
+        </div>
+
+        {/* Quiz Introduction Card */}
+        {!isQuizStarted && (
+          <div className="w-full max-w-6xl bg-gray-50 rounded-xl shadow-lg p-8 mt-6 mx-4">
+            <h2 className="text-2xl font-bold text-gray-800">Welcome to the Quiz!</h2>
+            <p className="text-gray-600 mt-2">
+              Read the instructions carefully and click the button below to start.
+            </p>
+            <button
+              onClick={handleStartQuiz}
+              className="mt-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Start Quiz
+            </button>
+          </div>
+        )}
+
+        {/* Quiz Content */}
+        {isQuizStarted && (
+          <div className="w-full max-w-6xl flex flex-col items-center mt-6 px-4">
+            <QuizQuestions />
+            <QuizResults />
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

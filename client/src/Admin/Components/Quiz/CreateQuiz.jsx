@@ -17,6 +17,7 @@ const CreateQuiz = ({ onBack }) => {
     type: "Public",
   });
   const [errors, setErrors] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false); // Track if form is submitted
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -30,10 +31,40 @@ const CreateQuiz = ({ onBack }) => {
 
   const { currentDate, currentTime } = getCurrentDateTime();
 
+  const validateField = (name, value) => {
+    let error = "";
+    switch (name) {
+      case "name":
+        if (!value.trim()) error = "Quiz name is required.";
+        break;
+      case "startDate":
+        if (!value) error = "Start date is required.";
+        break;
+      case "startTime":
+        if (!value) error = "Start time is required.";
+        break;
+      case "endDate":
+        if (!value) error = "End date is required.";
+        break;
+      case "endTime":
+        if (!value) error = "End time is required.";
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setQuizData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
-    setErrors((prev) => ({ ...prev, [name]: value.trim() === "" }));
+    const fieldValue = type === "checkbox" ? checked : value;
+
+    // Update quiz data
+    setQuizData((prev) => ({ ...prev, [name]: fieldValue }));
+
+    // Validate the field dynamically
+    const error = validateField(name, fieldValue);
+    setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
   const getMinEndTime = () => {
@@ -90,8 +121,31 @@ const CreateQuiz = ({ onBack }) => {
   };
 
   const handleCreateQuiz = () => {
+    setIsSubmitted(true); // Mark form as submitted
+  
+    // Check for empty fields
+    const requiredFields = ["name", "startDate", "startTime", "endDate", "endTime"];
+    const emptyFields = requiredFields.filter(field => !quizData[field].trim());
+  
+    if (emptyFields.length > 0) {
+      // Set errors for empty fields
+      const newErrors = {};
+      emptyFields.forEach(field => {
+        newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`;
+      });
+      setErrors(newErrors);
+  
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please fill in all required fields.",
+      });
+      return;
+    }
+  
+    // Validate dates
     if (!validateDates()) return;
-
+  
     Swal.fire({
       title: "Are you sure?",
       text: "Do you want to create this quiz?",
@@ -108,12 +162,12 @@ const CreateQuiz = ({ onBack }) => {
           icon: "success",
           confirmButtonText: "Start Quiz",
         }).then(() => {
+          // Pass quizData as state when navigating
           navigate("/QuizStart", { state: { quizData } });
         });
       }
     });
   };
-
   const minEndTime = getMinEndTime();
 
   return (
@@ -125,13 +179,16 @@ const CreateQuiz = ({ onBack }) => {
             <label className="block text-gray-700 font-medium mb-2">Quiz Name</label>
             <input
               type="text"
-              name="name" 
+              name="name"
               value={quizData.name}
               onChange={handleChange}
-              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.name ? "border-red-500" : "border-gray-300"}`}
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                (isSubmitted && errors.name) ? "border-red-500" : "border-gray-300"
+              }`}
               placeholder="Enter quiz name"
               required
             />
+            {isSubmitted && errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
 
           <div>
@@ -185,7 +242,9 @@ const CreateQuiz = ({ onBack }) => {
                 min={currentDate}
                 value={quizData.startDate}
                 onChange={handleChange}
-                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.startDate ? "border-red-500" : "border-gray-300"}`}
+                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                  (isSubmitted && errors.startDate) ? "border-red-500" : "border-gray-300"
+                }`}
                 required
               />
               <input
@@ -194,10 +253,14 @@ const CreateQuiz = ({ onBack }) => {
                 min={quizData.startDate === currentDate ? currentTime : "00:00"}
                 value={quizData.startTime}
                 onChange={handleChange}
-                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.startTime ? "border-red-500" : "border-gray-300"}`}
+                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                  (isSubmitted && errors.startTime) ? "border-red-500" : "border-gray-300"
+                }`}
                 required
               />
             </div>
+            {isSubmitted && errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>}
+            {isSubmitted && errors.startTime && <p className="text-red-500 text-sm mt-1">{errors.startTime}</p>}
           </div>
 
           <div>
@@ -211,7 +274,9 @@ const CreateQuiz = ({ onBack }) => {
                 min={quizData.startDate || currentDate}
                 value={quizData.endDate}
                 onChange={handleChange}
-                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.endDate ? "border-red-500" : "border-gray-300"}`}
+                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                  (isSubmitted && errors.endDate) ? "border-red-500" : "border-gray-300"
+                }`}
                 required
               />
               <input
@@ -220,10 +285,14 @@ const CreateQuiz = ({ onBack }) => {
                 min={minEndTime}
                 value={quizData.endTime}
                 onChange={handleChange}
-                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.endTime ? "border-red-500" : "border-gray-300"}`}
+                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                  (isSubmitted && errors.endTime) ? "border-red-500" : "border-gray-300"
+                }`}
                 required
               />
             </div>
+            {isSubmitted && errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>}
+            {isSubmitted && errors.endTime && <p className="text-red-500 text-sm mt-1">{errors.endTime}</p>}
           </div>
 
           <div>
