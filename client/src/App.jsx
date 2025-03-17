@@ -46,6 +46,7 @@ import BeforeLogin from './container/BeforeLogin.jsx';
 import EditQuiz from './Admin/Components/Quiz/EditQuiz.jsx';
 import QuizList from './component/quiz/QuizList.jsx';
 import Quiz from './component/quiz/Quiz.jsx';
+import QuizStart from './Admin/Components/Quiz/QuizStart.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -109,6 +110,9 @@ function App() {
             <Route path='../Admin/Components/Quiz/QuizPanel' element={<QuizPanel />} />
             <Route path='/QuizList' element={<QuizList />} />
             <Route path='/Quiz' element={<Quiz/>} />
+            <Route path='/QuizStart' element={<QuizStart/>} />
+            
+
             
             <Route path="/EditQuiz" element={<EditQuiz />} />
        

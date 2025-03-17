@@ -1,8 +1,8 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import QuizTimer from "./QuizTimer"; // Import QuizTimer component
+import QuizTimer from "./QuizTimer";
 
-const QuizStartHeader = ({ startTimer, isTimerRunning }) => {
+const QuizHeader = ({ startTimer, isTimerRunning }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -17,10 +17,10 @@ const QuizStartHeader = ({ startTimer, isTimerRunning }) => {
   const totalQuestions = 10;
 
   // Handle missing quizData (e.g., page refresh)
-  if (!location.state?.quizData) {
-    console.warn("Quiz data is missing! Redirecting to the quiz selection page...");
-    navigate("/quiz-selection"); // Change this to your quiz selection page
-  }
+  // if (!location.state?.quizData) {
+  //   console.warn("Quiz data is missing! Redirecting to the quiz selection page...");
+  //   navigate("/quiz-selection");
+  // }
 
   return (
     <div className="flex flex-col items-center bg-DGXblue text-white p-2 shadow-2xl ">
@@ -65,4 +65,4 @@ const QuizStartHeader = ({ startTimer, isTimerRunning }) => {
   );
 };
 
-export default QuizStartHeader;
+export default QuizHeader;

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import QuizStartHeader from './QuizHeader';
+import QuizHeader from './QuizHeader';
 
 const Quiz = () => {
   const location = useLocation();
@@ -49,8 +51,8 @@ const Quiz = () => {
   };
 
   return (
-    <div className="flex border-2 border-DGXblue flex-col justify-center min-h-screen bg-gray-100 text-white p-6">
-      <h1 className="text-4xl font-bold mb-6 text-DGXblack">{quiz.title || "Quiz"}</h1>
+    <div className="flex flex-col justify-center min-h-screen bg-gray-100 text-white p-6">
+     <QuizHeader/>
       {showScore ? (
         <div className="bg-white p-8 rounded-lg shadow-lg text-center text-black">
           <h1 className="text-2xl font-bold mb-4">Quiz Completed!</h1>

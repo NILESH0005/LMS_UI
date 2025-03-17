@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import QuizStartHeader from "./QuizStartHeader";
+// import QuizStartHeader from "../../../component/quiz/QuizStartHeader.jsx";
 import QuizTable from "./QuizTable.jsx";
 import QuizQuestions from "./QuizQuestions";
 import QuizResult from "./QuizResult";
 import QuizReview from "./QuizReview";
-import QuizTimer from "./QuizTimer";
+import QuizTimer from "../../../component/quiz/QuizTimer.jsx";
 
 const QuizStart = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -17,7 +17,7 @@ const QuizStart = () => {
   return (
     <>
       {/* Pass isTimerRunning and startTimer to QuizStartHeader */}
-      <QuizStartHeader startTimer={startTimer} isTimerRunning={isTimerRunning} />
+      {/* <QuizStartHeader startTimer={startTimer} isTimerRunning={isTimerRunning} /> */}
       
       <QuizQuestions />
       <QuizResult />
