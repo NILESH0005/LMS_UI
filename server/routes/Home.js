@@ -8,20 +8,30 @@ import {
   getContent,
   addNewsSection,
   updateContentSection,
-  // addProjectShowcase,
+  addProjectShowcase,
+  getProjectShowcase,
+
+
+  getAllCMSContent,
 } from "../controllers/home.js";
 
 const router = express.Router();
 
 router.post('/addParallaxText', fetchUser, addParallaxText);
-router.post('/getParallaxContent', fetchUser, getParallaxContent);
+router.post('/getParallaxContent',  getParallaxContent);
 router.post('/setActiveParallaxText', fetchUser, setActiveParallaxText);
 router.post('/addContentSection', fetchUser, addContentSection);
-router.get('/getContent', fetchUser, getContent);
+router.get('/getContent',  getContent);
+router.get('/getProjectShowcase',  getProjectShowcase);
 router.post('/updateContentSection', fetchUser, updateContentSection);
 router.post('/addNewsSection', fetchUser, addNewsSection);
 router.post('/addNewsSection', fetchUser, addNewsSection);
-// router.post('/addProjectShowcase', fetchUser, addNewsSection);
+router.post('/addProjectShowcase', fetchUser, addProjectShowcase);
+
+
+
+router.get('/getAllCMSContent',  getAllCMSContent);
+
 
 
 

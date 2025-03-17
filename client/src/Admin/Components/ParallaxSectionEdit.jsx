@@ -18,7 +18,7 @@ const ParallaxSection = () => {
     const method = "POST";
     const headers = {
       "Content-Type": "application/json",
-      "auth-token": userToken,
+      // "auth-token": userToken,
     };
     const body = {};
 
@@ -55,18 +55,18 @@ const ParallaxSection = () => {
         "Content-Type": "application/json",
         "auth-token": userToken,
       };
+
       const body = { componentName: "Parallax", componentIdName: "parallaxText", content: newText };
 
       try {
         const response = await fetchData(endpoint, method, body, headers);
 
         if (response.success) {
-          const newTextObj = { Content: newText, isActive: false, idCode: response.data.id }; // Assuming the API returns the idCode
+          const newTextObj = { Content: newText, isActive: false, idCode: response.data.id }; 
           console.log("idcode:" , response.data.id);
           setParallaxTexts([...parallaxTexts, newTextObj]);
           setNewText("");
 
-          // Set the newly added text as active
           await handleSetActiveText(response.data.id);
 
           Swal.fire({ icon: "success", title: "Added!", text: "New parallax text has been added.", timer: 1500, showConfirmButton: false });

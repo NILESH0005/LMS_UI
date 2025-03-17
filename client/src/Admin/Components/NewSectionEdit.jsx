@@ -1,38 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Slider from "react-slick";
 import Swal from "sweetalert2";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import ApiContext from "../../context/ApiContext";
 
 const initialNewsData = [
-  {
-    title: "AI Workshop for Beginners",
-    date: "January 15, 2025",
-    location: "GL Bajaj, Training Room 1",
-    image: "https://picsum.photos/seed/picsum/200/300",
-    link: "#",
-  },
-  {
-    title: "Advanced Data Science Seminar",
-    date: "February 20, 2025",
-    location: "KIET Hall 2",
-    image: "https://picsum.photos/200/300",
-    link: "#",
-  },
-  {
-    title: "Machine Learning Bootcamp",
-    date: "March 10, 2025",
-    location: "IIT Delhi, Seminar Hall",
-    image: "https://picsum.photos/id/237/200/300",
-    link: "#",
-  },
-  {
-    title: "Neural Networks Workshop",
-    date: "April 5, 2025",
-    location: "BITS Pilani, Tech Auditorium",
-    image: "https://picsum.photos/200/300?grayscale",
-    link: "#",
-  },
+  // {
+  //   title: "Neural Networks Workshop",
+  //   date: "April 5, 2025",
+  //   location: "BITS Pilani, Tech Auditorium",
+  //   image: "https://picsum.photos/200/300?grayscale",
+  //   link: "#",
+  // },
 ];
 
 const NewsSection = () => {
@@ -45,29 +25,61 @@ const NewsSection = () => {
     link: "",
   });
   const [editIndex, setEditIndex] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { fetchData, userToken } = useContext(ApiContext);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleAddOrEditNews = () => {
-    if (!formData.title || !formData.date || !formData.location || !formData.image) {
+  const handleAddOrEditNews = async () => {
+    if (!formData.title || !formData.location || !formData.image) {
       Swal.fire("Error!", "All fields are required!", "error");
       return;
     }
 
-    if (editIndex !== null) {
-      const updatedNews = [...newsList];
-      updatedNews[editIndex] = formData;
-      setNewsList(updatedNews);
-      setEditIndex(null);
-      Swal.fire("Updated!", "News has been updated.", "success");
-    } else {
-      setNewsList([...newsList, formData]);
-      Swal.fire("Added!", "News has been added successfully.", "success");
-    }
+    setIsLoading(true);
 
-    setFormData({ title: "", date: "", location: "", image: "", link: "" });
+    try {
+      const endpoint = "home/addNewsSection";
+      const method = "POST";
+      const body = {
+        componentName: "NewsSection",
+        componentIdName: "news_section",
+        title: formData.title,
+        location: formData.location,
+        image: formData.image,
+        link: formData.link,
+      };
+      const headers = {
+        "Content-Type": "application/json",
+        "auth-token": userToken,
+      };
+
+      const response = await fetchData(endpoint, method, body, headers);
+
+      if (response.success) {
+        if (editIndex !== null) {
+          const updatedNews = [...newsList];
+          updatedNews[editIndex] = formData;
+          setNewsList(updatedNews);
+          setEditIndex(null);
+          Swal.fire("Updated!", "News has been updated.", "success");
+        } else {
+          setNewsList([...newsList, formData]);
+          Swal.fire("Added!", "News has been added successfully.", "success");
+        }
+
+        setFormData({ title: "", date: "", location: "", image: "", link: "" });
+      } else {
+        throw new Error(response.message || "Failed to add news");
+      }
+    } catch (error) {
+      console.error("Error adding news:", error);
+      Swal.fire("Error", `Failed to add news: ${error.message}`, "error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleEdit = (index) => {
@@ -114,7 +126,6 @@ const NewsSection = () => {
         Explore the latest news, workshops, and events in AI and Data Science.
       </p>
 
-      {/* News Form */}
       <div className="mb-8 p-6 bg-gray-800 rounded-lg shadow-lg">
         <h3 className="text-xl font-semibold mb-4">{editIndex !== null ? "Edit News" : "Add News"}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -126,13 +137,6 @@ const NewsSection = () => {
             placeholder="Enter event title"
             className="w-full p-2 bg-gray-700 rounded text-white"
           />
-          {/* <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="w-full p-2 bg-gray-700 rounded text-white"
-          /> */}
           <input
             type="text"
             name="location"
@@ -162,8 +166,9 @@ const NewsSection = () => {
           <button
             onClick={handleAddOrEditNews}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full"
+            disabled={isLoading}
           >
-            {editIndex !== null ? "Update News" : "Add News"}
+            {isLoading ? "Loading..." : editIndex !== null ? "Update News" : "Add News"}
           </button>
           {editIndex !== null && (
             <button
@@ -179,7 +184,6 @@ const NewsSection = () => {
         </div>
       </div>
 
-      {/* News Slider */}
       <Slider {...settings}>
         {newsList.map((news, index) => (
           <div key={index} className="px-3">
@@ -199,12 +203,6 @@ const NewsSection = () => {
                   </a>
                 )}
                 <div className="mt-4 flex gap-2">
-                  <button
-                    onClick={() => handleEdit(index)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
-                  >
-                    Edit
-                  </button>
                   <button
                     onClick={() => handleDelete(index)}
                     className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"

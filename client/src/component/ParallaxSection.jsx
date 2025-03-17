@@ -6,18 +6,18 @@ const ParallaxSection = () => {
   const { fetchData, userToken } = useContext(ApiContext);
   console.log("usertoken:", userToken)
   useEffect(() => {
-    if (userToken) {
-      fetchActiveParallaxText();
-    }
-  }, [userToken]); // Depend on userToken
-  
+
+    fetchActiveParallaxText();
+
+  }, []); 
+
 
   const fetchActiveParallaxText = async () => {
     const endpoint = "home/getParallaxContent";
     const method = "POST";
     const headers = {
       "Content-Type": "application/json",
-      "auth-token": userToken,
+      // "auth-token": userToken,
     };
 
     console.log("headers", headers);
@@ -25,18 +25,18 @@ const ParallaxSection = () => {
 
     try {
       const response = await fetchData(endpoint, method, body, headers);
-      console.log("Response:", response); 
+      console.log("Response:", response);
 
       if (response.success) {
-        const active = response.data.find((text) => text.isActive); 
+        const active = response.data.find((text) => text.isActive);
         if (active) {
-          setActiveText(active.Content); 
+          setActiveText(active.Content);
         }
       } else {
-        console.error("Error:", response.message); 
+        console.error("Error:", response.message);
       }
     } catch (error) {
-      console.error("API Request Error:", error); 
+      console.error("API Request Error:", error);
     }
   };
   console.log("parallex content :", activeText);

@@ -323,6 +323,95 @@ export const searchdiscussion = async (req, res) => {
     }
 };
 
+// export const deleteProjectShowcase = (req, res) => {
+//     let success = false;
+//     const adminName = req.user?.id; // Extract user ID from the token
+
+//     if (!adminName) {
+//         return res.status(401).json({
+//             success: false,
+//             message: "Unauthorized: User information not found in token.",
+//         });
+//     }
+
+//     try {
+//         connectToDatabase(async (err, conn) => {
+//             if (err) {
+//                 logError(err);
+//                 return res.status(500).json({
+//                     success: false,
+//                     data: err,
+//                     message: "Database connection error.",
+//                 });
+//             }
+//             try {
+//                 // Check if the ProjectShowcase exists and is not already deleted
+//                 const checkQuery = `SELECT * FROM tblCMSContent WHERE ComponentName = 'ProjectShowcase' AND (delStatus IS NULL OR delStatus = 0)`;
+//                 const result = await queryAsync(conn, checkQuery);
+
+//                 if (result.length === 0) {
+//                     return res.status(404).json({
+//                         success: false,
+//                         message: "ProjectShowcase not found or already deleted.",
+//                     });
+//                 } else {
+//                     try {
+//                         // Update the delStatus, delOnDt, and AuthDel fields for the ProjectShowcase
+//                         const updateQuery = `
+//                 UPDATE tblCMSContent  
+//                 SET delStatus = 1, delOnDt = GETDATE(), AuthDel = ?  
+//                 OUTPUT inserted.idCode, inserted.delStatus, inserted.delOnDt, inserted.AuthDel
+//                 WHERE ComponentName = 'ProjectShowcase' AND (delStatus IS NULL OR delStatus = 0)
+//               `;
+//                         const rows = await queryAsync(conn, updateQuery, [adminName]);
+
+//                         if (rows.length > 0) {
+//                             success = true;
+//                             logInfo("ProjectShowcase deleted successfully");
+//                             return res.status(200).json({
+//                                 success,
+//                                 data: {
+//                                     idCode: rows[0].idCode,
+//                                     AuthDel: rows[0].AuthDel,
+//                                     delOnDt: rows[0].delOnDt,
+//                                     delStatus: rows[0].delStatus
+//                                 },
+//                                 message: "ProjectShowcase deleted successfully.",
+//                             });
+//                         } else {
+//                             logWarning("Failed to delete the ProjectShowcase.");
+//                             return res.status(404).json({
+//                                 success: false,
+//                                 message: "Failed to delete the ProjectShowcase.",
+//                             });
+//                         }
+//                     } catch (updateErr) {
+//                         logError(updateErr);
+//                         return res.status(500).json({
+//                             success: false,
+//                             data: updateErr,
+//                             message: "Error updating ProjectShowcase deletion.",
+//                         });
+//                     }
+//                 }
+//             } catch (error) {
+//                 logError(error);
+//                 return res.status(404).json({
+//                     success: false,
+//                     message: "Error finding ProjectShowcase data!",
+//                 });
+//             }
+//         });
+//     } catch (error) {
+//         logError(error);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Unable to connect to the database!",
+//         });
+//     }
+// };
+
+
 export const deleteDiscussion = (req, res) => {
     let success = false;
     const { discussionId } = req.body;

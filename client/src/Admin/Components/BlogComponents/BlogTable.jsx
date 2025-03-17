@@ -29,20 +29,18 @@ const BlogTable = ({ blogs, userToken }) => {
   };
 
   const getStatusClass = (status) => {
-    if (user.isAdmin === 1) {
-      return "bg-green-200 text-green-800"; // Force approved color for admins
-    }
     switch (status) {
       case "Approved":
-        return "bg-green-200 text-green-800";
+        return "bg-green-200 text-green-800"; // Green for approved
       case "Rejected":
-        return "bg-red-200 text-red-800";
+        return "bg-red-200 text-red-800"; // Red for rejected
       case "Pending":
-        return "bg-yellow-200 text-yellow-800";
+        return "bg-yellow-200 text-yellow-800"; // Yellow for pending
       default:
-        return "bg-gray-200 text-gray-800";
+        return "bg-gray-200 text-gray-800"; // Default
     }
   };
+  
 
   const openModal = (blog) => {
     setSelectedBlog(blog);
@@ -107,7 +105,7 @@ const BlogTable = ({ blogs, userToken }) => {
                   {moment.utc(blog.publishedDate).format("MMMM D, YYYY h:mm A")}
                 </td>
                 <td className="border px-4 py-2">{
-                  user.isAdmin === 1 ? "Approved" : blog.Status || "Pending"
+                 blog.Status || "Pending"
                 }</td>
                 <td className="border px-4 py-2">
                   <button

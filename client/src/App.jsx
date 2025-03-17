@@ -44,6 +44,8 @@ import QuizInterface from './component/QuizInterface.jsx';
 import QuizPanel from './Admin/Components/Quiz/QuizPanel.jsx';
 import BeforeLogin from './container/BeforeLogin.jsx';
 import CreateQuiz from './Admin/Components/Quiz/CreateQuiz.jsx';
+import QuizList from './component/quiz/QuizList.jsx';
+import Quiz from './component/quiz/Quiz.jsx';
 import QuizStart from './Admin/Components/Quiz/QuizStart.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
@@ -106,6 +108,9 @@ function App() {
             {/* Added Quiz in Navbar */}
             <Route path='/QuizInterface' element={<QuizInterface />} />
             <Route path='../Admin/Components/Quiz/QuizPanel' element={<QuizPanel />} />
+            <Route path='/QuizList' element={<QuizList />} />
+            <Route path='/Quiz' element={<Quiz/>} />
+            
             <Route path="/CreateQuiz" element={<CreateQuiz />} />
             <Route path="/QuizStart" element={<QuizStart />} />
             {  /*-----------ADMIN----------- */}
