@@ -43,7 +43,7 @@ import AddUserEvent from './component/AddUserEvent.jsx';
 import QuizInterface from './component/QuizInterface.jsx';
 import QuizPanel from './Admin/Components/Quiz/QuizPanel.jsx';
 import BeforeLogin from './container/BeforeLogin.jsx';
-import EditQuiz from './Admin/Components/Quiz/EditQuiz.jsx';
+import CreateQuiz from './Admin/Components/Quiz/CreateQuiz.jsx';
 import QuizList from './component/quiz/QuizList.jsx';
 import Quiz from './component/quiz/Quiz.jsx';
 import QuizStart from './Admin/Components/Quiz/QuizStart.jsx';
@@ -114,8 +114,8 @@ function App() {
             
 
             
-            <Route path="/EditQuiz" element={<EditQuiz />} />
-       
+            <Route path="/CreateQuiz" element={<CreateQuiz />} />
+            <Route path="/QuizStart" element={<QuizStart />} />
             {  /*-----------ADMIN----------- */}
 
             <Route path='/AdminDashboard' element={<AdminDashboard 
