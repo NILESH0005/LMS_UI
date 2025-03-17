@@ -41,8 +41,9 @@ import ProjectShowcase from './component/ProjectShowcase.jsx';
 import CommunityHighlights from './component/CommunityHighlights.jsx';
 import AddUserEvent from './component/AddUserEvent.jsx';
 import QuizInterface from './component/QuizInterface.jsx';
-import QuizPanel from './Admin/Components/QuizPanel.jsx';
+import QuizPanel from './Admin/Components/Quiz/QuizPanel.jsx';
 import BeforeLogin from './container/BeforeLogin.jsx';
+import EditQuiz from './Admin/Components/Quiz/EditQuiz.jsx';
 import QuizList from './component/quiz/QuizList.jsx';
 import Quiz from './component/quiz/Quiz.jsx';
 
@@ -105,15 +106,12 @@ function App() {
 
             {/* Added Quiz in Navbar */}
             <Route path='/QuizInterface' element={<QuizInterface />} />
-            <Route path='/QuizPanel' element={<QuizPanel />} />
+            <Route path='../Admin/Components/Quiz/QuizPanel' element={<QuizPanel />} />
             <Route path='/QuizList' element={<QuizList />} />
             <Route path='/Quiz' element={<Quiz/>} />
             
-            {/* <Route path='/CreateQuiz' element={<CreateQuiz />} />  */}
-
-
-
-
+            <Route path="/EditQuiz" element={<EditQuiz />} />
+       
             {  /*-----------ADMIN----------- */}
 
             <Route path='/AdminDashboard' element={<AdminDashboard 
@@ -121,7 +119,6 @@ function App() {
             events={events} setEvents={setEvents}/>} />
             {/* <Route path='/Admin/Sidebar' element={<Sidebar />} /> */}
             <Route path='/LoadPage' element={<LoadPage />} />
-
             {/* <Route path='/Calendar' element={<Calendar />} /> */}
             <Route path='/GeneralUserCalendar' element={<GeneralUserCalendar />} />
             {/* <Route path='/BlogManager' element={<BlogManager/>}/> */}

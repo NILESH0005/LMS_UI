@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { FaCalendarAlt, FaClock, FaArrowLeft, FaCheckCircle } from "react-icons/fa";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import { FaCalendarAlt, FaClock, FaCheckCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const CreateQuiz = ({ onBack }) => {
+  const navigate = useNavigate();
   const [quizData, setQuizData] = useState({
     name: "",
-    level: "Easy",
+    level: "Medium",
     duration: 30,
     negativeMarking: false,
     startDate: "",
@@ -14,16 +16,8 @@ const CreateQuiz = ({ onBack }) => {
     endTime: "",
     type: "Public",
   });
+  const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setQuizData({
-      ...quizData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
-
-  // Get the current date and time in the required format for the `min` attribute
   const getCurrentDateTime = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -31,14 +25,17 @@ const CreateQuiz = ({ onBack }) => {
     const day = String(now.getDate()).padStart(2, "0");
     const hours = String(now.getHours()).padStart(2, "0");
     const minutes = String(now.getMinutes()).padStart(2, "0");
-
-    return {
-      currentDate: `${year}-${month}-${day}`,
-      currentTime: `${hours}:${minutes}`,
-    };
+    return { currentDate: `${year}-${month}-${day}`, currentTime: `${hours}:${minutes}` };
   };
 
-  // Calculate the minimum end time based on the start time
+  const { currentDate, currentTime } = getCurrentDateTime();
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setQuizData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    setErrors((prev) => ({ ...prev, [name]: value.trim() === "" }));
+  };
+
   const getMinEndTime = () => {
     if (!quizData.startDate || !quizData.startTime) return "";
 
@@ -92,54 +89,46 @@ const CreateQuiz = ({ onBack }) => {
     return true;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleCreateQuiz = () => {
     if (!validateDates()) return;
 
-    console.log("Quiz Data Submitted:", quizData);
-    fetch("/api/create-quiz", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(quizData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to create this quiz?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, create it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
         Swal.fire({
+          title: "Quiz Created!",
+          text: "Your quiz has been successfully created.",
           icon: "success",
-          title: "Success!",
-          text: "Quiz created successfully!",
+          confirmButtonText: "Start Quiz",
+        }).then(() => {
+          navigate("/QuizStart", { state: { quizData } });
         });
-        console.log("Success:", data);
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Error creating quiz.",
-        });
-        console.error("Error:", error);
-      });
+      }
+    });
   };
 
-  const { currentDate, currentTime } = getCurrentDateTime();
   const minEndTime = getMinEndTime();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-8">
-        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
-          Create a New Quiz
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Create a New Quiz</h2>
+        <form className="space-y-6">
           <div>
             <label className="block text-gray-700 font-medium mb-2">Quiz Name</label>
             <input
               type="text"
-              name="name"
+              name="name" 
               value={quizData.name}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.name ? "border-red-500" : "border-gray-300"}`}
               placeholder="Enter quiz name"
               required
             />
@@ -185,66 +174,53 @@ const CreateQuiz = ({ onBack }) => {
             <label className="ml-2 text-gray-700 font-medium">Enable Negative Marking</label>
           </div>
 
-          {/* Date and Time Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                <FaCalendarAlt /> Start Date
-              </label>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+              <FaCalendarAlt /> Start Date & Time
+            </label>
+            <div className="flex gap-4">
               <input
                 type="date"
                 name="startDate"
+                min={currentDate}
                 value={quizData.startDate}
                 onChange={handleChange}
-                min={currentDate} // Prevent selecting dates before today
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.startDate ? "border-red-500" : "border-gray-300"}`}
                 required
               />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                <FaClock /> Start Time
-              </label>
               <input
                 type="time"
                 name="startTime"
+                min={quizData.startDate === currentDate ? currentTime : "00:00"}
                 value={quizData.startTime}
                 onChange={handleChange}
-                min={quizData.startDate === currentDate ? currentTime : "00:00"} // Prevent selecting times before the current time if the date is today
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.startTime ? "border-red-500" : "border-gray-300"}`}
                 required
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                <FaCalendarAlt /> End Date
-              </label>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+              <FaCalendarAlt /> End Date & Time
+            </label>
+            <div className="flex gap-4">
               <input
                 type="date"
                 name="endDate"
+                min={quizData.startDate || currentDate}
                 value={quizData.endDate}
                 onChange={handleChange}
-                min={quizData.startDate || currentDate} // Prevent selecting dates before the start date
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.endDate ? "border-red-500" : "border-gray-300"}`}
                 required
               />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                <FaClock /> End Time
-              </label>
               <input
                 type="time"
                 name="endTime"
+                min={minEndTime}
                 value={quizData.endTime}
                 onChange={handleChange}
-                min={minEndTime} // Prevent selecting times before the start time + 30 minutes
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className={`w-1/2 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.endTime ? "border-red-500" : "border-gray-300"}`}
                 required
               />
             </div>
@@ -264,7 +240,8 @@ const CreateQuiz = ({ onBack }) => {
           </div>
 
           <button
-            type="submit"
+            type="button"
+            onClick={handleCreateQuiz}
             className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center"
           >
             <FaCheckCircle className="mr-2" /> Create Quiz
