@@ -1,30 +1,40 @@
 import React, { useState } from "react";
 
-const QuizTable = ({ handleEdit, handleDelete }) => {
-  // Dummy Data
-  const dummyQuestions = [
-    { id: 1, text: "What is the capital of France?", group: "Geography" },
-    { id: 2, text: "Who wrote 'To Kill a Mockingbird'?", group: "Literature" },
-    { id: 3, text: "What is 2 + 2?", group: "Mathematics" },
-    { id: 4, text: "What is the chemical symbol for water?", group: "Science" },
-    { id: 5, text: "Who painted the Mona Lisa?", group: "Art" },
-    { id: 6, text: "What is the speed of light?", group: "Physics" },
-    { id: 7, text: "Who discovered penicillin?", group: "Medicine" },
-  ];
-
+const QuizTable = ({ questions = [], handleEdit, handleDelete }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("All");
 
+  // Dummy data
+  const dummyQuestions = [
+    { id: 1, text: "What is the capital of France?", correctAnswer: "Paris", group: "Geography", level: "Easy", count: 0 },
+    { id: 2, text: "What is 2 + 2?", correctAnswer: "4", group: "Mathematics", level: "Easy", count: 0 },
+    { id: 3, text: "Who wrote 'Hamlet'?", correctAnswer: "William Shakespeare", group: "Literature", level: "Medium", count: 0 },
+    { id: 4, text: "What is the chemical symbol for water?", correctAnswer: "H2O", group: "Science", level: "Easy", count: 0 },
+    { id: 5, text: "Who painted the Mona Lisa?", correctAnswer: "Leonardo da Vinci", group: "Art", level: "Medium", count: 0 },
+  ];
+
+  // Use provided questions or fallback to dummy data
+  const [finalQuestions, setFinalQuestions] = useState(questions.length > 0 ? questions : dummyQuestions);
+
   // Get unique groups for the dropdown
-  const groups = ["All", ...new Set(dummyQuestions.map((q) => q.group))];
+  const groups = ["All", ...new Set(finalQuestions.map((q) => q.group))];
 
   // Filter questions based on search and selected group
-  const filteredQuestions = dummyQuestions.filter((q) => {
+  const filteredQuestions = finalQuestions.filter((question) => {
     return (
-      (selectedGroup === "All" || q.group === selectedGroup) &&
-      q.text.toLowerCase().includes(searchQuery.toLowerCase())
+      (selectedGroup === "All" || question.group === selectedGroup) &&
+      question.text.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
+
+  // Function to increase the count of a question
+  const increaseCount = (id) => {
+    setFinalQuestions((prevQuestions) =>
+      prevQuestions.map((q) =>
+        q.id === id ? { ...q, count: q.count + 1 } : q
+      )
+    );
+  };
 
   return (
     <div className="mt-6 p-4 bg-white rounded-lg shadow">
@@ -60,7 +70,10 @@ const QuizTable = ({ handleEdit, handleDelete }) => {
             <tr className="bg-gray-200">
               <th className="border p-2">#</th>
               <th className="border p-2">Question</th>
+              <th className="border p-2">Correct Answer</th>
               <th className="border p-2">Group</th>
+              <th className="border p-2">Level</th>
+              <th className="border p-2">Count</th>
               <th className="border p-2">Actions</th>
             </tr>
           </thead>
@@ -69,11 +82,20 @@ const QuizTable = ({ handleEdit, handleDelete }) => {
               <tr key={q.id} className="text-center">
                 <td className="border p-2">{index + 1}</td>
                 <td className="border p-2">{q.text}</td>
+                <td className="border p-2">{q.correctAnswer}</td>
                 <td className="border p-2">{q.group}</td>
-                <td className="border p-2">
+                <td className="border p-2">{q.level}</td>
+                <td className="border p-2">{q.count}</td>
+                <td className="border p-2 flex justify-center space-x-2">
+                  <button
+                    onClick={() => increaseCount(q.id)}
+                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition"
+                  >
+                    +
+                  </button>
                   <button
                     onClick={() => handleEdit(q.id)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600 transition"
+                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition"
                   >
                     Edit
                   </button>

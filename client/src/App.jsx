@@ -44,7 +44,7 @@ import QuizInterface from './component/QuizInterface.jsx';
 import QuizPanel from './Admin/Components/Quiz/QuizPanel.jsx';
 import BeforeLogin from './container/BeforeLogin.jsx';
 import EditQuiz from './Admin/Components/Quiz/EditQuiz.jsx';
-import QuizStart from './Admin/Components/Quiz/QuizStart.jsx';
+
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
 
@@ -106,7 +106,7 @@ function App() {
             <Route path='/QuizInterface' element={<QuizInterface />} />
             <Route path='../Admin/Components/Quiz/QuizPanel' element={<QuizPanel />} />
             <Route path="/EditQuiz" element={<EditQuiz />} />
-            <Route path="/QuizStart" element={<QuizStart />} />
+       
             {  /*-----------ADMIN----------- */}
 
             <Route path='/AdminDashboard' element={<AdminDashboard 
@@ -114,7 +114,6 @@ function App() {
             events={events} setEvents={setEvents}/>} />
             {/* <Route path='/Admin/Sidebar' element={<Sidebar />} /> */}
             <Route path='/LoadPage' element={<LoadPage />} />
-
             {/* <Route path='/Calendar' element={<Calendar />} /> */}
             <Route path='/GeneralUserCalendar' element={<GeneralUserCalendar />} />
             {/* <Route path='/BlogManager' element={<BlogManager/>}/> */}
