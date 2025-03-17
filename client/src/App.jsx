@@ -43,6 +43,8 @@ import AddUserEvent from './component/AddUserEvent.jsx';
 import QuizInterface from './component/QuizInterface.jsx';
 import QuizPanel from './Admin/Components/QuizPanel.jsx';
 import BeforeLogin from './container/BeforeLogin.jsx';
+import QuizList from './component/quiz/QuizList.jsx';
+import Quiz from './component/quiz/Quiz.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -104,6 +106,9 @@ function App() {
             {/* Added Quiz in Navbar */}
             <Route path='/QuizInterface' element={<QuizInterface />} />
             <Route path='/QuizPanel' element={<QuizPanel />} />
+            <Route path='/QuizList' element={<QuizList />} />
+            <Route path='/Quiz' element={<Quiz/>} />
+            
             {/* <Route path='/CreateQuiz' element={<CreateQuiz />} />  */}
 
 

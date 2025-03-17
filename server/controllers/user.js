@@ -194,7 +194,6 @@ export const databaseUserVerification = async (req, res) => {
               .json({ success: false, data: {}, message: warningMessage });
           }
         } else {
-          // User not found
           const warningMessage =
             "Access denied. You are not yet a part of this community. Please request a referral from an existing member to join.";
 
@@ -393,8 +392,7 @@ export const registration = async (req, res) => {
 
 export const login = async (req, res) => {
   let success = false;
-  // console.log(req.body)
-  // if there are errors, return bad request and the errors
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const warningMessage = "The data format is incorrect. Please ensure it meets the required format and try again.";

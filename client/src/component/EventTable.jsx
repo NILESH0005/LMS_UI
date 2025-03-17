@@ -13,6 +13,7 @@ const EventTable = (props) => {
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const { fetchData, userToken } = useContext(ApiContext);
+  const [isTokenLoading, setIsTokenLoading] = useState(true); // New state for token loading
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -55,7 +56,7 @@ const EventTable = (props) => {
     fetchCategories();
   }, []);
 
-    const validateDates = () => {
+  const validateDates = () => {
     const { start, end } = newEvent;
     if (!start || !end) {
       Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please select both start and end dates and times.' });
@@ -89,33 +90,45 @@ const EventTable = (props) => {
 
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      const endpoint = "eventandworkshop/getEvent";
-      const method = "GET";
-      const headers = {
-        'Content-Type': 'application/json',
-      };
+    // Check if userToken is available
+    if (userToken) {
+      setIsTokenLoading(false); // Token is available, stop token loading
+      fetchEvents(); // Fetch events only when the token is available
+    } else {
+      // If no token, stop loading after a short delay (simulating token check)
+      const timeoutId = setTimeout(() => {
+        setIsTokenLoading(false);
+      }, 1000); // Adjust the delay as needed
 
-      try {
-        const result = await fetchData(endpoint, method, {}, headers);
-        console.log("event result:", result);
-        if (result.success && Array.isArray(result.data)) {
-          props.setEvents(result.data);
-          // console.log(events);
-        } else {
-          console.error("Invalid data format:", result);
-          props.setEvents([]);
-        }
-      } catch (error) {
-        console.error("Error fetching events:", error);
-        props.setEvents([]);
-      } finally {
-        setLoading(false);
-      }
+      return () => clearTimeout(timeoutId); // Cleanup timeout
+    }
+  }, [userToken]);
+
+  const fetchEvents = async () => {
+    const endpoint = "eventandworkshop/getEvent";
+    const method = "GET";
+    const headers = {
+      "Content-Type": "application/json",
+      "auth-token": userToken, // Include the token in the headers
     };
 
-    fetchEvents();
-  }, [fetchData]);
+    try {
+      const result = await fetchData(endpoint, method, {}, headers);
+      console.log("event result:", result);
+      if (result.success && Array.isArray(result.data)) {
+        props.setEvents(result.data);
+      } else {
+        console.error("Invalid data format:", result);
+        props.setEvents([]);
+      }
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      props.setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const updateEvents = (newEvent) => {
     props.setEvents((prevEvents) => [newEvent, ...prevEvents]);
@@ -193,7 +206,7 @@ const EventTable = (props) => {
     }
   };
 
-  if (loading) {
+  if (isTokenLoading) {
     return <div><LoadPage /></div>;
   }
 

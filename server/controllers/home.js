@@ -34,9 +34,7 @@ export const addParallaxText = async (req, res) => {
 
         if (userRows.length > 0) {
           const user = userRows[0];
-          const insertQuery = `INSERT INTO tblCMSContent  (ComponentName, ComponentIdName, Content,  AuthAdd, AddOnDt, delStatus)
-                          VALUES (?, ?, ?,  ?, GETDATE(), 0);
-                      `;
+          const insertQuery = `INSERT INTO tblCMSContent  (ComponentName, ComponentIdName, Content,  AuthAdd, AddOnDt, delStatus) VALUES (?, ?, ?,  ?, GETDATE(), 0);`;
 
           const insertResult = await queryAsync(conn, insertQuery, [
             componentName, componentIdName, content, user.Name
@@ -141,7 +139,7 @@ export const addNewsSection = async (req, res) => {
   }
 
   try {
-    const { componentName, componentIdName, title, location, image } = req.body;
+    const { componentName, componentIdName, title, location, image, link } = req.body;
 
     connectToDatabase(async (err, conn) => {
       if (err) {
@@ -158,13 +156,13 @@ export const addNewsSection = async (req, res) => {
           const user = userRows[0];
 
           // Insert news into the tblCMSContent table
-          const insertQuery = `INSERT INTO tblCMSContent (ComponentName, ComponentIdName, Title, Location, Image, AuthAdd, AddOnDt, delStatus) VALUES (?, ?, ?, ?, ?, ?, GETDATE(), 0);`;
+          const insertQuery = `INSERT INTO tblCMSContent (ComponentName, ComponentIdName, Title, Location, Image, Link, AuthAdd, AddOnDt, delStatus) VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), 0);`;
 
           const content = JSON.stringify({ title, location }); // Store news data as JSON
           console.log("inserted data", content)
 
           const insertResult = await queryAsync(conn, insertQuery, [
-            componentName, componentIdName, title, location, image, user.Name
+            componentName, componentIdName, title, location, image, link, user.Name
           ]);
 
           success = true;
@@ -193,24 +191,93 @@ export const addNewsSection = async (req, res) => {
   }
 };
 
+// export const addProjectShowcase = async (req, res) => {
+//   let success = false;
+//   console.log("Headers:", req.headers);
+//   const userId = req.user.id;
+//   console.log("User ID:", userId);
+
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     logWarning("Data is not in the right format");
+//     return res.status(400).json({ success, data: errors.array(), message: "Data is not in the right format" });
+//   }
+
+//   try {
+//     const { componentName, componentIdName, title, description, gif, techStack } = req.body;
+//     console.log("Request Body:", req.body); // Log the request body
+
+//     connectToDatabase(async (err, conn) => {
+//       if (err) {
+//         logError("Failed to connect to database:", err);
+//         return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
+//       }
+
+//       try {
+//         const userQuery = `SELECT UserID, Name FROM Community_User WHERE ISNULL(delStatus, 0) = 0 AND EmailId = ?`;
+//         const userRows = await queryAsync(conn, userQuery, [userId]);
+
+//         if (userRows.length > 0) {
+//           const user = userRows[0];
+
+//           // Insert into tblCMSContent
+//           const insertQuery = `INSERT INTO tblCMSContent (
+//               ComponentName, ComponentIdName, Title, Content, Image, TechStack, AuthAdd, AddOnDt, delStatus
+//             ) VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), 0);`;
+
+//           const insertResult = await queryAsync(conn, insertQuery, [
+//             componentName, componentIdName, title, description, gif, techStack, user.Name
+//           ]);
+
+//           console.log("Insert Result:", insertResult);
+
+//           // Fetch the last inserted ID using SCOPE_IDENTITY()
+//           const lastInsertedIdQuery = `SELECT TOP 1 idCode FROM tblCMSContent WHERE ISNULL(delStatus, 0) = 0 ORDER BY idCode DESC;`;
+//           const lastInsertedId = await queryAsync(conn, lastInsertedIdQuery);
+
+//           console.log("Last Inserted ID Query Result:", lastInsertedId);
+
+//           success = true;
+//           closeConnection();
+//           logInfo("Project Showcase added successfully!");
+
+//           return res.status(200).json({
+//             success,
+//             data: { postId: lastInsertedId[0]?.CMSContentID || null },
+//             message: "Project Showcase added successfully!",
+//           });
+//         } else {
+//           closeConnection();
+//           logWarning("User not found, please login first.");
+//           return res.status(400).json({ success: false, data: {}, message: "User not found, please login first." });
+//         }
+//       } catch (queryErr) {
+//         closeConnection();
+//         logError("Database Query Error:", queryErr);
+//         return res.status(500).json({ success: false, data: queryErr, message: "Database Query Error" });
+//       }
+//     });
+//   } catch (error) {
+//     logError("Unexpected Error:", error);
+//     return res.status(500).json({ success: false, data: error, message: "Unexpected Error, check logs" });
+//   }
+// };
+
 export const addProjectShowcase = async (req, res) => {
   let success = false;
-  console.log("Headers:", req.headers);
   const userId = req.user.id;
-  console.log("User ID:", userId);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    logWarning("Data is not in the right format");
     return res.status(400).json({ success, data: errors.array(), message: "Data is not in the right format" });
   }
 
   try {
-    const { componentName, componentIdName, title, description, gif, techStack } = req.body;
+    const { componentName, componentIdName, title, description, techStack } = req.body;
+    const gifFilePath = req.file ? req.file.path : null; // Get the file path
 
     connectToDatabase(async (err, conn) => {
       if (err) {
-        logError("Failed to connect to database");
         return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
       }
 
@@ -221,38 +288,37 @@ export const addProjectShowcase = async (req, res) => {
         if (userRows.length > 0) {
           const user = userRows[0];
 
+          // Insert into tblCMSContent
           const insertQuery = `INSERT INTO tblCMSContent (
-              ComponentName, ComponentIdName, Content, Image, TechStack, AuthAdd, AddOnDt, delStatus
-            ) VALUES (?, ?, ?, ?, ?, ?, GETDATE(), 0);`;
-
-          const content = JSON.stringify({ title, description });
+              ComponentName, ComponentIdName, Title, Content, Image, TechStack, AuthAdd, AddOnDt, delStatus
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), 0);`;
 
           const insertResult = await queryAsync(conn, insertQuery, [
-            componentName, componentIdName, content, gif, techStack, user.Name
+            componentName, componentIdName, title, description, gifFilePath, techStack, user.Name
           ]);
+
+          // Fetch the last inserted ID
+          const lastInsertedIdQuery = `SELECT TOP 1 idCode FROM tblCMSContent WHERE ISNULL(delStatus, 0) = 0 ORDER BY idCode DESC;`;
+          const lastInsertedId = await queryAsync(conn, lastInsertedIdQuery);
 
           success = true;
           closeConnection();
-          logInfo("Project Showcase added successfully!");
 
           return res.status(200).json({
             success,
-            data: { id: insertResult.insertId },
+            data: { postId: lastInsertedId[0]?.idCode || null },
             message: "Project Showcase added successfully!",
           });
         } else {
           closeConnection();
-          logWarning("User not found, please login first.");
           return res.status(400).json({ success: false, data: {}, message: "User not found, please login first." });
         }
       } catch (queryErr) {
         closeConnection();
-        logError("Database Query Error:", queryErr);
         return res.status(500).json({ success: false, data: queryErr, message: "Database Query Error" });
       }
     });
   } catch (error) {
-    logError("Unexpected Error:", error);
     return res.status(500).json({ success: false, data: error, message: "Unexpected Error, check logs" });
   }
 };
@@ -324,36 +390,40 @@ export const getParallaxContent = async (req, res) => {
 };
 
 export const getContent = async (req, res) => {
-  let success = false;
+  console.log("Received request for getContent");
+
   try {
     connectToDatabase(async (err, conn) => {
       if (err) {
-        logError("Failed to connect to database");
-        return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
+        console.error("Database connection failed:", err);
+        return res.status(500).json({ success: false, message: "Failed to connect to database" });
       }
+
       try {
-        const query = `SELECT idCode, ComponentName, ComponentIdName, Title, Content, Image, isActive  FROM tblCMSContent  WHERE ComponentName = 'ContentSection' AND ISNULL(delStatus, 0) = 0 `;
-        const results = await queryAsync(conn, query);
-        console.log("Query result:", results);
+        const contentQuery = `
+                  SELECT idCode, ComponentName, ComponentIdName, Title, Content, Image, isActive  
+                  FROM tblCMSContent  
+                  WHERE ComponentName = 'ContentSection' AND ISNULL(delStatus, 0) = 0
+              `;
+        const contentResults = await queryAsync(conn, contentQuery);
 
-        success = true;
-        closeConnection();
-        logInfo("Parallax content fetched successfully!");
+        if (!contentResults.length) {
+          return res.status(200).json({ success: true, data: [], message: "No content found" });
+        }
 
-        return res.status(200).json({
-          success,
-          data: results,
-          message: "Parallax content fetched successfully!",
-        });
+        return res.status(200).json({ success: true, data: contentResults, message: "Content fetched successfully" });
+
       } catch (queryErr) {
-        closeConnection();
-        logError("Database Query Error: ", queryErr);
-        return res.status(500).json({ success: false, data: queryErr, message: "Database Query Error" });
+        console.error("Database query error:", queryErr);
+        return res.status(500).json({ success: false, message: "Database Query Error" });
+      } finally {
+        closeConnection(); // Ensure DB connection is closed
       }
     });
+
   } catch (error) {
-    logError("Unexpected Error: ", error);
-    return res.status(500).json({ success: false, data: error, message: "Unexpected Error, check logs" });
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ success: false, message: "Unexpected error occurred" });
   }
 };
 
@@ -399,8 +469,8 @@ export const updateContentSection = async (req, res) => {
         const updateResult = await queryAsync(conn, updateQuery, [title, text, image, id]);
         console.log("Update result:", updateResult);
 
-        if  (success = true) {
-         
+        if (success = true) {
+
           return res.status(200).json({ success, message: "Content updated successfully" });
         } else {
           return res.status(400).json({ success, message: "Failed to update content. No rows affected." });
@@ -417,4 +487,93 @@ export const updateContentSection = async (req, res) => {
     return res.status(500).json({ success: false, message: "Something went wrong", error });
   }
 };
+
+export const getProjectShowcase = async (req, res) => {
+  let success = false;
+  try {
+    connectToDatabase(async (err, conn) => {
+      if (err) {
+        logError("Failed to connect to database");
+        return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
+      }
+      try {
+        const query = `
+          SELECT 
+            idCode, 
+            ComponentName, 
+            ComponentIdName, 
+            Title, 
+            Location, 
+            Image, 
+            Link, 
+            Content, 
+            AuthAdd, 
+            AuthDel, 
+            AuthLstEdit, 
+            delOnDt, 
+            AddOnDt, 
+            editOnDt, 
+            delStatus, 
+            isActive, 
+            TechStack 
+          FROM 
+            tblCMSContent 
+          WHERE 
+            ComponentName = 'ProjectShowcase' 
+            AND ISNULL(delStatus, 0) = 0 
+            AND isActive = 1
+        `;
+
+        const results = await queryAsync(conn, query);
+        console.log("Query result:", results);
+
+        success = true;
+        closeConnection();
+        logInfo("Project Showcase content fetched successfully!");
+
+        return res.status(200).json({
+          success,
+          data: results,
+          message: "Project Showcase content fetched successfully!",
+        });
+      } catch (queryErr) {
+        closeConnection();
+        logError("Database Query Error: ", queryErr);
+        return res.status(500).json({ success: false, data: queryErr, message: "Database Query Error" });
+      }
+    });
+  } catch (error) {
+    logError("Unexpected Error: ", error);
+    return res.status(500).json({ success: false, data: error, message: "Unexpected Error, check logs" });
+  }
+};
+
+
+
+
+
+export const getAllCMSContent = async (req, res) => {
+  try {
+    connectToDatabase(async (err, conn) => {
+      if (err) {
+        logError("Failed to connect to database");
+        return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
+      }
+
+      const query = `SELECT * FROM tblCMSContent WHERE delStatus = 0`; // Fetch only non-deleted records
+      const rows = await queryAsync(conn, query);
+
+      closeConnection();
+      return res.status(200).json({ success: true, data: rows, message: "Data fetched successfully" });
+    });
+  } catch (error) {
+    logError("Unexpected Error: ", error);
+    return res.status(500).json({ success: false, data: error, message: "Unexpected Error, check logs" });
+  }
+};
+
+
+
+
+
 

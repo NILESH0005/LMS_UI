@@ -15,8 +15,6 @@ const Home = () => {
             <NewsSection/>
             <ProjectShowcase/>
             <CommunityHighlights/>
-        
-
         </div>
     );
 };
