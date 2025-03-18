@@ -41,7 +41,7 @@ const QuizInterface = () => {
         }
       });
     } else {
-      navigate("/QuizList"); // Navigate to the QuizList component
+      navigate("/QuizList"); 
     }
   };
 

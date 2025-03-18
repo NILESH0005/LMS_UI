@@ -1,84 +1,113 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import ApiContext from "../../../context/ApiContext";
 
 const QuizTable = ({ handleEdit, handleDelete }) => {
-  // Dummy Data
-  const dummyQuestions = [
-    { id: 1, text: "What is the capital of France?", group: "Geography" },
-    { id: 2, text: "Who wrote 'To Kill a Mockingbird'?", group: "Literature" },
-    { id: 3, text: "What is 2 + 2?", group: "Mathematics" },
-    { id: 4, text: "What is the chemical symbol for water?", group: "Science" },
-    { id: 5, text: "Who painted the Mona Lisa?", group: "Art" },
-    { id: 6, text: "What is the speed of light?", group: "Physics" },
-    { id: 7, text: "Who discovered penicillin?", group: "Medicine" },
-  ];
+  const { fetchData, userToken } = useContext(ApiContext);
+  const [quizzes, setQuizzes] = useState([]); 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); 
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("All");
 
-  // Get unique groups for the dropdown
-  const groups = ["All", ...new Set(dummyQuestions.map((q) => q.group))];
+  const fetchQuizzes = async () => {
+    setLoading(true);
+    const endpoint = "quiz/getQuizzes";
+    const method = "GET";
+    const headers = {
+      "Content-Type": "application/json",
+      "auth-token": userToken,
+    };
+    const body = {};
 
-  // Filter questions based on search and selected group
-  const filteredQuestions = dummyQuestions.filter((q) => {
-    return (
-      (selectedGroup === "All" || q.group === selectedGroup) &&
-      q.text.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+    try {
+      const data = await fetchData(endpoint, method, body, headers);
+      console.log("data is:", data);
+      if (data.success) {
+        setQuizzes(data.data.quizzes); 
+      } else {
+        setError(data.message || "Failed to fetch quizzes");
+      }
+    } catch (err) {
+      setError("Something went wrong, please try again.");
+      console.error("Error fetching quizzes:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "N/A"; 
+  
+    const date = new Date(dateString);
+    
+    const day = date.getDate();
+    const suffix = ["th", "st", "nd", "rd"][
+      day % 10 > 3 || [11, 12, 13].includes(day % 100) ? 0 : day % 10
+    ];
+    
+    const datePart = `${day}${suffix} ${new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(date)}`;
+    
+    const timePart = date.toLocaleString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  
+    return `${datePart}, ${timePart}`;
+  };
+  
+  
+
+  useEffect(() => {
+    fetchQuizzes();
+  }, []);
+
+  if (loading) {
+    return <p>Loading quizzes...</p>;
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
 
   return (
     <div className="mt-6 p-4 bg-white rounded-lg shadow">
-      {/* Search and Filter Controls */}
       <div className="flex justify-between items-center mb-4">
-        {/* Search Field */}
         <input
           type="text"
-          placeholder="Search questions..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search quizzes..."
           className="p-2 border rounded w-1/2"
         />
-
-        {/* Group Filter Dropdown */}
-        <select
-          value={selectedGroup}
-          onChange={(e) => setSelectedGroup(e.target.value)}
-          className="p-2 border rounded"
-        >
-          {groups.map((group, index) => (
-            <option key={index} value={group}>
-              {group}
-            </option>
-          ))}
-        </select>
       </div>
-
-      {/* Table */}
-      {filteredQuestions.length > 0 ? (
+      {quizzes.length > 0 ? (
         <table className="w-full border-collapse border border-gray-300">
           <thead>
-            <tr className="bg-gray-200">
+            <tr className="bg-DGXgreen">
               <th className="border p-2">#</th>
-              <th className="border p-2">Question</th>
-              <th className="border p-2">Group</th>
+              <th className="border p-2">Quiz Category</th>
+              <th className="border p-2">Quiz Name</th>
+              <th className="border p-2">Level</th>
+              <th className="border p-2">Duration</th>
+              <th className="border p-2">Negative Marking</th>
+              <th className="border p-2">Start Date & Time</th>
+              <th className="border p-2">End Date & Time</th>
+              <th className="border p-2">Visibility</th>
               <th className="border p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredQuestions.map((q, index) => (
-              <tr key={q.id} className="text-center">
+            {quizzes.map((quiz, index) => (
+              <tr key={quiz.QuizID} className="text-center">
                 <td className="border p-2">{index + 1}</td>
-                <td className="border p-2">{q.text}</td>
-                <td className="border p-2">{q.group}</td>
+                <td className="border p-2">{quiz.QuizCategory}</td>
+                <td className="border p-2">{quiz.QuizName}</td>
+                <td className="border p-2">{quiz.QuizLevel}</td>
+                <td className="border p-2">{quiz.QuizDuration} mins</td>
+                <td className="border p-2">{quiz.NegativeMarking ? "Yes" : "No"}</td>
+                <td className="border p-2">{formatDateTime(quiz.StartDateAndTime)}</td>
+                <td className="border p-2">{formatDateTime(quiz.EndDateTime)}</td>
+                <td className="border p-2">{quiz.QuizVisibility}</td>
                 <td className="border p-2">
                   <button
-                    onClick={() => handleEdit(q.id)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600 transition"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(q.id)}
+                    onClick={() => handleDelete(quiz.QuizID)}
                     className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
                   >
                     Delete
@@ -89,7 +118,7 @@ const QuizTable = ({ handleEdit, handleDelete }) => {
           </tbody>
         </table>
       ) : (
-        <p className="text-center text-gray-500">No questions found.</p>
+        <p className="text-center text-gray-500">No quizzes found.</p>
       )}
     </div>
   );

@@ -31,7 +31,6 @@ const BlogModal = ({ blog, closeModal, updateBlogState }) => {
                     confirmButtonText: "OK",
                 });
 
-                // Notify the parent component to update the blog state
                 updateBlogState(blogId, Status);
                 closeModal();
             } else {
@@ -122,8 +121,6 @@ const BlogModal = ({ blog, closeModal, updateBlogState }) => {
                         </p>
                         <p className="text-gray-500 text-center mb-4">{published_date}</p>
                         <div className="text-justify" dangerouslySetInnerHTML={{ __html: content }} />
-
-                        {/* Buttons based on blog status */}
                         <div className="flex justify-center gap-4 mt-6">
                             {(user.isAdmin == '1') && Status === "Pending" && (
                                 <>

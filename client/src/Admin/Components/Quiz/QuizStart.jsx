@@ -8,8 +8,8 @@ const QuizStart = () => {
   const location = useLocation();
   const { quizData } = location.state || {};
   const [isQuizStarted, setIsQuizStarted] = useState(false);
+  
 
-  // Example quiz details (replace with actual data from quizData)
   const quizTitle = quizData?.title || "General Knowledge Quiz";
   const startTime = "10:00 AM";
   const endTime = "11:00 AM";
@@ -21,7 +21,6 @@ const QuizStart = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      {/* Navbar (Placeholder) */}
       <nav className="w-full bg-white shadow-lg">
         <div className="max-w-6xl mx-auto px-4 py-2">
         <h1 className="text-2xl font-bold text-gray-800">{quizTitle}</h1>
@@ -30,9 +29,7 @@ const QuizStart = () => {
         </div>
       </nav>
 
-      {/* Main Content */}
       <div className="w-full flex flex-col items-center mt-8">
-        {/* Quiz Title and Details */}
         <div className="w-full max-w-6xl px-4">
           <h1 className="text-4xl font-extrabold text-gray-800">{quizTitle}</h1>
           <div className="mt-4 flex flex-col space-y-2 text-gray-600">

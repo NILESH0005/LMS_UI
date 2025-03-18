@@ -6,10 +6,13 @@ import UpcomingQuiz from "./UpcomingQuiz";
 const QuizPanel = () => {
   const [activeComponent, setActiveComponent] = useState('QuizTable');
 
+  const navigateToQuizTable = () => {
+    setActiveComponent('QuizTable');
+  };
   const renderComponent = () => {
     switch (activeComponent) {
       case 'CreateQuiz':
-        return <CreateQuiz />;
+        return <CreateQuiz navigateToQuizTable={navigateToQuizTable} />;
       case 'UpcomingQuiz':
         return <UpcomingQuiz />;
       default:
@@ -40,8 +43,6 @@ const QuizPanel = () => {
     margin: '5px',
     transition: 'background-color 0.3s ease',
   };
-
-  // Hover effect for buttons
   const hoverStyle = {
     backgroundColor: '#0056b3',
     color: 'white',
