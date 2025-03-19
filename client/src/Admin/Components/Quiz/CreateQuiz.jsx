@@ -7,7 +7,7 @@ import ApiContext from "../../../context/ApiContext";
 const CreateQuiz = ({ navigateToQuizTable }) => {
   const navigate = useNavigate();
   const { userToken, fetchData } = useContext(ApiContext);
-  const [categories, setCategories] = useState([]); // Store fetched categories
+  const [categories, setCategories] = useState([]); 
   const [quizData, setQuizData] = useState({
     category: "",
     name: "",
@@ -21,9 +21,8 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
     type: "Public",
   });
   const [errors, setErrors] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false); // Track if form is submitted
-  const [loading, setLoading] = useState(false); // Track loading state
-
+  const [isSubmitted, setIsSubmitted] = useState(false); 
+  const [loading, setLoading] = useState(false); 
   useEffect(() => {
     const fetchCategories = async () => {
       const endpoint = `dropdown/getDropdownValues?category=blogCategory`;
@@ -137,7 +136,7 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
       return false;
     }
 
-    const timeDifference = (endDateTime - startDateTime) / (1000 * 60); // Difference in minutes
+    const timeDifference = (endDateTime - startDateTime) / (1000 * 60); 
     if (timeDifference < 30) {
       Swal.fire({
         icon: "error",
@@ -382,7 +381,7 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
           <button
             type="button"
             onClick={handleCreateQuiz}
-            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center"
+            className="w-full bg-DGXblue text-white p-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center"
             disabled={loading}
           >
             {loading ? "Creating..." : <><FaCheckCircle className="mr-2" /> Create Quiz</>}

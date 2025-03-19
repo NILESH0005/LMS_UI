@@ -95,14 +95,14 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
     }
 
     if (userToken) {
-      const endpoint = "discussion/discussionpost"; // Ensure correct API endpoint
+      const endpoint = "discussion/discussionpost"; 
       const method = "POST";
       const headers = {
         "Content-Type": "application/json",
         "auth-token": userToken,
       };
       const body = {
-        reference: id, // Ensure this correctly refers to the parent comment
+        reference: id,
         comment: replyText,
       };
 
@@ -121,7 +121,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
           return;
         }
 
-        // Create a new reply object
         const newReplyObj = {
           Comment: replyText,
           DiscussionID: id,
@@ -130,10 +129,9 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
           likeCount: 0,
           timestamp: new Date().toISOString(),
           userLike: 0,
-          comment: [], // Replies to replies (nested replies)
+          comment: [],
         };
 
-        // Update the state immediately
         setDissComments((prev) => {
           const updatedComments = [...prev];
           updatedComments[commentIndex].comment = [
@@ -169,7 +167,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
     <div>
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 transition-opacity duration-300 flex justify-center items-center">
-          {/* Modal */}
           <div
             className={`w-[calc(100%-1rem)] h-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] sm:h-[calc(100%-2rem)] lg:w-[calc(100%-4rem)] lg:h-[calc(100%-4rem)] xl:w-[calc(100%-6rem)] xl:h-[calc(100%-6rem)] bg-DGXwhite transition-transform shadow-lg transform ${isOpen ? "translate-y-0" : "translate-y-full"
               } z-50 flex flex-col overflow-auto`}
@@ -227,7 +224,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                     </div>
                   )}
 
-                  {/* Content */}
                   {discussion.Content && (
                     <div
                       className="mb-2 sm:mb-4"
@@ -235,7 +231,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                     />
                   )}
 
-                  {/* Tags */}
                   {discussion.Tag && (
                     <div className="mb-2 sm:mb-4">
                       <h3 className="text-md sm:text-lg font-semibold">
@@ -256,7 +251,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                     </div>
                   )}
 
-                  {/* Links */}
                   {discussion.ResourceUrl && (
                     <div>
                       <h3 className="text-md sm:text-lg font-semibold">
@@ -282,7 +276,6 @@ const DiscussionModal = ({ isOpen, onRequestClose, discussion }) => {
                   )}
                 </div>
 
-                {/* Comments Section (Bottom part) */}
                 <div className="w-full sm:w-1/2 p-2 sm:p-4 overflow-auto flex flex-col flex-grow">
                   <div className="p-4 w-full flex items-center space-x-4">
                     <textarea

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import ApiContext from "../../../context/ApiContext";
-
-const QuizTable = ({ handleEdit, handleDelete }) => {
+import Swal from "sweetalert2"; 
+const QuizTable = () => {
   const { fetchData, userToken } = useContext(ApiContext);
-  const [quizzes, setQuizzes] = useState([]); 
+  const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); 
-
+  const [error, setError] = useState(null);
 
   const fetchQuizzes = async () => {
     setLoading(true);
@@ -22,7 +21,7 @@ const QuizTable = ({ handleEdit, handleDelete }) => {
       const data = await fetchData(endpoint, method, body, headers);
       console.log("data is:", data);
       if (data.success) {
-        setQuizzes(data.data.quizzes); 
+        setQuizzes(data.data.quizzes);
       } else {
         setError(data.message || "Failed to fetch quizzes");
       }
@@ -33,28 +32,81 @@ const QuizTable = ({ handleEdit, handleDelete }) => {
       setLoading(false);
     }
   };
+
   const formatDateTime = (dateString) => {
-    if (!dateString) return "N/A"; 
+    if (!dateString) return "N/A";
+    
+    const date = new Date(dateString); // Convert to Date object
   
-    const date = new Date(dateString);
-    
-    const day = date.getDate();
-    const suffix = ["th", "st", "nd", "rd"][
-      day % 10 > 3 || [11, 12, 13].includes(day % 100) ? 0 : day % 10
-    ];
-    
-    const datePart = `${day}${suffix} ${new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(date)}`;
-    
+    const datePart = date.toLocaleString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC", // Force UTC
+    });
+  
     const timePart = date.toLocaleString("en-US", {
-      hour: "2-digit",
+      hour: "numeric",
       minute: "2-digit",
       hour12: true,
+      timeZone: "UTC", // Force UTC
     });
   
     return `${datePart}, ${timePart}`;
   };
   
-  
+
+  const handleDelete = async (quizId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const endpoint = "quiz/deleteQuiz";
+          const method = "POST";
+          const headers = {
+            "Content-Type": "application/json",
+            "auth-token": userToken,
+          };
+          const body = { quizId };
+          console.log("body is :", body);
+          const data = await fetchData(endpoint, method, body, headers);
+          console.log("data is :", data);
+
+          if (data.success) {
+            setQuizzes((prevQuizzes) =>
+              prevQuizzes.filter((quiz) => quiz.QuizID !== quizId)
+            );
+
+            Swal.fire({
+              title: "Deleted!",
+              text: "The quiz has been deleted.",
+              icon: "success",
+            });
+          } else {
+            Swal.fire({
+              title: "Error",
+              text: data.message || "Failed to delete the quiz.",
+              icon: "error",
+            });
+          }
+        } catch (error) {
+          console.error("Error deleting quiz:", error);
+          Swal.fire({
+            title: "Error",
+            text: "Something went wrong, please try again.",
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
 
   useEffect(() => {
     fetchQuizzes();
@@ -107,7 +159,7 @@ const QuizTable = ({ handleEdit, handleDelete }) => {
                 <td className="border p-2">{quiz.QuizVisibility}</td>
                 <td className="border p-2">
                   <button
-                    onClick={() => handleDelete(quiz.QuizID)}
+                    onClick={() => handleDelete(quiz.QuizID)} 
                     className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
                   >
                     Delete
