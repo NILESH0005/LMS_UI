@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import QuizHeader from './QuizHeader';
+import QuizPalette from './QuizPalette';
 
 const Quiz = () => {
   const location = useLocation();
@@ -15,6 +16,30 @@ const Quiz = () => {
     { question: "What is the capital of France?", options: ["Paris", "London", "Berlin", "Madrid"], correctAnswer: "Paris" },
     { question: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Saturn"], correctAnswer: "Mars" },
   ];
+
+  // Timer state
+  const [timer, setTimer] = useState({
+    hours: 1,
+    minutes: 5,
+    seconds: 55,
+  });
+
+  // Question palette state - simulating answered/unanswered questions
+  const [questionStatus, setQuestionStatus] = useState({
+    1: "answered",
+    2: "answered",
+    3: "answered",
+    4: "answered",
+    5: "not-answered",
+    6: "answered",
+    7: "answered",
+    8: "answered",
+    9: "answered",
+    10: "marked",
+    11: "marked",
+    12: "current",
+    // Rest are not visited
+  });
 
   const handleAnswerClick = (selectedAnswer) => {
     const newAnswers = [...selectedAnswers];
@@ -42,64 +67,74 @@ const Quiz = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center min-h-screen bg-gray-100 text-white p-6">
+    <div className="flex flex-col min-h-screen">
+      {/* Header */}
       <QuizHeader />
-      {showScore ? (
-        <div className="bg-white p-8 rounded-lg shadow-lg text-center text-black">
-          <h1 className="text-2xl font-bold mb-4">Quiz Completed!</h1>
-          <p className="text-xl">Your score: {score} out of {questions.length}</p>
-        </div>
-      ) : (
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full text-black">
-          <div className="flex justify-between items-center mb-6">
-            <p className="text-lg">Question {currentQuestion + 1} of {questions.length}</p>
-          </div>
-          <h2 className="text-xl font-semibold mb-4">{questions[currentQuestion].question}</h2>
 
-          <div className="flex flex-col w-full">
-            {questions[currentQuestion].options.map((option, index) => (
-              <div
-                key={index}
-                className={`flex items-center w-full py-4 pl-5 m-2 ml-0 space-x-2 border-2 cursor-pointer ${
-                  selectedAnswers[currentQuestion] === option ? "bg-green-200 border-green-500" : "bg-white/5 border-white/10"
-                } rounded-xl`}
-                onClick={() => handleAnswerClick(option)}
-              >
-                <input
-                  type="radio"
-                  className="w-6 h-6 bg-black"
-                  checked={selectedAnswers[currentQuestion] === option}
-                  readOnly
-                />
-                <p className="ml-6 text-DGXblack">{option}</p>
+      {/* Main content */}
+      <div className="flex-1 container mx-auto px-4 py-6">
+        <h1 className="text-3xl font-medium text-center mb-6">VI Practice Test</h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          {/* Main test area - 3/4 width on large screens */}
+          <div className="lg:col-span-3 border border-gray-300 rounded-md">
+            {/* Question header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border-b border-gray-300">
+              <div className="text-gray-700">Question No. {currentQuestion + 1}</div>
+              <div className="flex flex-wrap gap-4 items-center">
+              
+                <div className="flex items-center gap-2">
+                  <span>Right mark:</span>
+                  <span className="text-green-600 font-medium">1.00</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>Negative mark:</span>
+                  <span className="text-red-600 font-medium">0.00</span>
+                </div>
               </div>
-            ))}
+            </div>
+
+            {/* Question content */}
+            <div className="p-6 border-b border-gray-300">
+              <p className="text-lg mb-6">{questions[currentQuestion].question}</p>
+
+              <div className="space-y-3">
+                {questions[currentQuestion].options.map((option, index) => (
+                  <label key={index} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="answer"
+                      value={option}
+                      checked={selectedAnswers[currentQuestion] === option}
+                      onChange={() => handleAnswerClick(option)}
+                      className="w-4 h-4"
+                    />
+                    <span>{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex justify-between p-4">
+              <div className="flex gap-2">
+                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded">Mark for Review & Next</button>
+                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded">Clear Response</button>
+                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded">Instant Result</button>
+              </div>
+              <button className="px-4 py-2 bg-blue-700 text-white rounded">Save & Next</button>
+            </div>
           </div>
 
-          <div className="flex justify-between mt-4">
-            <button
-              className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-200"
-              onClick={() => setCurrentQuestion(currentQuestion - 1)}
-              disabled={currentQuestion === 0}
-            >
-              Previous
-            </button>
-            <button
-              className="bg-DGXblue text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
-              onClick={handleSkip}
-            >
-              Skip
-            </button>
-            <button
-              className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-200"
-              onClick={handleSaveAndNext}
-              disabled={!selectedAnswers[currentQuestion]}
-            >
-              Save & Next
-            </button>
-          </div>
+          {/* Sidebar - 1/4 width on large screens */}
+          <QuizPalette
+            questionStatus={questionStatus}
+            currentQuestion={currentQuestion}
+            setCurrentQuestion={setCurrentQuestion}
+            timer={timer}
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 };

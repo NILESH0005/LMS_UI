@@ -1,38 +1,38 @@
 import React, { useState, useEffect, useContext } from "react";
 import ApiContext from "../../../context/ApiContext";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
+
 const QuizTable = () => {
   const { fetchData, userToken } = useContext(ApiContext);
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [categories, setCategories] = useState([]); // State to store quiz categories
-
+  const [categories, setCategories] = useState([]);
 
   const fetchQuizCategories = async () => {
-        const endpoint = `dropdown/getQuizGroupDropdown`;
-        const method = "GET";
-        const headers = {
-          "Content-Type": "application/json",
-          "auth-token": userToken,
-        };
-  
-        try {
-          const data = await fetchData(endpoint, method, headers);
-          console.log("Fetched quiz categories:", data);
-          if (data.success) {
-            const sortedCategories = data.data.sort((a, b) =>
-              a.group_name.localeCompare(b.group_name)
-            );
-            setCategories(sortedCategories);
-          } else {
-            Swal.fire("Error", "Failed to fetch quiz categories.", "error");
-          }
-        } catch (error) {
-          console.error("Error fetching quiz categories:", error);
-          Swal.fire("Error", "Error fetching quiz categories.", "error");
-        }
-      };
+    const endpoint = `dropdown/getQuizGroupDropdown`;
+    const method = "GET";
+    const headers = {
+      "Content-Type": "application/json",
+      "auth-token": userToken,
+    };
+
+    try {
+      const data = await fetchData(endpoint, method, headers);
+      console.log("Fetched quiz categories:", data);
+      if (data.success) {
+        const sortedCategories = data.data.sort((a, b) =>
+          a.group_name.localeCompare(b.group_name)
+        );
+        setCategories(sortedCategories);
+      } else {
+        Swal.fire("Error", "Failed to fetch quiz categories.", "error");
+      }
+    } catch (error) {
+      console.error("Error fetching quiz categories:", error);
+      Swal.fire("Error", "Error fetching quiz categories.", "error");
+    }
+  };
 
   const fetchQuizzes = async () => {
     setLoading(true);
@@ -97,12 +97,14 @@ const QuizTable = () => {
             "Content-Type": "application/json",
             "auth-token": userToken,
           };
-          const body = { quizId };
-          console.log("body is :", body);
+          const body = { QuizID: quizId }; // Ensure the key matches the API's expected input
+          console.log("Request body:", body);
+
           const data = await fetchData(endpoint, method, body, headers);
-          console.log("data is :", data);
+          console.log("API response:", data);
 
           if (data.success) {
+            // Update the state to remove the deleted quiz
             setQuizzes((prevQuizzes) =>
               prevQuizzes.filter((quiz) => quiz.QuizID !== quizId)
             );
@@ -137,9 +139,7 @@ const QuizTable = () => {
   }, []);
 
   const getCategoryName = (groupId) => {
-    // Convert groupId to a number if it's a string
     const groupIdNumber = typeof groupId === 'string' ? parseInt(groupId, 10) : groupId;
-  
     const category = categories.find((cat) => cat.group_id === groupIdNumber);
     return category ? category.group_name : "N/A";
   };
@@ -178,30 +178,27 @@ const QuizTable = () => {
             </tr>
           </thead>
           <tbody>
-          {quizzes.map((quiz, index) => {
-  console.log("Quiz data:", quiz); // Log individual quiz data
-  return (
-    <tr key={quiz.QuizID} className="text-center">
-      <td className="border p-2">{index + 1}</td>
-      <td className="border p-2"> {getCategoryName(quiz.QuizCategory)}</td>
-      <td className="border p-2">{quiz.QuizName}</td>
-      <td className="border p-2">{quiz.QuizLevel}</td>
-      <td className="border p-2">{quiz.QuizDuration} mins</td>
-      <td className="border p-2">{quiz.NegativeMarking ? "Yes" : "No"}</td>
-      <td className="border p-2">{formatDateTime(quiz.StartDateAndTime)}</td>
-      <td className="border p-2">{formatDateTime(quiz.EndDateTime)}</td>
-      <td className="border p-2">{quiz.QuizVisibility}</td>
-      <td className="border p-2">
-        <button
-          onClick={() => handleDelete(quiz.QuizID)} 
-          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-        >
-          Delete
-        </button>
-      </td>
-    </tr>
-  );
-})}
+            {quizzes.map((quiz, index) => (
+              <tr key={quiz.QuizID} className="text-center">
+                <td className="border p-2">{index + 1}</td>
+                <td className="border p-2">{getCategoryName(quiz.QuizCategory)}</td>
+                <td className="border p-2">{quiz.QuizName}</td>
+                <td className="border p-2">{quiz.QuizLevel}</td>
+                <td className="border p-2">{quiz.QuizDuration} mins</td>
+                <td className="border p-2">{quiz.NegativeMarking ? "Yes" : "No"}</td>
+                <td className="border p-2">{formatDateTime(quiz.StartDateAndTime)}</td>
+                <td className="border p-2">{formatDateTime(quiz.EndDateTime)}</td>
+                <td className="border p-2">{quiz.QuizVisibility}</td>
+                <td className="border p-2">
+                  <button
+                    onClick={() => handleDelete(quiz.QuizID)}
+                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       ) : (
