@@ -31,7 +31,6 @@ export const createQuiz = async (req, res) => {
 
     console.log("Request Body:", req.body);
 
-    // Validate required fields
     if (!name || !startDate || !startTime || !endDate || !endTime) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
     }

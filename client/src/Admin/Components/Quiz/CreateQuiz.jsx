@@ -7,7 +7,7 @@ import ApiContext from "../../../context/ApiContext";
 const CreateQuiz = ({ navigateToQuizTable }) => {
   const navigate = useNavigate();
   const { userToken, fetchData } = useContext(ApiContext);
-  const [categories, setCategories] = useState([]); 
+  const [categories, setCategories] = useState([]);
   const [quizData, setQuizData] = useState({
     category: "",
     name: "",
@@ -21,11 +21,12 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
     type: "Public",
   });
   const [errors, setErrors] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false); 
-  const [loading, setLoading] = useState(false); 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    const fetchCategories = async () => {
-      const endpoint = `dropdown/getDropdownValues?category=blogCategory`;
+    const fetchQuizCategories = async () => {
+      const endpoint = `dropdown/getQuizGroupDropdown`;
       const method = "GET";
       const headers = {
         "Content-Type": "application/json",
@@ -34,23 +35,53 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
 
       try {
         const data = await fetchData(endpoint, method, headers);
-        console.log("Fetched blog categories:", data);
+        console.log("Fetched quiz categories:", data);
         if (data.success) {
           const sortedCategories = data.data.sort((a, b) =>
-            a.ddValue.localeCompare(b.ddValue)
+            a.group_name.localeCompare(b.group_name)
           );
           setCategories(sortedCategories);
         } else {
-          Swal.fire("Error", "Failed to fetch categories.", "error");
+          Swal.fire("Error", "Failed to fetch quiz categories.", "error");
         }
       } catch (error) {
-        console.error("Error fetching blog categories:", error);
-        Swal.fire("Error", "Error fetching categories.", "error");
+        console.error("Error fetching quiz categories:", error);
+        Swal.fire("Error", "Error fetching quiz categories.", "error");
       }
     };
 
-    fetchCategories();
+    fetchQuizCategories();
   }, []);
+
+
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     const endpoint = `dropdown/getDropdownValues?category=blogCategory`;
+  //     const method = "GET";
+  //     const headers = {
+  //       "Content-Type": "application/json",
+  //       "auth-token": userToken,
+  //     };
+
+  //     try {
+  //       const data = await fetchData(endpoint, method, headers);
+  //       console.log("Fetched blog categories:", data);
+  //       if (data.success) {
+  //         const sortedCategories = data.data.sort((a, b) =>
+  //           a.ddValue.localeCompare(b.ddValue)
+  //         );
+  //         setCategories(sortedCategories);
+  //       } else {
+  //         Swal.fire("Error", "Failed to fetch categories.", "error");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching blog categories:", error);
+  //       Swal.fire("Error", "Error fetching categories.", "error");
+  //     }
+  //   };
+
+  //   fetchCategories();
+  // }, []);
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -136,7 +167,7 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
       return false;
     }
 
-    const timeDifference = (endDateTime - startDateTime) / (1000 * 60); 
+    const timeDifference = (endDateTime - startDateTime) / (1000 * 60);
     if (timeDifference < 30) {
       Swal.fire({
         icon: "error",
@@ -238,17 +269,22 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
         <form className="space-y-6">
           <div>
             <label className="block text-gray-700 font-medium mb-2">Quiz Category</label>
-            <input
-              type="text"
+            <select
               name="category"
               value={quizData.category}
               onChange={handleChange}
-              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring- ${(isSubmitted && errors.name) ? "border-red-500" : "border-gray-300"
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${(isSubmitted && errors.category) ? "border-red-500" : "border-gray-300"
                 }`}
-              placeholder="Enter quiz category/subject"
               required
-            />
-            {isSubmitted && errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            >
+              <option value="">Select Quiz Category</option>
+              {categories.map((cat) => (
+                <option key={cat.group_id} value={cat.group_id}>
+                  {cat.group_name}
+                </option>
+              ))}
+            </select>
+            {isSubmitted && errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">Quiz Name</label>
