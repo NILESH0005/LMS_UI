@@ -8,18 +8,15 @@ const BlogTable = ({ blogs, userToken }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
-  const [blogData, setBlogData] = useState(blogs); // Local state for blogs
+  const [blogData, setBlogData] = useState(blogs); 
   const { user } = useContext(ApiContext);
 
-  // Function to update blog state (status or delete)
   const updateBlogState = (blogId, newStatus) => {
     if (newStatus === "delete") {
-      // Remove the blog from the table
       setBlogData((prevBlogs) =>
         prevBlogs.filter((blog) => blog.BlogID !== blogId)
       );
     } else {
-      // Update the status of the blog
       setBlogData((prevBlogs) =>
         prevBlogs.map((blog) =>
           blog.BlogID === blogId ? { ...blog, Status: newStatus } : blog
@@ -31,13 +28,13 @@ const BlogTable = ({ blogs, userToken }) => {
   const getStatusClass = (status) => {
     switch (status) {
       case "Approved":
-        return "bg-green-200 text-green-800"; // Green for approved
+        return "bg-green-200 text-green-800"; 
       case "Rejected":
-        return "bg-red-200 text-red-800"; // Red for rejected
+        return "bg-red-200 text-red-800"; 
       case "Pending":
-        return "bg-yellow-200 text-yellow-800"; // Yellow for pending
+        return "bg-yellow-200 text-yellow-800"; 
       default:
-        return "bg-gray-200 text-gray-800"; // Default
+        return "bg-gray-200 text-gray-800";
     }
   };
   
@@ -52,7 +49,6 @@ const BlogTable = ({ blogs, userToken }) => {
     setSelectedBlog(null);
   };
 
-  // Filter blogs based on status and category
   const filteredBlogs = blogData.filter((blog) => {
     const matchesStatus = statusFilter === "" || blog.Status?.toLowerCase() === statusFilter.toLowerCase();
     const matchesCategory = categoryFilter === "" || blog.category?.toLowerCase() === categoryFilter.toLowerCase();
@@ -63,7 +59,6 @@ const BlogTable = ({ blogs, userToken }) => {
 
   return (
     <div>
-      {/* Filter Dropdowns */}
       <div className="flex justify-start mb-4 space-x-4">
         <div className="flex items-center">
           <label className="mr-2 text-lg font-medium">Filter by Status:</label>
@@ -80,7 +75,6 @@ const BlogTable = ({ blogs, userToken }) => {
         </div>
       </div>
 
-      {/* Table */}
       <table className="min-w-full table-auto border-collapse">
         <thead>
           <tr className="bg-DGXgreen text-white">
@@ -127,7 +121,6 @@ const BlogTable = ({ blogs, userToken }) => {
         </tbody>
       </table>
 
-      {/* Blog Modal */}
       {isModalOpen && selectedBlog && (
         <BlogModal
           blog={selectedBlog}

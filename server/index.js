@@ -12,6 +12,7 @@ import userProfile from './routes/UserProfile.js';
 import dropdownRoutes from './routes/Dropdown.js';
 import { connectToDatabase } from './database/mySql.js';
 import homeRoutes from './routes/Home.js';
+import quizRoutes from './routes/Quiz.js';
 
 dotenv.config();
 
@@ -56,6 +57,8 @@ app.use('/userprofile', userProfile);
 app.use('/dropdown', dropdownRoutes);
 app.use('/addUser', userRoutes);
 app.use('/home', homeRoutes);
+app.use('/quiz', quizRoutes);
+
 
 // Database connection
 connectToDatabase((err) => {

@@ -111,6 +111,9 @@ function App() {
             <Route path='../Admin/Components/Quiz/QuizPanel' element={<QuizPanel />} />
             <Route path='/QuizList' element={<QuizList />} />
             <Route path='/Quiz' element={<Quiz/>} />
+            <Route path='/QuizStart' element={<QuizStart/>} />
+            
+
             
             <Route path="/CreateQuiz" element={<CreateQuiz />} />
             <Route path="/QuizStart" element={<QuizStart />} />

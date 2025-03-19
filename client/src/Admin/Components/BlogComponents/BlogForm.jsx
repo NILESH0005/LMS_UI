@@ -15,7 +15,7 @@ const BlogForm = (props) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]); // Store fetched categories
+  const [categories, setCategories] = useState([]); 
 
   const { fetchData, userToken, user } = useContext(ApiContext);
 
@@ -123,8 +123,6 @@ const BlogForm = (props) => {
       "Content-Type": "application/json",
       "auth-token": userToken,
     };
-
-    // Include userName in the body
     const body = {
       title,
       content,
@@ -151,9 +149,9 @@ const BlogForm = (props) => {
               image: selectedImage,
               author,
               publishedDate,
-              Status: blogStatus, // Default status for new blogs
+              Status: blogStatus, 
               UserID: user.UserID,
-              UserName: user.Name, // Include userName here as well if needed
+              UserName: user.Name, 
             },
             ...prevBlogs,
           ]);

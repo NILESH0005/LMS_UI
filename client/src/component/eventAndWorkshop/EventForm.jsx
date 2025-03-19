@@ -114,7 +114,6 @@ const EventForm = (props) => {
       [name]: value,
     }));
 
-    // Validate the field and update errors
     const error = validateField(name, value);
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -188,13 +187,12 @@ const EventForm = (props) => {
   };
 
   const calculateFontSize = (length) => {
-    // Decrease font size as the text length increases
     if (length < 50) {
-      return "16px"; // Larger text size
+      return "16px"; 
     } else if (length < 200) {
-      return "14px"; // Medium text size
+      return "14px"; 
     } else {
-      return "12px"; // Smaller text size
+      return "12px"; 
     }
   };
 
@@ -265,7 +263,7 @@ const EventForm = (props) => {
     };
     const body = {
       userID: user.UserID,
-      userName: user.Name, // Add the userName here
+      userName: user.Name, 
       title: newEvent.title,
       start: newEvent.start,
       end: newEvent.end,

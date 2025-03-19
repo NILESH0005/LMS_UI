@@ -53,9 +53,13 @@ const QuizPanel = () => {
     setActiveComponent('QuizTable');
   };
 
+  const navigateToQuizTable = () => {
+    setActiveComponent('QuizTable');
+  };
   const renderComponent = () => {
     switch (activeComponent) {
       case 'CreateQuiz':
+        return <CreateQuiz navigateToQuizTable={navigateToQuizTable} />;
         return <CreateQuiz onCreateQuiz={handleCreateQuiz} />;
       case 'UpcomingQuiz':
         return <UpcomingQuiz />;
@@ -87,8 +91,6 @@ const QuizPanel = () => {
     margin: '5px',
     transition: 'background-color 0.3s ease',
   };
-
-  // Hover effect for buttons
   const hoverStyle = {
     backgroundColor: '#0056b3',
     color: 'white',

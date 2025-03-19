@@ -8,6 +8,12 @@ const QuizStart = () => {
   const location = useLocation();
   const { quizData } = location.state || {};
   const [isQuizStarted, setIsQuizStarted] = useState(false);
+  
+
+  const quizTitle = quizData?.title || "General Knowledge Quiz";
+  const startTime = "10:00 AM";
+  const endTime = "11:00 AM";
+  const isNegativeMarkingEnabled = quizData?.negativeMarking || false;
 
   const handleStartQuiz = () => {
     setIsQuizStarted(true);
@@ -15,7 +21,6 @@ const QuizStart = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      {/* Navbar */}
       <nav className="w-full bg-white shadow-lg">
         <div className="max-w-6xl mx-auto px-6 py-3">
           <h1 className="text-2xl font-bold text-gray-800">
@@ -24,11 +29,26 @@ const QuizStart = () => {
         </div>
       </nav>
 
-      {/* Main Content Container */}
-      <div className="w-full flex justify-center mt-8 px-4">
-        <div className="w-full max-w-6xl">
-          {/* Quiz Header */}
-          <QuizStartHeader quizData={quizData} />
+      <div className="w-full flex flex-col items-center mt-8">
+        <div className="w-full max-w-6xl px-4">
+          <h1 className="text-4xl font-extrabold text-gray-800">{quizTitle}</h1>
+          <div className="mt-4 flex flex-col space-y-2 text-gray-600">
+            <p>
+              <span className="font-semibold">Start Time:</span> {startTime}
+            </p>
+            <p>
+              <span className="font-semibold">End Time:</span> {endTime}
+            </p>
+            <p>
+              <span className="font-semibold">Negative Marking:</span>{" "}
+              {isNegativeMarkingEnabled ? (
+                <span className="text-green-600">Enabled</span>
+              ) : (
+                <span className="text-red-600">Disabled</span>
+              )}
+            </p>
+          </div>
+        </div>
 
           {/* Quiz Introduction Card */}
           {!isQuizStarted && (
@@ -57,8 +77,7 @@ const QuizStart = () => {
           )}
         </div>
       </div>
-    </div>
-  );
+      );
 };
 
 export default QuizStart;
