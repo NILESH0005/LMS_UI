@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { FaCalendarAlt, FaClock, FaCheckCircle } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const CreateQuiz = ({ onBack }) => {
-  const navigate = useNavigate();
+const CreateQuiz = ({ onCreateQuiz }) => {
   const [quizData, setQuizData] = useState({
+    category: "", 
     name: "",
     level: "Medium",
     duration: 30,
@@ -17,7 +16,7 @@ const CreateQuiz = ({ onBack }) => {
     type: "Public",
   });
   const [errors, setErrors] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false); // Track if form is submitted
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -34,6 +33,9 @@ const CreateQuiz = ({ onBack }) => {
   const validateField = (name, value) => {
     let error = "";
     switch (name) {
+      case "category":
+        if (!value.trim()) error = "Quiz category is required.";
+        break;
       case "name":
         if (!value.trim()) error = "Quiz name is required.";
         break;
@@ -59,10 +61,8 @@ const CreateQuiz = ({ onBack }) => {
     const { name, value, type, checked } = e.target;
     const fieldValue = type === "checkbox" ? checked : value;
 
-    // Update quiz data
     setQuizData((prev) => ({ ...prev, [name]: fieldValue }));
 
-    // Validate the field dynamically
     const error = validateField(name, fieldValue);
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
@@ -71,7 +71,7 @@ const CreateQuiz = ({ onBack }) => {
     if (!quizData.startDate || !quizData.startTime) return "";
 
     const startDateTime = new Date(`${quizData.startDate}T${quizData.startTime}`);
-    const minEndDateTime = new Date(startDateTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
+    const minEndDateTime = new Date(startDateTime.getTime() + 30 * 60 * 1000);
 
     const hours = String(minEndDateTime.getHours()).padStart(2, "0");
     const minutes = String(minEndDateTime.getMinutes()).padStart(2, "0");
@@ -82,7 +82,6 @@ const CreateQuiz = ({ onBack }) => {
   const validateDates = () => {
     const { startDate, startTime, endDate, endTime } = quizData;
 
-    // Check if all fields are filled
     if (!startDate || !endDate || !startTime || !endTime) {
       Swal.fire({
         icon: "error",
@@ -96,7 +95,6 @@ const CreateQuiz = ({ onBack }) => {
     const endDateTime = new Date(`${endDate}T${endTime}`);
     const currentDateTime = new Date();
 
-    // Check if start date/time is before the current date/time
     if (startDateTime < currentDateTime) {
       Swal.fire({
         icon: "error",
@@ -106,8 +104,7 @@ const CreateQuiz = ({ onBack }) => {
       return false;
     }
 
-    // Check if end date/time is at least 30 minutes after start date/time
-    const timeDifference = (endDateTime - startDateTime) / (1000 * 60); // Difference in minutes
+    const timeDifference = (endDateTime - startDateTime) / (1000 * 60);
     if (timeDifference < 30) {
       Swal.fire({
         icon: "error",
@@ -121,20 +118,18 @@ const CreateQuiz = ({ onBack }) => {
   };
 
   const handleCreateQuiz = () => {
-    setIsSubmitted(true); // Mark form as submitted
-  
-    // Check for empty fields
-    const requiredFields = ["name", "startDate", "startTime", "endDate", "endTime"];
+    setIsSubmitted(true);
+
+    const requiredFields = ["category", "name", "startDate", "startTime", "endDate", "endTime"];
     const emptyFields = requiredFields.filter(field => !quizData[field].trim());
-  
+
     if (emptyFields.length > 0) {
-      // Set errors for empty fields
       const newErrors = {};
       emptyFields.forEach(field => {
         newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`;
       });
       setErrors(newErrors);
-  
+
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -142,10 +137,9 @@ const CreateQuiz = ({ onBack }) => {
       });
       return;
     }
-  
-    // Validate dates
+
     if (!validateDates()) return;
-  
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you want to create this quiz?",
@@ -156,18 +150,17 @@ const CreateQuiz = ({ onBack }) => {
       confirmButtonText: "Yes, create it!",
     }).then((result) => {
       if (result.isConfirmed) {
+        onCreateQuiz(quizData);
         Swal.fire({
           title: "Quiz Created!",
           text: "Your quiz has been successfully created.",
           icon: "success",
-          confirmButtonText: "Start Quiz",
-        }).then(() => {
-          // Pass quizData as state when navigating
-          navigate("/QuizStart", { state: { quizData } });
+          confirmButtonText: "OK",
         });
       }
     });
   };
+
   const minEndTime = getMinEndTime();
 
   return (
@@ -175,6 +168,21 @@ const CreateQuiz = ({ onBack }) => {
       <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-8">
         <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Create a New Quiz</h2>
         <form className="space-y-6">
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Quiz Category</label>
+            <input
+              type="text"
+              name="category"
+              value={quizData.category}
+              onChange={handleChange}
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                (isSubmitted && errors.category) ? "border-red-500" : "border-gray-300"
+              }`}
+              placeholder="Enter quiz category/subject"
+              required
+            />
+            {isSubmitted && errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
+          </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">Quiz Name</label>
             <input

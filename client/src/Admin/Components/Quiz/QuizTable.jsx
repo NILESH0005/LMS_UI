@@ -1,29 +1,21 @@
 import React, { useState } from "react";
 
-const QuizTable = ({ handleEdit, handleDelete }) => {
-  // Dummy Data
-  const dummyQuestions = [
-    { id: 1, text: "What is the capital of France?", group: "Geography" },
-    { id: 2, text: "Who wrote 'To Kill a Mockingbird'?", group: "Literature" },
-    { id: 3, text: "What is 2 + 2?", group: "Mathematics" },
-    { id: 4, text: "What is the chemical symbol for water?", group: "Science" },
-    { id: 5, text: "Who painted the Mona Lisa?", group: "Art" },
-    { id: 6, text: "What is the speed of light?", group: "Physics" },
-    { id: 7, text: "Who discovered penicillin?", group: "Medicine" },
-  ];
-
+const QuizTable = ({ quizzes, handleEdit, handleDelete }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("All");
+  const [selectedQuizLevel, setSelectedQuizLevel] = useState("All");
 
-  // Get unique groups for the dropdown
-  const groups = ["All", ...new Set(dummyQuestions.map((q) => q.group))];
+  const quizLevels = ["All", "Easy", "Medium", "Hard"];
 
-  // Filter questions based on search and selected group
-  const filteredQuestions = dummyQuestions.filter((q) => {
-    return (
-      (selectedGroup === "All" || q.group === selectedGroup) &&
-      q.text.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const filteredQuizzes = quizzes.map((q, index) => ({
+    ...q,
+    quizCategory: q.quizCategory || ["Math", "Science", "History", "Geography", "English"][index % 5],
+  })).filter((q) => {
+    const matchesLevel =
+      selectedQuizLevel === "All" || q.quizLevel === selectedQuizLevel;
+    const matchesSearch =
+      q.quizName &&
+      q.quizName.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesLevel && matchesSearch;
   });
 
   return (
@@ -33,43 +25,55 @@ const QuizTable = ({ handleEdit, handleDelete }) => {
         {/* Search Field */}
         <input
           type="text"
-          placeholder="Search questions..."
+          placeholder="Search quizzes..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="p-2 border rounded w-1/2"
         />
 
-        {/* Group Filter Dropdown */}
+        {/* Quiz Level Filter Dropdown */}
         <select
-          value={selectedGroup}
-          onChange={(e) => setSelectedGroup(e.target.value)}
+          value={selectedQuizLevel}
+          onChange={(e) => setSelectedQuizLevel(e.target.value)}
           className="p-2 border rounded"
         >
-          {groups.map((group, index) => (
-            <option key={index} value={group}>
-              {group}
+          {quizLevels.map((level, index) => (
+            <option key={index} value={level}>
+              {level}
             </option>
           ))}
         </select>
       </div>
 
       {/* Table */}
-      {filteredQuestions.length > 0 ? (
+      {filteredQuizzes.length > 0 ? (
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border p-2">#</th>
-              <th className="border p-2">Question</th>
-              <th className="border p-2">Group</th>
+              <th className="border p-2">Serial Number</th>
+              <th className="border p-2">Private/Public</th>
+              <th className="border p-2">Quiz Name</th>
+              <th className="border p-2">Quiz Category</th>
+              <th className="border p-2">Quiz Level</th>
+              <th className="border p-2">Duration</th>
+              <th className="border p-2">Negative Marking</th>
+              <th className="border p-2">Start Time</th>
+              <th className="border p-2">End Time</th>
               <th className="border p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredQuestions.map((q, index) => (
+            {filteredQuizzes.map((q) => (
               <tr key={q.id} className="text-center">
-                <td className="border p-2">{index + 1}</td>
-                <td className="border p-2">{q.text}</td>
-                <td className="border p-2">{q.group}</td>
+                <td className="border p-2">{q.serialNumber}</td>
+                <td className="border p-2">{q.isPrivate ? "Private" : "Public"}</td>
+                <td className="border p-2">{q.quizName}</td>
+                <td className="border p-2">{q.quizCategory}</td>
+                <td className="border p-2">{q.quizLevel}</td>
+                <td className="border p-2">{q.duration}</td>
+                <td className="border p-2">{q.negativeMarking ? "Enabled" : "Disabled"}</td>
+                <td className="border p-2">{q.startTime}</td>
+                <td className="border p-2">{q.endTime}</td>
                 <td className="border p-2">
                   <button
                     onClick={() => handleEdit(q.id)}
@@ -89,7 +93,7 @@ const QuizTable = ({ handleEdit, handleDelete }) => {
           </tbody>
         </table>
       ) : (
-        <p className="text-center text-gray-500">No questions found.</p>
+        <p className="text-center text-gray-500">No quizzes found.</p>
       )}
     </div>
   );
