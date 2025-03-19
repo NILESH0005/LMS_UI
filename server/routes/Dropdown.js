@@ -1,9 +1,10 @@
 import express from 'express';
-import { getDropdownValues } from '../controllers/dropdown.js';  // Make sure the path is correct
+import { getDropdownValues, getQuizGroupDropdown } from '../controllers/dropdown.js';  // Make sure the path is correct
 
 const router = express.Router();
 
-// Define the route for fetching dropdown values
 router.get('/getDropdownValues', getDropdownValues);
+router.get('/getQuizGroupDropdown', getQuizGroupDropdown);
+
 
 export default router;

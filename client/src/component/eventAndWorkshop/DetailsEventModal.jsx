@@ -96,7 +96,7 @@ const DetailsEventModal = ({ selectedEvent, onClose, handleEventStatusChange }) 
   };
 
   const handleConfirmAction = async (Status, remark = '') => {
-    console.log("Selected Event:", selectedEvent); // Debug log
+    console.log("Selected Event:", selectedEvent); 
     if (!selectedEvent) {
       Swal.fire({
         title: "Error!",

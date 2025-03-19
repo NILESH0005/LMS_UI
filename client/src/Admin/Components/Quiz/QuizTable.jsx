@@ -6,6 +6,33 @@ const QuizTable = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]); // State to store quiz categories
+
+
+  const fetchQuizCategories = async () => {
+        const endpoint = `dropdown/getQuizGroupDropdown`;
+        const method = "GET";
+        const headers = {
+          "Content-Type": "application/json",
+          "auth-token": userToken,
+        };
+  
+        try {
+          const data = await fetchData(endpoint, method, headers);
+          console.log("Fetched quiz categories:", data);
+          if (data.success) {
+            const sortedCategories = data.data.sort((a, b) =>
+              a.group_name.localeCompare(b.group_name)
+            );
+            setCategories(sortedCategories);
+          } else {
+            Swal.fire("Error", "Failed to fetch quiz categories.", "error");
+          }
+        } catch (error) {
+          console.error("Error fetching quiz categories:", error);
+          Swal.fire("Error", "Error fetching quiz categories.", "error");
+        }
+      };
 
   const fetchQuizzes = async () => {
     setLoading(true);
@@ -35,26 +62,22 @@ const QuizTable = () => {
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "N/A";
-    
-    const date = new Date(dateString); // Convert to Date object
-  
+    const date = new Date(dateString);
+
     const datePart = date.toLocaleString("en-US", {
       month: "long",
       day: "numeric",
       year: "numeric",
-      timeZone: "UTC", // Force UTC
     });
-  
+
     const timePart = date.toLocaleString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
-      timeZone: "UTC", // Force UTC
     });
-  
+
     return `${datePart}, ${timePart}`;
   };
-  
 
   const handleDelete = async (quizId) => {
     Swal.fire({
@@ -110,7 +133,16 @@ const QuizTable = () => {
 
   useEffect(() => {
     fetchQuizzes();
+    fetchQuizCategories();
   }, []);
+
+  const getCategoryName = (groupId) => {
+    // Convert groupId to a number if it's a string
+    const groupIdNumber = typeof groupId === 'string' ? parseInt(groupId, 10) : groupId;
+  
+    const category = categories.find((cat) => cat.group_id === groupIdNumber);
+    return category ? category.group_name : "N/A";
+  };
 
   if (loading) {
     return <p>Loading quizzes...</p>;
@@ -149,7 +181,7 @@ const QuizTable = () => {
             {quizzes.map((quiz, index) => (
               <tr key={quiz.QuizID} className="text-center">
                 <td className="border p-2">{index + 1}</td>
-                <td className="border p-2">{quiz.QuizCategory}</td>
+                <td className="border p-2"> {getCategoryName(quiz.QuizCategory)}</td>
                 <td className="border p-2">{quiz.QuizName}</td>
                 <td className="border p-2">{quiz.QuizLevel}</td>
                 <td className="border p-2">{quiz.QuizDuration} mins</td>
