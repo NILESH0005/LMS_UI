@@ -63,19 +63,16 @@ const QuizTable = () => {
   const formatDateTime = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
-
-    const datePart = date.toLocaleString("en-US", {
+    const datePart = date.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
       year: "numeric",
     });
-
-    const timePart = date.toLocaleString("en-US", {
+    const timePart = date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
     });
-
     return `${datePart}, ${timePart}`;
   };
 
@@ -137,7 +134,6 @@ const QuizTable = () => {
   }, []);
 
   const getCategoryName = (groupId) => {
-    // Convert groupId to a number if it's a string
     const groupIdNumber = typeof groupId === 'string' ? parseInt(groupId, 10) : groupId;
   
     const category = categories.find((cat) => cat.group_id === groupIdNumber);
