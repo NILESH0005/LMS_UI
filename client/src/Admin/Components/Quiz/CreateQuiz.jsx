@@ -8,6 +8,7 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
   const navigate = useNavigate();
   const { userToken, fetchData } = useContext(ApiContext);
   const [categories, setCategories] = useState([]);
+  const [quizLevels, setQuizLevels] = useState([]); // State to store quiz levels
   const [quizData, setQuizData] = useState({
     category: "",
     name: "",
@@ -31,6 +32,7 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
       const headers = {
         "Content-Type": "application/json",
         "auth-token": userToken,
+
       };
 
       try {
@@ -50,38 +52,33 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
       }
     };
 
+    const fetchQuizLevels = async () => {
+      const endpoint = `dropdown/getDropdownValues?category=quizLevel`;
+      const method = "GET";
+      const headers = {
+        "Content-Type": "application/json",
+        "auth-token": userToken,
+      };
+
+      try {
+        const data = await fetchData(endpoint, method, headers);
+        console.log("Fetched quiz levels:", data);
+        if (data.success) {
+          setQuizLevels(data.data);
+        } else {
+          Swal.fire("Error", "Failed to fetch quiz levels.", "error");
+        }
+      } catch (error) {
+        console.error("Error fetching quiz levels:", error);
+        Swal.fire("Error", "Error fetching quiz levels.", "error");
+      }
+    };
+
     fetchQuizCategories();
+    fetchQuizLevels();
   }, []);
 
 
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
-  //     const endpoint = `dropdown/getDropdownValues?category=blogCategory`;
-  //     const method = "GET";
-  //     const headers = {
-  //       "Content-Type": "application/json",
-  //       "auth-token": userToken,
-  //     };
-
-  //     try {
-  //       const data = await fetchData(endpoint, method, headers);
-  //       console.log("Fetched blog categories:", data);
-  //       if (data.success) {
-  //         const sortedCategories = data.data.sort((a, b) =>
-  //           a.ddValue.localeCompare(b.ddValue)
-  //         );
-  //         setCategories(sortedCategories);
-  //       } else {
-  //         Swal.fire("Error", "Failed to fetch categories.", "error");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching blog categories:", error);
-  //       Swal.fire("Error", "Error fetching categories.", "error");
-  //     }
-  //   };
-
-  //   fetchCategories();
-  // }, []);
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -309,9 +306,12 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="Easy">Easy</option>
-              <option value="Medium">Medium</option>
-              <option value="Hard">Hard</option>
+              <option value="">Select Quiz Level</option>
+              {quizLevels.map((level) => (
+                <option key={level.idCode} value={level.idCode}>
+                  {level.ddValue}
+                </option>
+              ))}
             </select>
           </div>
 

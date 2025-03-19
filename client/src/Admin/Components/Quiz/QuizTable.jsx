@@ -1,38 +1,60 @@
 import React, { useState, useEffect, useContext } from "react";
 import ApiContext from "../../../context/ApiContext";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 const QuizTable = () => {
   const { fetchData, userToken } = useContext(ApiContext);
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]); // State to store quiz categories
+  const [quizLevels, setQuizLevels] = useState([]);
 
 
-  const fetchQuizCategories = async () => {
-        const endpoint = `dropdown/getQuizGroupDropdown`;
-        const method = "GET";
-        const headers = {
-          "Content-Type": "application/json",
-          "auth-token": userToken,
-        };
+  const fetchQuizLevels = async () => {
+    const endpoint = `dropdown/getDropdownValues?category=quizLevel`;
+    const method = "GET";
+    const headers = {
+      "Content-Type": "application/json",
+      "auth-token": userToken,
+    };
   
-        try {
-          const data = await fetchData(endpoint, method, headers);
-          console.log("Fetched quiz categories:", data);
-          if (data.success) {
-            const sortedCategories = data.data.sort((a, b) =>
-              a.group_name.localeCompare(b.group_name)
-            );
-            setCategories(sortedCategories);
-          } else {
-            Swal.fire("Error", "Failed to fetch quiz categories.", "error");
-          }
-        } catch (error) {
-          console.error("Error fetching quiz categories:", error);
-          Swal.fire("Error", "Error fetching quiz categories.", "error");
-        }
-      };
+    try {
+      const data = await fetchData(endpoint, method, headers);
+      if (data.success) {
+        setQuizLevels(data.data);
+      } else {
+        Swal.fire("Error", "Failed to fetch quiz levels.", "error");
+      }
+    } catch (error) {
+      console.error("Error fetching quiz levels:", error);
+      Swal.fire("Error", "Error fetching quiz levels.", "error");
+    }
+  };
+  const fetchQuizCategories = async () => {
+    const endpoint = `dropdown/getQuizGroupDropdown`;
+    const method = "GET";
+    const headers = {
+      "Content-Type": "application/json",
+      "auth-token": userToken,
+    };
+
+    try {
+      const data = await fetchData(endpoint, method, headers);
+      console.log("Fetched quiz categories:", data);
+      if (data.success) {
+        const sortedCategories = data.data.sort((a, b) =>
+          a.group_name.localeCompare(b.group_name)
+        );
+        setCategories(sortedCategories);
+      } else {
+        Swal.fire("Error", "Failed to fetch quiz categories.", "error");
+      }
+    } catch (error) {
+      console.error("Error fetching quiz categories:", error);
+      Swal.fire("Error", "Error fetching quiz categories.", "error");
+    }
+  };
+  
 
   const fetchQuizzes = async () => {
     setLoading(true);
@@ -131,11 +153,19 @@ const QuizTable = () => {
   useEffect(() => {
     fetchQuizzes();
     fetchQuizCategories();
+    fetchQuizLevels(); // Fetch quiz levels
+
   }, []);
+
+  const getLevelName = (levelId) => {
+    const levelIdNumber = typeof levelId === 'string' ? parseInt(levelId, 10) : levelId;
+    const level = quizLevels.find((lvl) => lvl.idCode === levelIdNumber);
+    return level ? level.ddValue : "N/A";
+  };
 
   const getCategoryName = (groupId) => {
     const groupIdNumber = typeof groupId === 'string' ? parseInt(groupId, 10) : groupId;
-  
+
     const category = categories.find((cat) => cat.group_id === groupIdNumber);
     return category ? category.group_name : "N/A";
   };
@@ -174,30 +204,30 @@ const QuizTable = () => {
             </tr>
           </thead>
           <tbody>
-          {quizzes.map((quiz, index) => {
-  console.log("Quiz data:", quiz); // Log individual quiz data
-  return (
-    <tr key={quiz.QuizID} className="text-center">
-      <td className="border p-2">{index + 1}</td>
-      <td className="border p-2"> {getCategoryName(quiz.QuizCategory)}</td>
-      <td className="border p-2">{quiz.QuizName}</td>
-      <td className="border p-2">{quiz.QuizLevel}</td>
-      <td className="border p-2">{quiz.QuizDuration} mins</td>
-      <td className="border p-2">{quiz.NegativeMarking ? "Yes" : "No"}</td>
-      <td className="border p-2">{formatDateTime(quiz.StartDateAndTime)}</td>
-      <td className="border p-2">{formatDateTime(quiz.EndDateTime)}</td>
-      <td className="border p-2">{quiz.QuizVisibility}</td>
-      <td className="border p-2">
-        <button
-          onClick={() => handleDelete(quiz.QuizID)} 
-          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-        >
-          Delete
-        </button>
-      </td>
-    </tr>
-  );
-})}
+            {quizzes.map((quiz, index) => {
+              console.log("Quiz data:", quiz); // Log individual quiz data
+              return (
+                <tr key={quiz.QuizID} className="text-center">
+                  <td className="border p-2">{index + 1}</td>
+                  <td className="border p-2"> {getCategoryName(quiz.QuizCategory)}</td>
+                  <td className="border p-2">{quiz.QuizName}</td>
+                  <td className="border p-2">{getLevelName(quiz.QuizLevel)}</td> {/* Use getLevelName here */}
+                  <td className="border p-2">{quiz.QuizDuration} mins</td>
+                  <td className="border p-2">{quiz.NegativeMarking ? "Yes" : "No"}</td>
+                  <td className="border p-2">{formatDateTime(quiz.StartDateAndTime)}</td>
+                  <td className="border p-2">{formatDateTime(quiz.EndDateTime)}</td>
+                  <td className="border p-2">{quiz.QuizVisibility}</td>
+                  <td className="border p-2">
+                    <button
+                      onClick={() => handleDelete(quiz.QuizID)}
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       ) : (
