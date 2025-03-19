@@ -178,27 +178,30 @@ const QuizTable = () => {
             </tr>
           </thead>
           <tbody>
-            {quizzes.map((quiz, index) => (
-              <tr key={quiz.QuizID} className="text-center">
-                <td className="border p-2">{index + 1}</td>
-                <td className="border p-2"> {getCategoryName(quiz.QuizCategory)}</td>
-                <td className="border p-2">{quiz.QuizName}</td>
-                <td className="border p-2">{quiz.QuizLevel}</td>
-                <td className="border p-2">{quiz.QuizDuration} mins</td>
-                <td className="border p-2">{quiz.NegativeMarking ? "Yes" : "No"}</td>
-                <td className="border p-2">{formatDateTime(quiz.StartDateAndTime)}</td>
-                <td className="border p-2">{formatDateTime(quiz.EndDateTime)}</td>
-                <td className="border p-2">{quiz.QuizVisibility}</td>
-                <td className="border p-2">
-                  <button
-                    onClick={() => handleDelete(quiz.QuizID)} 
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+          {quizzes.map((quiz, index) => {
+  console.log("Quiz data:", quiz); // Log individual quiz data
+  return (
+    <tr key={quiz.QuizID} className="text-center">
+      <td className="border p-2">{index + 1}</td>
+      <td className="border p-2"> {getCategoryName(quiz.QuizCategory)}</td>
+      <td className="border p-2">{quiz.QuizName}</td>
+      <td className="border p-2">{quiz.QuizLevel}</td>
+      <td className="border p-2">{quiz.QuizDuration} mins</td>
+      <td className="border p-2">{quiz.NegativeMarking ? "Yes" : "No"}</td>
+      <td className="border p-2">{formatDateTime(quiz.StartDateAndTime)}</td>
+      <td className="border p-2">{formatDateTime(quiz.EndDateTime)}</td>
+      <td className="border p-2">{quiz.QuizVisibility}</td>
+      <td className="border p-2">
+        <button
+          onClick={() => handleDelete(quiz.QuizID)} 
+          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  );
+})}
           </tbody>
         </table>
       ) : (

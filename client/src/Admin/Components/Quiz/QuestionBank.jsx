@@ -1,22 +1,59 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import QuizQuestions from "./QuizQuestions"; // Import the QuizQuestions component
 
 const QuizBank = ({ questions = [], handleEdit, handleDelete }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("All");
-  const navigate = useNavigate(); // Hook for navigation
+  const [showQuizQuestions, setShowQuizQuestions] = useState(false); // State to control rendering of QuizQuestions
 
   // Dummy data
   const dummyQuestions = [
-    { id: 1, text: "What is the capital of France?", correctAnswer: "Paris", group: "Geography", level: "Easy", count: 0 },
-    { id: 2, text: "What is 2 + 2?", correctAnswer: "4", group: "Mathematics", level: "Easy", count: 0 },
-    { id: 3, text: "Who wrote 'Hamlet'?", correctAnswer: "William Shakespeare", group: "Literature", level: "Medium", count: 0 },
-    { id: 4, text: "What is the chemical symbol for water?", correctAnswer: "H2O", group: "Science", level: "Easy", count: 0 },
-    { id: 5, text: "Who painted the Mona Lisa?", correctAnswer: "Leonardo da Vinci", group: "Art", level: "Medium", count: 0 },
+    {
+      id: 1,
+      text: "What is the capital of France?",
+      correctAnswer: "Paris",
+      group: "Geography",
+      level: "Easy",
+      count: 0,
+    },
+    {
+      id: 2,
+      text: "What is 2 + 2?",
+      correctAnswer: "4",
+      group: "Mathematics",
+      level: "Easy",
+      count: 0,
+    },
+    {
+      id: 3,
+      text: "Who wrote 'Hamlet'?",
+      correctAnswer: "William Shakespeare",
+      group: "Literature",
+      level: "Medium",
+      count: 0,
+    },
+    {
+      id: 4,
+      text: "What is the chemical symbol for water?",
+      correctAnswer: "H2O",
+      group: "Science",
+      level: "Easy",
+      count: 0,
+    },
+    {
+      id: 5,
+      text: "Who painted the Mona Lisa?",
+      correctAnswer: "Leonardo da Vinci",
+      group: "Art",
+      level: "Medium",
+      count: 0,
+    },
   ];
 
   // Use provided questions or fallback to dummy data
-  const [finalQuestions, setFinalQuestions] = useState(questions.length > 0 ? questions : dummyQuestions);
+  const [finalQuestions, setFinalQuestions] = useState(
+    questions.length > 0 ? questions : dummyQuestions
+  );
 
   // Get unique groups for the dropdown
   const groups = ["All", ...new Set(finalQuestions.map((q) => q.group))];
@@ -32,23 +69,26 @@ const QuizBank = ({ questions = [], handleEdit, handleDelete }) => {
   // Function to increase the count of a question
   const increaseCount = (id) => {
     setFinalQuestions((prevQuestions) =>
-      prevQuestions.map((q) =>
-        q.id === id ? { ...q, count: q.count + 1 } : q
-      )
+      prevQuestions.map((q) => (q.id === id ? { ...q, count: q.count + 1 } : q))
     );
   };
 
-  // Function to navigate to QuizStart page
-  const goToQuizStart = () => {
-    navigate('/QuizStart'); // Adjust the route as needed
+  // Function to show QuizQuestions component
+  const handleEditQuiz = () => {
+    setShowQuizQuestions(true); // Set state to true to render QuizQuestions
   };
+
+  // If showQuizQuestions is true, render the QuizQuestions component
+  if (showQuizQuestions) {
+    return <QuizQuestions questions={finalQuestions} />;
+  }
 
   return (
     <div className="mt-6 p-4 bg-white rounded-lg shadow">
-      {/* Button to navigate to QuizStart page */}
+      {/* Button to navigate to QuizQuestions component */}
       <div className="flex justify-end mb-4">
         <button
-          onClick={goToQuizStart}
+          onClick={handleEditQuiz}
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
         >
           Edit Quiz
