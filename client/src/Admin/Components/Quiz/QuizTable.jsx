@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import ApiContext from "../../../context/ApiContext";
 import Swal from "sweetalert2";
+
 const QuizTable = () => {
   const { fetchData, userToken } = useContext(ApiContext);
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [categories, setCategories] = useState([]); // State to store quiz categories
+  const [categories, setCategories] = useState([]);
   const [quizLevels, setQuizLevels] = useState([]);
 
 
@@ -116,12 +117,14 @@ const QuizTable = () => {
             "Content-Type": "application/json",
             "auth-token": userToken,
           };
-          const body = { quizId };
-          console.log("body is :", body);
+          const body = { QuizID: quizId }; // Ensure the key matches the API's expected input
+          console.log("Request body:", body);
+
           const data = await fetchData(endpoint, method, body, headers);
-          console.log("data is :", data);
+          console.log("API response:", data);
 
           if (data.success) {
+            // Update the state to remove the deleted quiz
             setQuizzes((prevQuizzes) =>
               prevQuizzes.filter((quiz) => quiz.QuizID !== quizId)
             );

@@ -237,13 +237,11 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
           setLoading(false);
 
           if (data.success) {
+            navigateToQuizTable();
             Swal.fire({
               title: "Quiz Created!",
               text: "Your quiz has been successfully created.",
               icon: "success",
-              confirmButtonText: "Start",
-            }).then(() => {
-              navigateToQuizTable();
             });
           } else {
             Swal.fire("Error", `Error: ${data.message}`, "error");
