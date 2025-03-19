@@ -168,7 +168,9 @@ const QuizQuestions = ({ setActiveComp }) => {
 
       {/* Image Upload for Question */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Question Image (Optional)</label>
+        <label className="block text-sm font-medium mb-1">
+          Question Image (Optional)
+        </label>
         <label className="flex items-center space-x-2 cursor-pointer">
           <FiUpload className="text-blue-500" size={20} />
           <span className="text-blue-500">Upload Image</span>
@@ -182,15 +184,15 @@ const QuizQuestions = ({ setActiveComp }) => {
 
         {/* Image Preview for Question */}
         {image && (
-          <div className="mt-2 relative">
+          <div className="mt-2 relative flex justify-center items-center border rounded-lg overflow-hidden max-w-md mx-auto">
             <img
               src={image}
               alt="Preview"
-              className="w-full h-[60vh] object-cover border"
+              className="w-full h-auto max-h-[60vh] object-contain"
             />
             <button
               onClick={removeImage}
-              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 shadow-md"
             >
               <FiTrash size={16} />
             </button>
@@ -223,7 +225,9 @@ const QuizQuestions = ({ setActiveComp }) => {
               }}
               className="cursor-pointer"
             />
-            <label className="w-6 text-sm font-medium">{String.fromCharCode(65 + index)}</label>
+            <label className="w-6 text-sm font-medium">
+              {String.fromCharCode(65 + index)}
+            </label>
             <input
               type="text"
               className="p-2 border rounded flex-1"
