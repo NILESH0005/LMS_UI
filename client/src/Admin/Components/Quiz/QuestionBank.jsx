@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const QuizTable = ({ questions = [], handleEdit, handleDelete }) => {
+const QuizBank = ({ questions = [], handleEdit, handleDelete }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("All");
+  const navigate = useNavigate(); // Hook for navigation
 
   // Dummy data
   const dummyQuestions = [
@@ -36,8 +38,23 @@ const QuizTable = ({ questions = [], handleEdit, handleDelete }) => {
     );
   };
 
+  // Function to navigate to QuizStart page
+  const goToQuizStart = () => {
+    navigate('/QuizStart'); // Adjust the route as needed
+  };
+
   return (
     <div className="mt-6 p-4 bg-white rounded-lg shadow">
+      {/* Button to navigate to QuizStart page */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={goToQuizStart}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+        >
+          Start Quiz
+        </button>
+      </div>
+
       {/* Search and Filter Controls */}
       <div className="flex justify-between items-center mb-4">
         {/* Search Field */}
@@ -117,4 +134,4 @@ const QuizTable = ({ questions = [], handleEdit, handleDelete }) => {
   );
 };
 
-export default QuizTable;
+export default QuizBank;

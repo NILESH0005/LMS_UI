@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import Users from './Components/Users';
-import Discussions from './Components/Discussions';
-import Events from './Components/Events';
-import GuidelineManager from './Components/GuidelineManager';
-import Contact from './Components/Contact';
-import BlogManager from './Components/BlogManager';
-import Home from './Components/Home';
-import QuizPanel from './Components/Quiz/QuizPanel';
-import QuestionBank from './Components/Quiz/QuestionBank';
-import QuizResults from './Components/Quiz/QuizResults';
-import QuizSettings from './Components/Quiz/QuizSettings';
+import React, { useState } from "react";
+import Users from "./Components/Users";
+import Discussions from "./Components/Discussions";
+import Events from "./Components/Events";
+import GuidelineManager from "./Components/GuidelineManager";
+import Contact from "./Components/Contact";
+import BlogManager from "./Components/BlogManager";
+import Home from "./Components/Home";
+import QuizPanel from "./Components/Quiz/QuizPanel";
+import QuestionBank from "./Components/Quiz/QuestionBank";
+import QuizMapping from "./Components/Quiz/QuizMapping";
+import QuizSettings from "./Components/Quiz/QuizSettings";
 import {
   FaUsers,
   FaComments,
@@ -17,42 +17,43 @@ import {
   FaBlog,
   FaQuestionCircle,
   FaList,
-  FaChartBar,
+  FaBrain,
+  FaChartPie,
   FaCog,
   FaBook,
   FaHome,
   FaEnvelope,
   FaAngleDown,
-  FaAngleUp
-} from 'react-icons/fa';
+  FaAngleUp,
+} from "react-icons/fa";
 
 const AdminDashboard = (props) => {
-  const [activeComp, setActiveComp] = useState('users'); // Default to users
+  const [activeComp, setActiveComp] = useState("users"); // Default to users
   const [quizMenuOpen, setQuizMenuOpen] = useState(false);
 
   const getComp = (comp) => {
     switch (comp) {
-      case 'users':
+      case "users":
         return <Users />;
-      case 'discussions':
+      case "discussions":
         return <Discussions />;
-      case 'events':
+      case "events":
         return <Events events={props.events} setEvents={props.setEvents} />;
-      case 'blog_manager':
+      case "blog_manager":
         return <BlogManager blogs={props.blogs} setBlogs={props.setBlogs} />;
-      case 'quizpanel':
-        return <QuizPanel />;
-      case 'quiz_questions':
+      case "quizpanel":
+        return <QuizPanel setActiveComp={setActiveComp} />;
+      case "quiz_bank":
         return <QuestionBank />;
-      case 'quiz_results':
-        return <QuizResults />;
-      case 'quiz_settings':
+      case "quiz_mapping":
+        return <QuizMapping />;
+      case "quiz_settings":
         return <QuizSettings />;
-      case 'guidelines':
+      case "guidelines":
         return <GuidelineManager />;
-      case 'Home':
+      case "Home":
         return <Home />;
-      case 'contact':
+      case "contact":
         return <Contact />;
       default:
         return <Home />;
@@ -69,9 +70,9 @@ const AdminDashboard = (props) => {
             <li>
               <div
                 className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
-                  activeComp === 'users' ? 'bg-gray-700 text-yellow-300' : ''
+                  activeComp === "users" ? "bg-gray-700 text-yellow-300" : ""
                 }`}
-                onClick={() => setActiveComp('users')}
+                onClick={() => setActiveComp("users")}
               >
                 <FaUsers className="mr-4" />
                 Users
@@ -80,9 +81,11 @@ const AdminDashboard = (props) => {
             <li>
               <div
                 className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
-                  activeComp === 'discussions' ? 'bg-gray-700 text-yellow-300' : ''
+                  activeComp === "discussions"
+                    ? "bg-gray-700 text-yellow-300"
+                    : ""
                 }`}
-                onClick={() => setActiveComp('discussions')}
+                onClick={() => setActiveComp("discussions")}
               >
                 <FaComments className="mr-4" />
                 Discussions
@@ -91,9 +94,9 @@ const AdminDashboard = (props) => {
             <li>
               <div
                 className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
-                  activeComp === 'events' ? 'bg-gray-700 text-yellow-300' : ''
+                  activeComp === "events" ? "bg-gray-700 text-yellow-300" : ""
                 }`}
-                onClick={() => setActiveComp('events')}
+                onClick={() => setActiveComp("events")}
               >
                 <FaCalendarAlt className="mr-4" />
                 Events
@@ -102,29 +105,29 @@ const AdminDashboard = (props) => {
             <li>
               <div
                 className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
-                  activeComp === 'blog_manager' ? 'bg-gray-700 text-yellow-300' : ''
+                  activeComp === "blog_manager"
+                    ? "bg-gray-700 text-yellow-300"
+                    : ""
                 }`}
-                onClick={() => setActiveComp('blog_manager')}
+                onClick={() => setActiveComp("blog_manager")}
               >
                 <FaBlog className="mr-4" />
                 Blogs
               </div>
             </li>
-
-            {/* Quiz Section */}  
+            {/* Quiz Section */}
             <li>
               <div
-                className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
-                  activeComp === 'quizpanel' ? 'bg-gray-700 text-yellow-300' : ''
-                }`}
-                onClick={() => {
-                  setActiveComp('quizpanel');
-                  setQuizMenuOpen(!quizMenuOpen);
-                }}
+                className="py-3 px-4 cursor-pointer flex items-center text-xl"
+                onClick={() => setQuizMenuOpen(!quizMenuOpen)}
               >
-                <FaQuestionCircle className="mr-4" />
-                Quiz Panel
-                {quizMenuOpen ? <FaAngleUp className="ml-auto" /> : <FaAngleDown className="ml-auto" />}
+                <FaBrain className="mr-4" />
+                Quiz
+                {quizMenuOpen ? (
+                  <FaAngleUp className="ml-auto" />
+                ) : (
+                  <FaAngleDown className="ml-auto" />
+                )}
               </div>
             </li>
             {quizMenuOpen && (
@@ -132,9 +135,24 @@ const AdminDashboard = (props) => {
                 <li>
                   <div
                     className={`py-2 px-4 cursor-pointer flex items-center text-lg ${
-                      activeComp === 'quiz_questions' ? 'bg-gray-700 text-yellow-300' : ''
+                      activeComp === "quizpanel"
+                        ? "bg-gray-700 text-yellow-300"
+                        : ""
                     }`}
-                    onClick={() => setActiveComp('quiz_questions')}
+                    onClick={() => setActiveComp("quizpanel")}
+                  >
+                    <FaQuestionCircle className="mr-4" />
+                    Quiz Panel
+                  </div>
+                </li>
+                <li>
+                  <div
+                    className={`py-2 px-4 cursor-pointer flex items-center text-lg ${
+                      activeComp === "quiz_bank"
+                        ? "bg-gray-700 text-yellow-300"
+                        : ""
+                    }`}
+                    onClick={() => setActiveComp("quiz_bank")}
                   >
                     <FaList className="mr-4" />
                     Question Bank
@@ -143,20 +161,24 @@ const AdminDashboard = (props) => {
                 <li>
                   <div
                     className={`py-2 px-4 cursor-pointer flex items-center text-lg ${
-                      activeComp === 'quiz_results' ? 'bg-gray-700 text-yellow-300' : ''
+                      activeComp === "quiz_mapping"
+                        ? "bg-gray-700 text-yellow-300"
+                        : ""
                     }`}
-                    onClick={() => setActiveComp('quiz_results')}
+                    onClick={() => setActiveComp("quiz_mapping")}
                   >
-                    <FaChartBar className="mr-4" />
-                    Quiz Results
+                    <FaChartPie className="mr-4" />
+                    Quiz Mapping
                   </div>
                 </li>
                 <li>
                   <div
                     className={`py-2 px-4 cursor-pointer flex items-center text-lg ${
-                      activeComp === 'quiz_settings' ? 'bg-gray-700 text-yellow-300' : ''
+                      activeComp === "quiz_settings"
+                        ? "bg-gray-700 text-yellow-300"
+                        : ""
                     }`}
-                    onClick={() => setActiveComp('quiz_settings')}
+                    onClick={() => setActiveComp("quiz_settings")}
                   >
                     <FaCog className="mr-4" />
                     Quiz Settings
@@ -168,9 +190,11 @@ const AdminDashboard = (props) => {
             <li>
               <div
                 className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
-                  activeComp === 'guidelines' ? 'bg-gray-700 text-yellow-300' : ''
+                  activeComp === "guidelines"
+                    ? "bg-gray-700 text-yellow-300"
+                    : ""
                 }`}
-                onClick={() => setActiveComp('guidelines')}
+                onClick={() => setActiveComp("guidelines")}
               >
                 <FaBook className="mr-4" />
                 Guidelines
@@ -179,9 +203,9 @@ const AdminDashboard = (props) => {
             <li>
               <div
                 className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
-                  activeComp === 'Home' ? 'bg-gray-700 text-yellow-300' : ''
+                  activeComp === "Home" ? "bg-gray-700 text-yellow-300" : ""
                 }`}
-                onClick={() => setActiveComp('Home')}
+                onClick={() => setActiveComp("Home")}
               >
                 <FaHome className="mr-4" />
                 Home page
@@ -190,9 +214,9 @@ const AdminDashboard = (props) => {
             <li>
               <div
                 className={`py-3 px-4 cursor-pointer flex items-center text-xl ${
-                  activeComp === 'contact' ? 'bg-gray-700 text-yellow-300' : ''
+                  activeComp === "contact" ? "bg-gray-700 text-yellow-300" : ""
                 }`}
-                onClick={() => setActiveComp('contact')}
+                onClick={() => setActiveComp("contact")}
               >
                 <FaEnvelope className="mr-4" />
                 Contact Us
@@ -203,9 +227,7 @@ const AdminDashboard = (props) => {
       </div>
 
       {/* Main Content */}
-      <div className="col-span-10 p-4">
-        {getComp(activeComp)}
-      </div>
+      <div className="col-span-10 p-4">{getComp(activeComp)}</div>
     </div>
   );
 };

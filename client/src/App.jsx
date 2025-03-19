@@ -47,6 +47,7 @@ import CreateQuiz from './Admin/Components/Quiz/CreateQuiz.jsx';
 import QuizList from './component/quiz/QuizList.jsx';
 import Quiz from './component/quiz/Quiz.jsx';
 import QuizStart from './Admin/Components/Quiz/QuizStart.jsx';
+import QuestionBank from './Admin/Components/Quiz/QuestionBank.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
 
@@ -116,6 +117,7 @@ function App() {
             
             <Route path="/CreateQuiz" element={<CreateQuiz />} />
             <Route path="/QuizStart" element={<QuizStart />} />
+            <Route path="/QuestionBank" element={<QuestionBank />} />
             {  /*-----------ADMIN----------- */}
 
             <Route path='/AdminDashboard' element={<AdminDashboard 
