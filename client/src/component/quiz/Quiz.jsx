@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import QuizHeader from './QuizHeader';
 import QuizPalette from './QuizPalette';
@@ -9,7 +9,9 @@ const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
-  const [selectedAnswers, setSelectedAnswers] = useState(Array(2).fill(null)); // Stores selected answers
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
+  const [timer, setTimer] = useState({ hours: 1, minutes: 5, seconds: 55 });
+  const [questionStatus, setQuestionStatus] = useState({});
 
   // Sample questions
   const questions = [
@@ -17,34 +19,47 @@ const Quiz = () => {
     { question: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Saturn"], correctAnswer: "Mars" },
   ];
 
-  // Timer state
-  const [timer, setTimer] = useState({
-    hours: 1,
-    minutes: 5,
-    seconds: 55,
-  });
+  useEffect(() => {
+    // Initialize selectedAnswers and questionStatus based on the number of questions
+    const initialSelectedAnswers = Array(questions.length).fill(null);
+    const initialQuestionStatus = questions.reduce((acc, _, index) => {
+      acc[index + 1] = "not-visited";
+      return acc;
+    }, {});
+    setSelectedAnswers(initialSelectedAnswers);
+    setQuestionStatus(initialQuestionStatus);
+  }, [questions.length]);
 
-  // Question palette state - simulating answered/unanswered questions
-  const [questionStatus, setQuestionStatus] = useState({
-    1: "answered",
-    2: "answered",
-    3: "answered",
-    4: "answered",
-    5: "not-answered",
-    6: "answered",
-    7: "answered",
-    8: "answered",
-    9: "answered",
-    10: "marked",
-    11: "marked",
-    12: "current",
-    // Rest are not visited
-  });
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        let { hours, minutes, seconds } = prev;
+        if (seconds === 0) {
+          if (minutes === 0) {
+            if (hours === 0) {
+              clearInterval(interval);
+              return prev;
+            }
+            hours -= 1;
+            minutes = 59;
+          } else {
+            minutes -= 1;
+          }
+          seconds = 59;
+        } else {
+          seconds -= 1;
+        }
+        return { hours, minutes, seconds };
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAnswerClick = (selectedAnswer) => {
     const newAnswers = [...selectedAnswers];
     newAnswers[currentQuestion] = selectedAnswer;
     setSelectedAnswers(newAnswers);
+    setQuestionStatus((prev) => ({ ...prev, [currentQuestion + 1]: "answered" }));
   };
 
   const handleSaveAndNext = () => {
@@ -66,14 +81,33 @@ const Quiz = () => {
     }
   };
 
+  const handleMarkForReview = () => {
+    setQuestionStatus((prev) => ({ ...prev, [currentQuestion + 1]: "marked" }));
+    handleSkip();
+  };
+
+  const handleClearResponse = () => {
+    const newAnswers = [...selectedAnswers];
+    newAnswers[currentQuestion] = null;
+    setSelectedAnswers(newAnswers);
+    setQuestionStatus((prev) => ({ ...prev, [currentQuestion + 1]: "not-answered" }));
+  };
+
+  const handleInstantResult = () => {
+    const correct = questions.reduce((acc, question, index) => {
+      if (selectedAnswers[index] === question.correctAnswer) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+    alert(`Your instant result: ${correct} out of ${questions.length}`);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <QuizHeader />
-
       {/* Main content */}
       <div className="flex-1 container mx-auto px-4 py-6">
-        <h1 className="text-3xl font-medium text-center mb-6">VI Practice Test</h1>
+        <h1 className="text-3xl font-medium text-center mb-6">User Interface for Quiz</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {/* Main test area - 3/4 width on large screens */}
@@ -82,7 +116,6 @@ const Quiz = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border-b border-gray-300">
               <div className="text-gray-700">Question No. {currentQuestion + 1}</div>
               <div className="flex flex-wrap gap-4 items-center">
-              
                 <div className="flex items-center gap-2">
                   <span>Right mark:</span>
                   <span className="text-green-600 font-medium">1.00</span>
@@ -118,11 +151,11 @@ const Quiz = () => {
             {/* Action buttons */}
             <div className="flex justify-between p-4">
               <div className="flex gap-2">
-                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded">Mark for Review & Next</button>
-                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded">Clear Response</button>
-                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded">Instant Result</button>
+                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded" onClick={handleMarkForReview}>Mark for Review & Next</button>
+                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded" onClick={handleClearResponse}>Clear Response</button>
+                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded" onClick={handleInstantResult}>Instant Result</button>
               </div>
-              <button className="px-4 py-2 bg-blue-700 text-white rounded">Save & Next</button>
+              <button className="px-4 py-2 bg-blue-700 text-white rounded" onClick={handleSaveAndNext}>Save & Next</button>
             </div>
           </div>
 

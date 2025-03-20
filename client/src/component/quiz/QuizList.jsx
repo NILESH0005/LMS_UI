@@ -7,24 +7,27 @@ const QuizList = () => {
 
     const subjects = [
         {
+            id: 1,
             title: "Supervised vs Unsupervised vs Reinforcement Learning",
             quizzes: [
-                { title: "Basics of Machine Learning", level: "Beginner", questions: 10, points: 100 },
-                { title: "Advanced Reinforcement Learning", level: "Advanced", questions: 15, points: 150 },
+                { id: 101, title: "Basics of Machine Learning", level: "Beginner", questions: 10, points: 100 },
+                { id: 102, title: "Advanced Reinforcement Learning", level: "Advanced", questions: 15, points: 150 },
             ],
         },
         {
+            id: 2,
             title: "Python Programming",
             quizzes: [
-                { title: "Python Basics", level: "Beginner", questions: 10, points: 100 },
-                { title: "Advanced Python Libraries", level: "Intermediate", questions: 12, points: 120 },
+                { id: 201, title: "Python Basics", level: "Beginner", questions: 10, points: 100 },
+                { id: 202, title: "Advanced Python Libraries", level: "Intermediate", questions: 12, points: 120 },
             ],
         },
         {
+            id: 3,
             title: "Mathematics for AI/ML",
             quizzes: [
-                { title: "Linear Algebra", level: "Beginner", questions: 10, points: 100 },
-                { title: "Probability & Statistics", level: "Intermediate", questions: 12, points: 120 },
+                { id: 301, title: "Linear Algebra", level: "Beginner", questions: 10, points: 100 },
+                { id: 302, title: "Probability & Statistics", level: "Intermediate", questions: 12, points: 120 },
             ],
         },
         // Add more subjects and quizzes as needed
@@ -32,11 +35,11 @@ const QuizList = () => {
 
     // Mock data for top performers
     const topPerformers = [
-        { name: "John Doe", points: 1200, avatar: "https://randomuser.me/api/portraits/men/1.jpg" },
-        { name: "Jane Smith", points: 1150, avatar: "https://randomuser.me/api/portraits/women/2.jpg" },
-        { name: "Alice Johnson", points: 1100, avatar: "https://randomuser.me/api/portraits/women/3.jpg" },
-        { name: "Bob Brown", points: 1050, avatar: "https://randomuser.me/api/portraits/men/4.jpg" },
-        { name: "Charlie Davis", points: 1000, avatar: "https://randomuser.me/api/portraits/men/5.jpg" },
+        { id: 1, name: "John Doe", points: 1200, avatar: "https://randomuser.me/api/portraits/men/1.jpg" },
+        { id: 2, name: "Jane Smith", points: 1150, avatar: "https://randomuser.me/api/portraits/women/2.jpg" },
+        { id: 3, name: "Alice Johnson", points: 1100, avatar: "https://randomuser.me/api/portraits/women/3.jpg" },
+        { id: 4, name: "Bob Brown", points: 1050, avatar: "https://randomuser.me/api/portraits/men/4.jpg" },
+        { id: 5, name: "Charlie Davis", points: 1000, avatar: "https://randomuser.me/api/portraits/men/5.jpg" },
     ];
 
     const handleQuizClick = (quiz) => {
@@ -50,7 +53,7 @@ const QuizList = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6 ">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
             {/* Hero Section */}
             <div className="py-12 sm:py-24 w-full">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -78,21 +81,21 @@ const QuizList = () => {
                 {/* Quiz Categories Section (Left - 8/12 width) */}
                 <div className="w-full lg:w-8/12" ref={quizCategoriesRef}>
                     <h2 className="text-3xl font-bold text-gray-800 mb-8">Quiz Categories</h2>
-                    {subjects.map((subject, index) => (
-                        <div key={index} className="mb-12">
+                    {subjects.map((subject) => (
+                        <div key={subject.id} className="mb-12">
                             <h3 className="text-2xl font-bold text-gray-700 mb-6">{subject.title}</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                {subject.quizzes.map((quiz, quizIndex) => (
+                                {subject.quizzes.map((quiz) => (
                                     <div
-                                        key={quizIndex}
-                                        className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+                                        key={quiz.id}
+                                        className="bg-white p-6 rounded-lg shadow-2xl hover:shadow-3xl transition-shadow duration-300"
                                     >
                                         <h4 className="text-xl font-bold text-gray-800 mb-2">{quiz.title}</h4>
                                         <p className="text-gray-600 mb-2">Level: {quiz.level}</p>
                                         <p className="text-gray-600 mb-2">Questions: {quiz.questions}</p>
                                         <p className="text-gray-600 mb-4">Points: {quiz.points}</p>
                                         <button
-                                            className="w-full bg-DGXblue text-white py-2 px-4 rounded-lg transition duration-200"
+                                            className="w-full bg-DGXblue text-white py-2 px-4 rounded-lg transition duration-200 hover:bg-blue-600"
                                             onClick={() => handleQuizClick(quiz)}
                                         >
                                             Start Quiz
@@ -107,12 +110,12 @@ const QuizList = () => {
                 {/* Top Performers Section (Right - 4/12 width) */}
                 <div className="w-full lg:w-4/12">
                     <div className="sticky top-6">
-                        <div className="bg-white p-6 rounded-xl shadow-lg">
+                        <div className="bg-white p-6 rounded-xl shadow-2xl">
                             <h2 className="text-2xl font-bold text-gray-900 mb-6">Top Performers</h2>
                             <div className="space-y-4">
                                 {topPerformers.map((user, index) => (
                                     <div
-                                        key={index}
+                                        key={user.id}
                                         className="flex items-center justify-between bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow duration-300"
                                     >
                                         <div className="flex items-center">
@@ -127,7 +130,7 @@ const QuizList = () => {
                                             </div>
                                         </div>
                                         <span className="text-lg font-bold text-lime-600">
-                                            #{index + 1}
+                                            {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
                                         </span>
                                     </div>
                                 ))}
