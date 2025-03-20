@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import ApiContext from "../../../context/ApiContext";
 import Swal from "sweetalert2";
+import LoadPage from "../../../component/LoadPage"; // Import the LoadPage component
 
 const QuizTable = () => {
   const { fetchData, userToken } = useContext(ApiContext);
@@ -9,7 +10,7 @@ const QuizTable = () => {
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
   const [quizLevels, setQuizLevels] = useState([]);
-
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const fetchQuizLevels = async () => {
     const endpoint = `dropdown/getDropdownValues?category=quizLevel`;
@@ -31,6 +32,7 @@ const QuizTable = () => {
       Swal.fire("Error", "Error fetching quiz levels.", "error");
     }
   };
+
   const fetchQuizCategories = async () => {
     const endpoint = `dropdown/getQuizGroupDropdown`;
     const method = "GET";
@@ -55,7 +57,6 @@ const QuizTable = () => {
       Swal.fire("Error", "Error fetching quiz categories.", "error");
     }
   };
-  
 
   const fetchQuizzes = async () => {
     setLoading(true);
@@ -154,31 +155,46 @@ const QuizTable = () => {
   };
 
   useEffect(() => {
-    fetchQuizzes();
-    fetchQuizCategories();
-    fetchQuizLevels(); // Fetch quiz levels
+    const fetchAllData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([fetchQuizzes(), fetchQuizCategories(), fetchQuizLevels()]);
+        setIsDataLoaded(true);
+      } catch (error) {
+        setError("Failed to fetch data. Please try again.");
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchAllData();
   }, []);
 
   const getLevelName = (levelId) => {
+    if (!quizLevels.length) return "Loading...";
     const levelIdNumber = typeof levelId === 'string' ? parseInt(levelId, 10) : levelId;
     const level = quizLevels.find((lvl) => lvl.idCode === levelIdNumber);
     return level ? level.ddValue : "N/A";
   };
 
   const getCategoryName = (groupId) => {
+    if (!categories.length) return "Loading...";
     const groupIdNumber = typeof groupId === 'string' ? parseInt(groupId, 10) : groupId;
-
     const category = categories.find((cat) => cat.group_id === groupIdNumber);
     return category ? category.group_name : "N/A";
   };
 
   if (loading) {
-    return <p>Loading quizzes...</p>;
+    return <LoadPage />; // Render the LoadPage component while loading
   }
 
   if (error) {
     return <p className="text-red-500">{error}</p>;
+  }
+
+  if (!isDataLoaded) {
+    return <LoadPage />; // Render the LoadPage component while data is being loaded
   }
 
   return (

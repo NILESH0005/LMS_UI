@@ -119,5 +119,5 @@ const QuizPalette = ({ questionStatus, currentQuestion, setCurrentQuestion, time
     </div>
   );
 };
-
+    
 export default QuizPalette;
