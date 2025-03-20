@@ -153,7 +153,7 @@ const QuizQuestions = ({ setActiveComp }) => {
 
     const questionData = {
       question_text: questionText,
-      Ques_level: selectedLevel, // Use the selectedLevel state
+      Ques_level: selectedLevel, 
       image: image, // Base64 or URL
       group_id: group, // Group ID
       options: options.map((option, index) => ({
@@ -179,7 +179,6 @@ const QuizQuestions = ({ setActiveComp }) => {
 
       if (response && response.success) {
         Swal.fire("Success", "Question added successfully!", "success");
-        // Reset form fields
         setQuestionText("");
         setOptions(["", "", "", ""]);
         setCorrectAnswers([]);

@@ -161,7 +161,7 @@ export const getQuizzes = async (req, res) => {
 
 export const deleteQuiz = (req, res) => {
   let success = false;
-  const { QuizID } = req.body; 
+  const { QuizID } = req.body;
   const adminName = req.user?.id;
 
   try {
@@ -242,7 +242,7 @@ export const deleteQuiz = (req, res) => {
 
 export const createQuestion = async (req, res) => {
   let success = false;
-  const userId = req.user.id; 
+  const userId = req.user.id;
   console.log("User ID:", userId);
 
   const errors = validationResult(req);
@@ -304,5 +304,51 @@ export const createQuestion = async (req, res) => {
   } catch (error) {
     console.error("Unexpected Error:", error);
     return res.status(500).json({ success: false, data: error, message: "Unexpected Error, check logs" });
+  }
+};
+
+export const getQuestion = async (req, res) => {
+  let success = false;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const warningMessage = "Data is not in the right format";
+    console.error(warningMessage, errors.array());
+    logWarning(warningMessage);
+    res.status(400).json({ success, data: errors.array(), message: warningMessage });
+    return;
+  }
+
+  try {
+    connectToDatabase(async (err, conn) => {
+      if (err) {
+        const errorMessage = "Failed to connect to database";
+        logError(err);
+        res.status(500).json({ success: false, data: err, message: errorMessage });
+        return;
+      }
+
+      try {
+        const query = `select question_text,GroupMaster.group_name,tblDDReferences.ddValue,option_text, 0 as count
+                          from Questions
+                          left join GroupMaster on Questions.group_id = GroupMaster.group_id
+                          left join tblDDReferences on Questions.Ques_level = tblDDReferences.idCode
+                          left join QuestionOptions on Questions.id = QuestionOptions.question_id
+                          where QuestionOptions.is_correct = 1 and isnull(Questions.delStatus,0)=0 ORDER BY Questions.AddOnDt DESC;`;
+        const quizzes = await queryAsync(conn, query);
+
+        success = true;
+        closeConnection();
+        const infoMessage = "Questions fetched successfully";
+        logInfo(infoMessage);
+        res.status(200).json({ success, data: { quizzes }, message: infoMessage });
+      } catch (queryErr) {
+        logError(queryErr);
+        closeConnection();
+        res.status(500).json({ success: false, data: queryErr, message: 'Something went wrong please try again' });
+      }
+    });
+  } catch (error) {
+    logError(error);
+    res.status(500).json({ success: false, data: {}, message: 'Something went wrong please try again' });
   }
 };

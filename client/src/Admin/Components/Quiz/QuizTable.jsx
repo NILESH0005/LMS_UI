@@ -118,14 +118,13 @@ const QuizTable = () => {
             "Content-Type": "application/json",
             "auth-token": userToken,
           };
-          const body = { QuizID: quizId }; // Ensure the key matches the API's expected input
+          const body = { QuizID: quizId }; 
           console.log("Request body:", body);
 
           const data = await fetchData(endpoint, method, body, headers);
           console.log("API response:", data);
 
           if (data.success) {
-            // Update the state to remove the deleted quiz
             setQuizzes((prevQuizzes) =>
               prevQuizzes.filter((quiz) => quiz.QuizID !== quizId)
             );
