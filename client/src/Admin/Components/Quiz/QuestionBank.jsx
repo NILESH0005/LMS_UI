@@ -1,68 +1,100 @@
-import React, { useState, useEffect, useContext } from "react";
-import Swal from "sweetalert2";
-import LoadPage from "../../../component/LoadPage"; // Loader component
-import ApiContext from "../../../context/ApiContext";
+import React, { useState } from "react";
+import QuizQuestions from "./QuizQuestions"; // Import the QuizQuestions component
 
-const QuizBank = ({ handleEdit, handleDelete }) => {
-  const { fetchData, userToken } = useContext(ApiContext);
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const QuizBank = ({ questions = [], handleEdit, handleDelete }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("All");
+  const [showQuizQuestions, setShowQuizQuestions] = useState(false); // State to control rendering of QuizQuestions
 
-  // Fetch questions from API
-  const fetchQuestions = async () => {
-    setLoading(true);
-    const endpoint = "quiz/getQuizzes";
-    const method = "GET";
-    const headers = {
-      "Content-Type": "application/json",
-      "auth-token": userToken,
-    };
-    const body = {};
-    
+  // Dummy data
+  const dummyQuestions = [
+    {
+      id: 1,
+      text: "What is the capital of France?",
+      correctAnswer: "Paris",
+      group: "Geography",
+      level: "Easy",
+      count: 0,
+    },
+    {
+      id: 2,
+      text: "What is 2 + 2?",
+      correctAnswer: "4",
+      group: "Mathematics",
+      level: "Easy",
+      count: 0,
+    },
+    {
+      id: 3,
+      text: "Who wrote 'Hamlet'?",
+      correctAnswer: "William Shakespeare",
+      group: "Literature",
+      level: "Medium",
+      count: 0,
+    },
+    {
+      id: 4,
+      text: "What is the chemical symbol for water?",
+      correctAnswer: "H2O",
+      group: "Science",
+      level: "Easy",
+      count: 0,
+    },
+    {
+      id: 5,
+      text: "Who painted the Mona Lisa?",
+      correctAnswer: "Leonardo da Vinci",
+      group: "Art",
+      level: "Medium",
+      count: 0,
+    },
+  ];
 
-    try {
-      const data = await fetchData(endpoint, method, body, headers);
-      if (data.success) {
-        setQuestions(data.data.quizzes); // Assuming API response contains `quizzes`
-      } else {
-        setError(data.message || "Failed to fetch questions.");
-      }
-    } catch (err) {
-      setError("Something went wrong, please try again.");
-      console.error("Error fetching questions:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Use provided questions or fallback to dummy data
+  const [finalQuestions, setFinalQuestions] = useState(
+    questions.length > 0 ? questions : dummyQuestions
+  );
 
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
+  // Get unique groups for the dropdown
+  const groups = ["All", ...new Set(finalQuestions.map((q) => q.group))];
 
-  // Get unique groups for dropdown
-  const groups = ["All", ...new Set(questions.map((q) => q.group_name))];
-
-  // Filter questions based on search query and selected group
-  const filteredQuestions = questions.filter((question) => {
+  // Filter questions based on search and selected group
+  const filteredQuestions = finalQuestions.filter((question) => {
     return (
-      (selectedGroup === "All" || question.group_name === selectedGroup) &&
-      question.question_text.toLowerCase().includes(searchQuery.toLowerCase())
+      (selectedGroup === "All" || question.group === selectedGroup) &&
+      question.text.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
-  if (loading) {
-    return <LoadPage />; // Show loader while fetching data
-  }
+  // Function to increase the count of a question
+  const increaseCount = (id) => {
+    setFinalQuestions((prevQuestions) =>
+      prevQuestions.map((q) => (q.id === id ? { ...q, count: q.count + 1 } : q))
+    );
+  };
 
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
+  // Function to show QuizQuestions component
+  const handleEditQuiz = () => {
+    setShowQuizQuestions(true); // Set state to true to render QuizQuestions
+  };
+
+  // If showQuizQuestions is true, render the QuizQuestions component
+  if (showQuizQuestions) {
+    return <QuizQuestions questions={finalQuestions} />;
   }
 
   return (
     <div className="mt-6 p-4 bg-white rounded-lg shadow">
+      {/* Button to navigate to QuizQuestions component */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleEditQuiz}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+        >
+          Edit Quiz
+        </button>
+      </div>
+
       <div className="flex justify-between items-center mb-4">
         <input
           type="text"
@@ -88,24 +120,32 @@ const QuizBank = ({ handleEdit, handleDelete }) => {
       {filteredQuestions.length > 0 ? (
         <table className="w-full border-collapse border border-gray-300">
           <thead>
-            <tr className="bg-DGXgreen">
+            <tr className="bg-gray-200">
               <th className="border p-2">#</th>
               <th className="border p-2">Question</th>
               <th className="border p-2">Correct Answer</th>
               <th className="border p-2">Group</th>
               <th className="border p-2">Level</th>
+              <th className="border p-2">Count</th>
               <th className="border p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredQuestions.map((q, index) => (
-              <tr key={index} className="text-center">
+              <tr key={q.id} className="text-center">
                 <td className="border p-2">{index + 1}</td>
-                <td className="border p-2">{q.question_text}</td>
-                <td className="border p-2">{q.option_text}</td>
-                <td className="border p-2">{q.group_name}</td>
-                <td className="border p-2">{q.ddValue}</td>
+                <td className="border p-2">{q.text}</td>
+                <td className="border p-2">{q.correctAnswer}</td>
+                <td className="border p-2">{q.group}</td>
+                <td className="border p-2">{q.level}</td>
+                <td className="border p-2">{q.count}</td>
                 <td className="border p-2 flex justify-center space-x-2">
+                  <button
+                    onClick={() => increaseCount(q.id)}
+                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition"
+                  >
+                    +
+                  </button>
                   <button
                     onClick={() => handleEdit(q.id)}
                     className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition"
