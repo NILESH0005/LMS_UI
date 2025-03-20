@@ -95,9 +95,7 @@ const QuizBank = ({ questions = [], handleEdit, handleDelete }) => {
         </button>
       </div>
 
-      {/* Search and Filter Controls */}
       <div className="flex justify-between items-center mb-4">
-        {/* Search Field */}
         <input
           type="text"
           placeholder="Search questions..."
@@ -106,7 +104,6 @@ const QuizBank = ({ questions = [], handleEdit, handleDelete }) => {
           className="p-2 border rounded w-1/2"
         />
 
-        {/* Group Filter Dropdown */}
         <select
           value={selectedGroup}
           onChange={(e) => setSelectedGroup(e.target.value)}
@@ -120,7 +117,6 @@ const QuizBank = ({ questions = [], handleEdit, handleDelete }) => {
         </select>
       </div>
 
-      {/* Table */}
       {filteredQuestions.length > 0 ? (
         <table className="w-full border-collapse border border-gray-300">
           <thead>

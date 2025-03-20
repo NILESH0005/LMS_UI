@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { FiUpload, FiTrash } from "react-icons/fi";
 import QuizQuestionTable from "./QuizQuestionTable";
+import ApiContext from "../../../context/ApiContext";
 
 const QuizQuestions = ({ setActiveComp }) => {
+  const { userToken, fetchData } = useContext(ApiContext);
   const [questions, setQuestions] = useState([]);
   const [questionText, setQuestionText] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]); // Start with 4 options
@@ -13,21 +15,84 @@ const QuizQuestions = ({ setActiveComp }) => {
   const [group, setGroup] = useState("General");
   const [image, setImage] = useState(null);
   const [optionImages, setOptionImages] = useState([null, null, null, null]); // Start with 4 option images
+  const [categories, setCategories] = useState([]);
+  const [questionLevels, setQuestionLevels] = useState([]);
+  const [selectedLevel, setSelectedLevel] = useState([]); // Default to level 1
 
-  // Handle Image Upload for Question
+  useEffect(() => {
+    const fetchQuizCategories = async () => {
+      const endpoint = `dropdown/getQuizGroupDropdown`;
+      const method = "GET";
+      const headers = {
+        "Content-Type": "application/json",
+        "auth-token": userToken,
+      };
+
+      try {
+        const data = await fetchData(endpoint, method, headers);
+        console.log("Fetched quiz categories:", data);
+        if (data.success) {
+          const sortedCategories = data.data.sort((a, b) =>
+            a.group_name.localeCompare(b.group_name)
+          );
+          setCategories(sortedCategories);
+        } else {
+          Swal.fire("Error", "Failed to fetch quiz categories.", "error");
+        }
+      } catch (error) {
+        console.error("Error fetching quiz categories:", error);
+        Swal.fire("Error", "Error fetching quiz categories.", "error");
+      }
+    };
+
+    const fetchQuestionLevels = async () => {
+      const endpoint = `dropdown/getDropdownValues?category=questionLevel`;
+      const method = "GET";
+      const headers = {
+        "Content-Type": "application/json",
+        "auth-token": userToken,
+      };
+
+      try {
+        const data = await fetchData(endpoint, method, headers);
+        console.log("Fetched question levels:", data);
+        if (data.success) {
+          setQuestionLevels(data.data);
+        } else {
+          Swal.fire("Error", "Failed to fetch question levels.", "error");
+        }
+      } catch (error) {
+        console.error("Error fetching question levels:", error);
+        Swal.fire("Error", "Error fetching question levels.", "error");
+      }
+    };
+
+    fetchQuizCategories();
+    fetchQuestionLevels();
+  }, [userToken, fetchData]);
+
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        Swal.fire("Error", "Image size must be less than 2 MB.", "error");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = () => setImage(reader.result);
       reader.readAsDataURL(file);
     }
   };
 
-  // Handle Image Upload for Options
   const handleOptionImageUpload = (event, index) => {
     const file = event.target.files[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        Swal.fire("Error", "Image size must be less than 2 MB.", "error");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = () => {
         const newOptionImages = [...optionImages];
@@ -38,25 +103,21 @@ const QuizQuestions = ({ setActiveComp }) => {
     }
   };
 
-  // Remove uploaded image for Question
   const removeImage = () => {
     setImage(null);
   };
 
-  // Remove uploaded image for Options
   const removeOptionImage = (index) => {
     const newOptionImages = [...optionImages];
     newOptionImages[index] = null;
     setOptionImages(newOptionImages);
   };
 
-  // Add a new option
   const handleAddOption = () => {
     setOptions([...options, ""]);
     setOptionImages([...optionImages, null]);
   };
 
-  // Remove an option
   const handleRemoveOption = (index) => {
     if (options.length > 2) {
       const newOptions = [...options];
@@ -76,8 +137,7 @@ const QuizQuestions = ({ setActiveComp }) => {
     }
   };
 
-  // Create a new question
-  const handleCreateQuestion = () => {
+  const handleCreateQuestion = async () => {
     if (!questionText.trim()) {
       Swal.fire("Error", "Please enter a question!", "error");
       return;
@@ -91,34 +151,56 @@ const QuizQuestions = ({ setActiveComp }) => {
       return;
     }
 
-    const newQuestion = {
-      id: uuidv4(),
-      text: questionText,
-      options,
-      correctAnswers,
-      group,
-      image,
-      optionImages,
+    const questionData = {
+      question_text: questionText,
+      Ques_level: selectedLevel, // Use the selectedLevel state
+      image: image, // Base64 or URL
+      group_id: group, // Group ID
+      options: options.map((option, index) => ({
+        option_text: option,
+        is_correct: correctAnswers.includes(index),
+        image: optionImages[index], // Base64 or URL
+      })),
     };
 
-    setQuestions([...questions, newQuestion]);
-    setQuestionText("");
-    setOptions(["", "", "", ""]);
-    setCorrectAnswers([]);
-    setGroup("General");
-    setImage(null);
-    setOptionImages([null, null, null, null]);
+    console.log("Data to be sent:", questionData);
 
-    Swal.fire("Success", "Question added successfully!", "success");
+    try {
+      const endpoint = "quiz/createQuestion";
+      const method = "POST";
+      const headers = {
+        "Content-Type": "application/json",
+        "auth-token": userToken,
+      };
+      const body = questionData; // Convert to JSON string
+
+      const response = await fetchData(endpoint, method, body, headers);
+      console.log("Response:", response);
+
+      if (response && response.success) {
+        Swal.fire("Success", "Question added successfully!", "success");
+        // Reset form fields
+        setQuestionText("");
+        setOptions(["", "", "", ""]);
+        setCorrectAnswers([]);
+        setGroup("General");
+        setImage(null);
+        setOptionImages([null, null, null, null]);
+        setSelectedLevel(1); // Reset selected level to default
+      } else {
+        Swal.fire("Error", response?.message || "Failed to add question.", "error");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire("Error", "Something went wrong, please try again.", "error");
+    }
   };
 
-  // Delete a question
   const handleDelete = (id) => {
     setQuestions(questions.filter((q) => q.id !== id));
     Swal.fire("Deleted", "Question removed successfully!", "success");
   };
 
-  // Edit a question
   const handleEdit = (id) => {
     const question = questions.find((q) => q.id === id);
     setQuestionText(question.text);
@@ -130,16 +212,14 @@ const QuizQuestions = ({ setActiveComp }) => {
     setQuestions(questions.filter((q) => q.id !== id));
   };
 
-  // Navigate to QuestionBank
   const navigateToQuestionBank = () => {
-    setActiveComp("quiz_bank"); // Update the active component in AdminDashboard
+    setActiveComp("quiz_bank");
   };
 
   return (
     <div className="p-6 bg-gray-100 rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-4">Create a Quiz Question</h2>
 
-      {/* Group Selection */}
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Group</label>
         <select
@@ -147,14 +227,15 @@ const QuizQuestions = ({ setActiveComp }) => {
           value={group}
           onChange={(e) => setGroup(e.target.value)}
         >
-          <option value="General">General</option>
-          <option value="Math">Math</option>
-          <option value="Science">Science</option>
-          <option value="History">History</option>
+          <option value="">Select Group</option>
+          {categories.map((cat) => (
+            <option key={cat.group_id} value={cat.group_id}>
+              {cat.group_name}
+            </option>
+          ))}
         </select>
       </div>
 
-      {/* Question Input */}
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Question</label>
         <input
@@ -166,7 +247,23 @@ const QuizQuestions = ({ setActiveComp }) => {
         />
       </div>
 
-      {/* Image Upload for Question */}
+      <div>
+        <label className="block text-gray-700 font-medium mb-2">Question Level</label>
+        <select
+          name="level"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          value={selectedLevel}
+          onChange={(e) => setSelectedLevel(e.target.value)}
+        >
+          <option value="">Select Question Level</option>
+          {questionLevels.map((level) => (
+            <option key={level.idCode} value={level.idCode}>
+              {level.ddValue}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">
           Question Image (Optional)
@@ -182,7 +279,6 @@ const QuizQuestions = ({ setActiveComp }) => {
           />
         </label>
 
-        {/* Image Preview for Question */}
         {image && (
           <div className="mt-2 relative flex justify-center items-center border rounded-lg overflow-hidden max-w-md mx-auto">
             <img
@@ -200,7 +296,6 @@ const QuizQuestions = ({ setActiveComp }) => {
         )}
       </div>
 
-      {/* Options */}
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Options</label>
         <button
@@ -239,7 +334,6 @@ const QuizQuestions = ({ setActiveComp }) => {
                 setOptions(newOptions);
               }}
             />
-            {/* Image Upload for Option */}
             <label className="flex items-center space-x-2 cursor-pointer">
               <FiUpload className="text-blue-500" size={20} />
               <input
@@ -249,7 +343,6 @@ const QuizQuestions = ({ setActiveComp }) => {
                 className="hidden"
               />
             </label>
-            {/* Image Preview for Option */}
             {optionImages[index] && (
               <div className="mt-2 relative">
                 <img
@@ -274,8 +367,6 @@ const QuizQuestions = ({ setActiveComp }) => {
           </div>
         ))}
       </div>
-
-      {/* Buttons */}
       <div className="mt-4 flex space-x-2">
         <button
           onClick={handleCreateQuestion}

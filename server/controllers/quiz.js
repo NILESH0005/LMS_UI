@@ -239,3 +239,70 @@ export const deleteQuiz = (req, res) => {
     });
   }
 };
+
+export const createQuestion = async (req, res) => {
+  let success = false;
+  const userId = req.user.id; 
+  console.log("User ID:", userId);
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success, data: errors.array(), message: "Data is not in the right format" });
+  }
+
+  try {
+    const { question_text, Ques_level, image, group_id, options } = req.body;
+
+    if (!question_text || !Ques_level || !group_id || !options || options.length < 2) {
+      return res.status(400).json({ success, message: "Missing required fields or insufficient options." });
+    }
+
+    connectToDatabase(async (err, conn) => {
+      if (err) {
+        return res.status(500).json({ success: false, data: err, message: "Failed to connect to database" });
+      }
+
+      try {
+        const insertQuestionQuery = `
+          INSERT INTO Questions 
+          (question_text, Ques_level, image, group_id, AuthAdd, AddOnDt, delStatus) 
+          VALUES (?, ?, ?, ?, ?, GETDATE(), 0);
+        `;
+        const questionResult = await queryAsync(conn, insertQuestionQuery, [
+          question_text, Ques_level, image, group_id, userId
+        ]);
+
+        const lastQuestionIdQuery = `SELECT TOP 1 id FROM Questions ORDER BY id DESC;`;
+        const lastQuestionIdResult = await queryAsync(conn, lastQuestionIdQuery);
+        const questionId = lastQuestionIdResult[0].id;
+
+        for (const option of options) {
+          const { option_text, is_correct, image } = option;
+          const insertOptionQuery = `
+            INSERT INTO QuestionOptions 
+            (question_id, option_text, is_correct, image, AuthAdd, AddOnDt, delStatus) 
+            VALUES (?, ?, ?, ?, ?, GETDATE(), 0);
+          `;
+          await queryAsync(conn, insertOptionQuery, [
+            questionId, option_text, is_correct ? 1 : 0, image, userId
+          ]);
+        }
+
+        success = true;
+        closeConnection();
+        return res.status(200).json({
+          success,
+          data: { questionId },
+          message: "Question and options added successfully!"
+        });
+      } catch (queryErr) {
+        closeConnection();
+        console.error("Database Query Error:", queryErr);
+        return res.status(500).json({ success: false, data: queryErr, message: "Database Query Error" });
+      }
+    });
+  } catch (error) {
+    console.error("Unexpected Error:", error);
+    return res.status(500).json({ success: false, data: error, message: "Unexpected Error, check logs" });
+  }
+};

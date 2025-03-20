@@ -8,7 +8,7 @@ const CreateQuiz = ({ navigateToQuizTable }) => {
   const navigate = useNavigate();
   const { userToken, fetchData } = useContext(ApiContext);
   const [categories, setCategories] = useState([]);
-  const [quizLevels, setQuizLevels] = useState([]); // State to store quiz levels
+  const [quizLevels, setQuizLevels] = useState([]); 
   const [quizData, setQuizData] = useState({
     category: "",
     name: "",
