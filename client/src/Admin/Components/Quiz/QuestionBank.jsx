@@ -50,8 +50,6 @@ const QuizBank = () => {
 
   // Handle delete functionality
   const handleDelete = async (questionId) => {
-    // console.log("Delete button clicked for question ID:", questionId); // Debugging
-
     if (!questionId) {
       console.error("Question ID is undefined."); // Debugging
       Swal.fire("Error", "Question ID is missing.", "error");
@@ -64,7 +62,7 @@ const QuizBank = () => {
       "Content-Type": "application/json",
       "auth-token": userToken,
     };
-    const body = { id: questionId };
+    const body = { id: questionId }; // Ensure the key is `id` as expected by the backend
 
     console.log("Delete request payload:", { endpoint, method, headers, body }); // Debugging
 
@@ -174,7 +172,10 @@ const QuizBank = () => {
                 <td className="border p-2">{q.count}</td>
                 <td className="border p-2 flex justify-center">
                   <button
-                    onClick={() => handleDelete(q.id)} // Ensure q.id is passed correctly
+                    onClick={() => {
+                      console.log("Deleting question with ID:", q.id); // Debugging
+                      handleDelete(q.id);
+                    }}
                     className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
                   >
                     Delete
