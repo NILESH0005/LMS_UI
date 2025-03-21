@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import QuizQuestions from "./QuizQuestions"; // Import the QuizQuestions component
+import QuizQuestions from "./QuizQuestions";
 
 const QuizBank = ({ questions = [], handleEdit, handleDelete }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("All");
-  const [showQuizQuestions, setShowQuizQuestions] = useState(false); // State to control rendering of QuizQuestions
+  const [showQuizQuestions, setShowQuizQuestions] = useState(false); 
 
-  // Dummy data
   const dummyQuestions = [
     {
       id: 1,
