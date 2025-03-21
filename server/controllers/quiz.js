@@ -352,3 +352,61 @@ export const getQuestion = async (req, res) => {
     res.status(500).json({ success: false, data: {}, message: 'Something went wrong please try again' });
   }
 };
+
+export const deleteQuestion = async (req, res) => {
+  let success = false;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const warningMessage = "Data is not in the right format";
+    console.error(warningMessage, errors.array());
+    logWarning(warningMessage);
+    res.status(400).json({ success, data: errors.array(), message: warningMessage });
+    return;
+  }
+
+  const { questionId } = req.body; // Assuming the question ID is sent in the request body
+
+  if (!questionId) {
+    const errorMessage = "Question ID is required";
+    logError(errorMessage);
+    res.status(400).json({ success, data: {}, message: errorMessage });
+    return;
+  }
+
+  try {
+    connectToDatabase(async (err, conn) => {
+      if (err) {
+        const errorMessage = "Failed to connect to database";
+        logError(err);
+        res.status(500).json({ success: false, data: err, message: errorMessage });
+        return;
+      }
+
+      try {
+        const query = `UPDATE Questions SET delStatus = 1 WHERE id = ?`;
+        const result = await queryAsync(conn, query, [questionId]);
+
+        if (result.affectedRows > 0) {
+          success = true;
+          const infoMessage = "Question deleted successfully";
+          logInfo(infoMessage);
+          res.status(200).json({ success, data: { questionId }, message: infoMessage });
+        } else {
+          const notFoundMessage = "No question found with the provided ID";
+          logWarning(notFoundMessage);
+          res.status(404).json({ success, data: {}, message: notFoundMessage });
+        }
+
+        closeConnection();
+      } catch (queryErr) {
+        logError(queryErr);
+        closeConnection();
+        res.status(500).json({ success: false, data: queryErr, message: "Something went wrong, please try again" });
+      }
+    });
+  } catch (error) {
+    logError(error);
+    res.status(500).json({ success: false, data: {}, message: "Something went wrong, please try again" });
+  }
+};
