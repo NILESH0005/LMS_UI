@@ -196,6 +196,7 @@ const QuizQuestions = ({ setActiveComp }) => {
   };
 
   const handleDelete = (id) => {
+    console.log("Delete button clicked for question ID:", id); // Debugging
     setQuestions(questions.filter((q) => q.id !== id));
     Swal.fire("Deleted", "Question removed successfully!", "success");
   };
