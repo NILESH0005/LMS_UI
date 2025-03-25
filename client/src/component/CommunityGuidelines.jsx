@@ -207,9 +207,7 @@ const CommunityGuidelines = () => {
               </li>
             </ul>
           </p>
-
         </section>
-
         <section id="no-spamming-or-self-promotion-details" className="mb-8">
           <h2 className="text-2xl text-DGXblack mt-8 text-center font-bold">No Spamming or Self-Promotion</h2>
           <p className="text-[#374151] mt-4">
@@ -228,7 +226,6 @@ const CommunityGuidelines = () => {
             </ul>
           </p>
         </section>
-
         <section id="intellectual-property-details" className="mb-8">
           <h2 className="text-2xl text-DGXblack mt-8 text-center font-bold"> Optimizing DGX Machine Performance</h2>
           <p className="text-[#374151] mt-4">
@@ -255,7 +252,6 @@ const CommunityGuidelines = () => {
             </ul>
           </p>
         </section>
-
         <section id="content-guidelines-details" className="mb-8">
           <h2 className="text-2xl text-DGXblack mt-8 text-center font-bold">Content and Media Sharing</h2>
           <p className="text-[#374151] mt-4">
@@ -277,12 +273,10 @@ const CommunityGuidelines = () => {
               </li>
               <li className="mb-2">
                 <a className="font-bold text-DGXblack">Content Moderation: </a>Understand the platform’s moderation policies on media sharing, ensuring that shared content follows community guidelines.
-
               </li>
             </ul>
           </p>
         </section>
-
         <section id="conflict-resolution-details" className="mb-8">
           <h2 className="text-2xl text-DGXblack mt-8 text-center font-bold">Platform Improvements and Feature Requests</h2>
           <p className="text-[#374151] mt-4">
@@ -301,7 +295,6 @@ const CommunityGuidelines = () => {
               </li>
               <li className="mb-2">
                 <a className="font-bold text-DGXblack">Testing Features: </a> Participate in beta tests of new features, providing feedback to help refine and improve the platform’s usability.
-
               </li>
               <li className="mb-2">
                 <a className="font-bold text-DGXblack">User Engagement:</a> Contribute to discussions about platform development, offering insights from your experience to guide future updates.
@@ -310,11 +303,9 @@ const CommunityGuidelines = () => {
           </p>
         </section>
       </div>
-
     </div>
   );
 };
-
 
 export default CommunityGuidelines;
 

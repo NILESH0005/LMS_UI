@@ -396,3 +396,73 @@ export const deleteQuestion = async (req, res) => {
     res.status(500).json({ success: false, data: {}, message: 'Something went wrong please try again' });
   }
 };
+
+export const getQuestionsByGroup = async (req, res) => {
+  let success = false;
+  const groupId = req.query.groupId || req.body.groupId;
+
+  if (!groupId) {
+    return res.status(400).json({
+      success,
+      message: "Group ID is required"
+    });
+  }
+
+  try {
+    connectToDatabase(async (err, conn) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          message: "Database connection failed"
+        });
+      }
+
+      try {
+        // Get questions
+        const questionsQuery = `SELECT id, question_text, group_id 
+                              FROM Questions
+                              WHERE ISNULL(delStatus, 0) = 0
+                              AND group_id = ?
+                              ORDER BY AddOnDt DESC`;
+        
+        // Get quizzes - modified to handle both string and integer categories
+        const quizzesQuery = `SELECT QuizID as quiz_id, QuizName as quiz_name, QuizLevel as quiz_level
+                             FROM QuizDetails 
+                             WHERE ISNULL(delStatus, 0) = 0
+                             AND (QuizCategory = ? OR QuizCategory = CAST(? AS NVARCHAR(50)))`;
+
+        const [questions, quizzes] = await Promise.all([
+          queryAsync(conn, questionsQuery, [groupId]),
+          queryAsync(conn, quizzesQuery, [groupId, groupId.toString()])
+        ]);
+
+        return res.status(200).json({
+          success: true,
+          data: {
+            questions: questions.map(q => ({
+              question_id: q.id,
+              question_text: q.question_text,
+              group_id: q.group_id
+            })),
+            quizzes
+          },
+          message: "Data fetched successfully"
+        });
+      } catch (error) {
+        console.error("Database error:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Database query failed"
+        });
+      } finally {
+        closeConnection(conn);
+      }
+    });
+  } catch (error) {
+    console.error("Server error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
