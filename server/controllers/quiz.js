@@ -418,45 +418,52 @@ export const getQuestionsByGroup = async (req, res) => {
       }
 
       try {
-        // Get all questions
-        const questionsQuery = `SELECT id, question_text, group_id 
-                              FROM Questions
-                              WHERE ISNULL(delStatus, 0) = 0
-                              AND group_id = ?
-                              ORDER BY AddOnDt DESC`;
-
         // Get quizzes
         const quizzesQuery = `SELECT QuizID as quiz_id, QuizName as quiz_name, QuizLevel as quiz_level
                              FROM QuizDetails 
                              WHERE ISNULL(delStatus, 0) = 0
                              AND (QuizCategory = ? OR QuizCategory = CAST(? AS NVARCHAR(50)))`;
 
-        // Get already mapped questions for this group
-        // Get already mapped questions for this group - updated to avoid duplicates
-        const mappedQuestionsQuery = `select question_text from Questions where group_id = ?
-and id not in (select QuestionsID from QuizMapping where quizGroupID = ?)
-`;
+        // Get not mapped questions
+        const notMappedQuery = `SELECT id as question_id, question_text, group_id 
+                               FROM Questions 
+                               WHERE ISNULL(delStatus, 0) = 0
+                               AND group_id = ?
+                               AND id NOT IN (SELECT QuestionsID FROM QuizMapping WHERE quizGroupID = ?)`;
 
-        const [questions, quizzes, mappedQuestions] = await Promise.all([
-          queryAsync(conn, questionsQuery, [groupId]),
+        // Get mapped questions with marks and quiz info
+        // In your API endpoint:
+        const mappedQuery = `SELECT 
+  q.id as question_id,
+  q.question_text,
+  qm.totalMarks,
+  qm.negativeMarks,
+  qm.QuestionName as quiz_name,
+  qm.quizGroupID as quiz_id
+FROM Questions q
+INNER JOIN QuizMapping qm ON q.id = qm.QuestionsID
+LEFT JOIN QuizDetails qd ON qm.quizGroupID = qd.QuizID
+WHERE q.group_id = ?`;
+
+        const [quizzes, unmappedQuestions, mappedQuestions] = await Promise.all([
           queryAsync(conn, quizzesQuery, [groupId, groupId.toString()]),
-          queryAsync(conn, mappedQuestionsQuery, [groupId])
+          queryAsync(conn, notMappedQuery, [groupId, groupId]),
+          queryAsync(conn, mappedQuery, [groupId, groupId])
         ]);
-
-        // Filter out questions that are already mapped
-        const unmappedQuestions = questions.filter(q =>
-          !mappedQuestions.some(mq => mq.question_id === q.id)
-        );
 
         return res.status(200).json({
           success: true,
           data: {
-            questions: unmappedQuestions.map(q => ({
+            questions: unmappedQuestions,
+            mappedQuestions: mappedQuestions.map(q => ({
               question_id: q.id,
-              question_text: q.question_text,
-              group_id: q.group_id
+              question_text: q.question_text || q.QuestionName, // Fallback to QuestionName if needed
+              group_id: q.group_id,
+              marks: q.totalMarks,
+              negative_marks: q.negativeMarks,
+              quiz_name: q.quiz_name,
+              quiz_id: q.quiz_id
             })),
-            mappedQuestions,
             quizzes
           },
           message: "Data fetched successfully"

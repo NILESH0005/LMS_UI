@@ -68,13 +68,16 @@ const QuizMapping = () => {
         setQuestions(fetchedQuestions);
         if (response.data.mappedQuestions) {
           setMappedQuestions(response.data.mappedQuestions.map(q => ({
-            question_id: q.question_id,
+            question_id: q.id || q.question_id, // Handle both field names
             question_text: q.question_text,
-            marks: q.marks,
-            negative_marks: q.negative_marks,
-            quiz_name: q.quiz_name
+            marks: q.marks || 0, // Default to 0 if not provided
+            negative_marks: q.negative_marks || 0, // Default to 0 if not provided
+            quiz_name: q.quiz_name || 'Unassigned',
+            quiz_id: q.quiz_id
           })));
         }
+        console.log("Mapped questions from API:", response.data.mappedQuestions);
+
         const initialMarks = {};
         fetchedQuestions.forEach(q => {
           initialMarks[q.question_id] = {
@@ -187,8 +190,8 @@ const QuizMapping = () => {
   };
 
   const filteredMappedQuestions = selectedQuiz
-  ? mappedQuestions.filter(q => q.quiz_id === parseInt(selectedQuiz))
-  : mappedQuestions;
+    ? mappedQuestions.filter(q => q.quiz_id === parseInt(selectedQuiz))
+    : mappedQuestions;
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -314,7 +317,7 @@ const QuizMapping = () => {
                     </thead>
                     <tbody>
                       {filteredMappedQuestions.map(q => (
-                        <tr key={`mapped-${q.question_id}-${q.quiz_name.replace(/\s+/g, '-')}`} className="border-t">
+                        <tr key={`mapped-${q.question_id}-${q.quiz_id}`} className="border-t">
                           <td className="p-2">{q.question_text}</td>
                           {!selectedQuiz && <td className="p-2">{q.quiz_name}</td>}
                           <td className="p-2">{q.marks}</td>
