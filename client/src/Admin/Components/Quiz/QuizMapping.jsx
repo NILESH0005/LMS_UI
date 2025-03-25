@@ -5,21 +5,22 @@ import ApiContext from "../../../context/ApiContext.jsx";
 const QuizMapping = () => {
   const { userToken, fetchData, currentUser } = useContext(ApiContext);
   const [quizGroups, setQuizGroups] = useState([]);
-  const [quizLevels, setQuizLevels] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
   const [questions, setQuestions] = useState([]);
-  const [existingMappings, setExistingMappings] = useState([]);
+  const [mappedQuestions, setMappedQuestions] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState("");
   const [selectedQuiz, setSelectedQuiz] = useState("");
   const [selectedQuestions, setSelectedQuestions] = useState([]);
+  const [questionMarks, setQuestionMarks] = useState({});
   const [loading, setLoading] = useState({
     groups: false,
-    levels: false,
     quizzes: false,
     questions: false,
     mappings: false
   });
+
+
+
   const fetchQuizGroups = async () => {
     setLoading(prev => ({ ...prev, groups: true }));
     try {
@@ -37,7 +38,9 @@ const QuizMapping = () => {
   const fetchQuestions = async (groupId) => {
     if (!groupId) {
       setQuestions([]);
-      setQuizzes([]); // Clear quizzes too
+      setMappedQuestions([]);
+      setQuizzes([]);
+      setQuestionMarks({});
       return;
     }
 
@@ -55,12 +58,32 @@ const QuizMapping = () => {
       );
 
       if (response?.success) {
-        setQuestions(response.data.questions.map(question => ({
+        const fetchedQuestions = response.data.questions.map(question => ({
           question_id: question.question_id,
           question_text: question.question_text,
-          question_level: "N/A", 
+          question_level: "N/A",
           group_id: question.group_id,
-        })));
+        }));
+
+        setQuestions(fetchedQuestions);
+        if (response.data.mappedQuestions) {
+          setMappedQuestions(response.data.mappedQuestions.map(q => ({
+            question_id: q.question_id,
+            question_text: q.question_text,
+            marks: q.marks,
+            negative_marks: q.negative_marks,
+            quiz_name: q.quiz_name
+          })));
+        }
+        const initialMarks = {};
+        fetchedQuestions.forEach(q => {
+          initialMarks[q.question_id] = {
+            marks: 1,
+            negative: 0
+          };
+        });
+        setQuestionMarks(initialMarks);
+
         setQuizzes(response.data.quizzes.map(quiz => ({
           quiz_id: quiz.quiz_id,
           quiz_name: quiz.quiz_name,
@@ -75,6 +98,7 @@ const QuizMapping = () => {
       Swal.fire("Error", error.message, "error");
       setQuestions([]);
       setQuizzes([]);
+      setQuestionMarks({});
     } finally {
       setLoading(prev => ({
         ...prev,
@@ -85,28 +109,19 @@ const QuizMapping = () => {
   };
   useEffect(() => {
     if (selectedGroup) {
-      setSelectedLevel("");
       setSelectedQuiz("");
       setSelectedQuestions([]);
       fetchQuestions(selectedGroup);
     } else {
       setQuestions([]);
+      setQuizzes([]);
+      setQuestionMarks({});
     }
   }, [selectedGroup]);
 
   useEffect(() => {
     fetchQuizGroups();
   }, []);
-
-
-
-
-  useEffect(() => {
-    if (selectedQuiz) {
-    } else {
-      setExistingMappings([]);
-    }
-  }, [selectedQuiz]);
 
   const handleSubmitMapping = async () => {
     if (!selectedQuiz || selectedQuestions.length === 0) {
@@ -116,22 +131,35 @@ const QuizMapping = () => {
 
     try {
       setLoading(prev => ({ ...prev, mappings: true }));
-      const data = await fetchData(
-        "quiz-question-mappings",
+      const mappingData = selectedQuestions.map(questionId => ({
+        question_id: questionId,
+        marks: questionMarks[questionId]?.marks || 1,
+        negative_marks: questionMarks[questionId]?.negative || 0
+      }));
+      const response = await fetchData(
+        "quiz/createQuizQuestionMapping",
         "POST",
         {
-          quiz_id: selectedQuiz,
-          question_ids: selectedQuestions,
-          created_by: currentUser.email
+          quiz_id: parseInt(selectedQuiz),
+          questions: mappingData,
+          created_by: currentUser || "admin"
+        },
+        {
+          "Content-Type": "application/json",
+          "auth-token": userToken,
+          "user-id": currentUser || ""
         }
       );
 
-      if (data.success) {
-        Swal.fire("Success", "Question mappings saved successfully", "success");
-        fetchExistingMappings(selectedQuiz);
+      if (response?.success) {
+        Swal.fire("Success", response.message || "Question mappings created successfully", "success");
+        setSelectedQuestions([]);
+      } else {
+        throw new Error(response?.message || "Failed to create mappings");
       }
     } catch (error) {
-      Swal.fire("Error", "Failed to save mappings", "error");
+      console.error("Error creating mappings:", error);
+      Swal.fire("Error", error.message || "Failed to create question mappings", "error");
     } finally {
       setLoading(prev => ({ ...prev, mappings: false }));
     }
@@ -145,6 +173,23 @@ const QuizMapping = () => {
     );
   };
 
+  const handleMarksChange = (questionId, field, value) => {
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return;
+
+    setQuestionMarks(prev => ({
+      ...prev,
+      [questionId]: {
+        ...prev[questionId],
+        [field]: field === 'negative' ? numValue : Math.max(0, numValue)
+      }
+    }));
+  };
+
+  const filteredMappedQuestions = selectedQuiz
+  ? mappedQuestions.filter(q => q.quiz_id === parseInt(selectedQuiz))
+  : mappedQuestions;
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto">
@@ -156,8 +201,7 @@ const QuizMapping = () => {
             className="w-full p-2 border rounded-md"
             onChange={(e) => setSelectedGroup(e.target.value)}
             value={selectedGroup}
-            disabled={loading.groups}
-          >
+            disabled={loading.groups}>
             <option value="">-- Select Group --</option>
             {quizGroups.map(group => (
               <option key={group.group_id} value={group.group_id}>
@@ -166,6 +210,7 @@ const QuizMapping = () => {
             ))}
           </select>
         </div>
+
         {selectedGroup && (
           <div className="mb-4">
             <label className="block font-semibold text-gray-700 mb-2">Quiz:</label>
@@ -184,32 +229,106 @@ const QuizMapping = () => {
             </select>
           </div>
         )}
+
         {selectedGroup && (
-          <div className="mb-6">
-            <label className="block font-semibold text-gray-700 mb-2">Available Questions:</label>
-            <div className="max-h-60 overflow-y-auto border rounded-md p-3 bg-gray-50">
-              {questions.length > 0 ? (
-                questions.map(q => (
-                  <div key={q.question_id} className="flex items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id={`q-${q.question_id}`}
-                      checked={selectedQuestions.includes(q.question_id)}
-                      onChange={() => handleQuestionSelect(q.question_id)}
-                      className="mr-2"
-                      disabled={loading.questions}
-                    />
-                    <label htmlFor={`q-${q.question_id}`} className="text-sm">
-                      {q.question_text}
-                    </label>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500">No questions available for this group</p>
-              )}
+          <>
+            <div className="mb-6">
+              <label className="block font-semibold text-gray-700 mb-2">Available Questions:</label>
+              <div className="max-h-60 overflow-y-auto border rounded-md p-3 bg-gray-50">
+                {loading.questions ? (
+                  <div className="text-center py-4">Loading questions...</div>
+                ) : questions.length > 0 ? (
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gray-200">
+                        <th className="p-2 text-left">Select</th>
+                        <th className="p-2 text-left">Question</th>
+                        <th className="p-2 text-left">Marks</th>
+                        <th className="p-2 text-left">Negative Marks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {questions.map(q => (
+                        <tr key={q.question_id} className="border-t">
+                          <td className="p-2">
+                            <input
+                              type="checkbox"
+                              id={`q-${q.question_id}`}
+                              checked={selectedQuestions.includes(q.question_id)}
+                              onChange={() => handleQuestionSelect(q.question_id)}
+                              className="mr-2"
+                              disabled={loading.questions}
+                            />
+                          </td>
+                          <td className="p-2">
+                            <label htmlFor={`q-${q.question_id}`} className="text-sm">
+                              {q.question_text}
+                            </label>
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.5"
+                              value={questionMarks[q.question_id]?.marks || 1}
+                              onChange={(e) => handleMarksChange(q.question_id, 'marks', e.target.value)}
+                              className="w-16 p-1 border rounded"
+                              disabled={!selectedQuestions.includes(q.question_id)}
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={questionMarks[q.question_id]?.negative || 0}
+                              onChange={(e) => handleMarksChange(q.question_id, 'negative', e.target.value)}
+                              className="w-16 p-1 border rounded"
+                              disabled={!selectedQuestions.includes(q.question_id)}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-gray-500">No questions available for this group</p>
+                )}
+              </div>
             </div>
-          </div>
+            {filteredMappedQuestions.length > 0 && (
+              <div className="mb-6">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  {selectedQuiz
+                    ? `Questions Mapped to ${quizzes.find(q => q.quiz_id === parseInt(selectedQuiz))?.quiz_name || 'Selected Quiz'}`
+                    : `All Mapped Questions in Group`}
+                </label>
+                <div className="max-h-60 overflow-y-auto border rounded-md p-3 bg-gray-50">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gray-200">
+                        <th className="p-2 text-left">Question</th>
+                        {!selectedQuiz && <th className="p-2 text-left">Mapped To Quiz</th>}
+                        <th className="p-2 text-left">Marks</th>
+                        <th className="p-2 text-left">Negative Marks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredMappedQuestions.map(q => (
+                        <tr key={`mapped-${q.question_id}-${q.quiz_name.replace(/\s+/g, '-')}`} className="border-t">
+                          <td className="p-2">{q.question_text}</td>
+                          {!selectedQuiz && <td className="p-2">{q.quiz_name}</td>}
+                          <td className="p-2">{q.marks}</td>
+                          <td className="p-2">{q.negative_marks}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
         )}
+
         <button
           onClick={handleSubmitMapping}
           disabled={!selectedQuiz || selectedQuestions.length === 0 || loading.mappings}
@@ -217,32 +336,6 @@ const QuizMapping = () => {
         >
           {loading.mappings ? "Saving..." : "Save Question Mappings"}
         </button>
-        {existingMappings.length > 0 && (
-          <div className="mt-6">
-            <h3 className="font-semibold text-gray-700 mb-2">Currently Mapped Questions:</h3>
-            <div className="border rounded-md p-3 bg-gray-50 max-h-60 overflow-y-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="p-2 text-left">Question</th>
-                    <th className="p-2 text-left">Level</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {existingMappings.map(mapping => {
-                    const question = questions.find(q => q.question_id === mapping.question_id);
-                    return question ? (
-                      <tr key={mapping.id} className="border-t">
-                        <td className="p-2">{question.question_text}</td>
-                        <td className="p-2">{question.question_level}</td>
-                      </tr>
-                    ) : null;
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
