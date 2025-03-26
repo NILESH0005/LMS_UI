@@ -3,8 +3,19 @@ import React from 'react';
 // Define the cn function locally
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
-const QuizPalette = ({ questionStatus, currentQuestion, setCurrentQuestion, timer }) => {
-  const getStatusClass = (status) => {
+const QuizPalette = ({
+  questionStatus,
+  currentQuestion,
+  setCurrentQuestion,
+  timer,
+  totalQuestions,
+  onSubmitQuiz
+}) => {
+  const getStatusClass = (status, questionNumber) => {
+    if (questionNumber === currentQuestion + 1) {
+      return 'bg-red-500 text-white ring-2 ring-offset-2 ring-red-500';
+    }
+
     switch (status) {
       case 'answered':
         return 'bg-green-500 text-white';
@@ -12,8 +23,6 @@ const QuizPalette = ({ questionStatus, currentQuestion, setCurrentQuestion, time
         return 'bg-red-500 text-white';
       case 'marked':
         return 'bg-purple-500 text-white';
-      case 'current':
-        return 'bg-red-500 text-white ring-2 ring-offset-2 ring-red-500';
       default:
         return 'bg-gray-200 text-gray-700';
     }
@@ -43,13 +52,13 @@ const QuizPalette = ({ questionStatus, currentQuestion, setCurrentQuestion, time
       {/* Question Palette */}
       <div className="mb-6">
         <h3 className="text-gray-700 mb-2">Question Palette:</h3>
-        <div className="grid grid-cols-6 gap-2">
-          {Array.from({ length: 42 }, (_, i) => i + 1).map((num) => (
+        <div className="grid grid-cols-5 gap-2">
+          {Array.from({ length: totalQuestions }, (_, i) => i + 1).map((num) => (
             <button
               key={num}
               className={cn(
                 'w-8 h-8 flex items-center justify-center rounded text-sm',
-                getStatusClass(questionStatus[num] || 'not-visited')
+                getStatusClass(questionStatus[num] || 'not-visited', num)
               )}
               onClick={() => setCurrentQuestion(num - 1)}
             >
@@ -83,7 +92,7 @@ const QuizPalette = ({ questionStatus, currentQuestion, setCurrentQuestion, time
           </div>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-700 text-xs">
-              48
+              0
             </div>
             <span className="text-sm">Not Visited</span>
           </div>
@@ -95,29 +104,23 @@ const QuizPalette = ({ questionStatus, currentQuestion, setCurrentQuestion, time
           </div>
         </div>
       </div>
-
-      {/* Filter */}
-      {/* <div className="mb-6">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-sm">Filter:</span>
-          <select className="border border-gray-300 rounded px-2 py-1 text-sm w-full">
-            <option>All</option>
-            <option>Answered</option>
-            <option>Not Answered</option>
-            <option>Marked</option>
-          </select>
-        </div>
-      </div> */}
-
       {/* Action buttons */}
       <div className="grid grid-cols-2 gap-2">
-        <button className="bg-blue-200 text-blue-800 py-2 rounded">Question Paper</button>
-        <button className="bg-blue-200 text-blue-800 py-2 rounded">Instructions</button>
-        <button className="bg-blue-200 text-blue-800 py-2 rounded">Profile</button>
-        <button className="bg-blue-200 text-blue-800 py-2 rounded">Submit</button>
+        <button
+          className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          onClick={() => {
+            // Add confirmation dialog
+            const confirmSubmit = window.confirm("Are you sure you want to submit the quiz?");
+            if (confirmSubmit) {
+              onSubmitQuiz();
+            }
+          }}
+        >
+          Submit Quiz
+        </button>
       </div>
     </div>
   );
 };
-    
+
 export default QuizPalette;
