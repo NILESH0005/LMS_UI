@@ -13,7 +13,7 @@ router.post('/deleteQuestion', fetchUser, deleteQuestion)
 router.post('/getQuestionsByGroup', fetchUser, getQuestionsByGroup)
 router.post('/createQuizQuestionMapping', fetchUser, createQuizQuestionMapping)
 router.get('/getUserQuizCategory', fetchUser, getUserQuizCategory)
-router.get('/getQuizQuestions', fetchUser, getQuizQuestions)
+router.post('/getQuizQuestions', fetchUser, getQuizQuestions)
 
 
 

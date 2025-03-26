@@ -21,53 +21,58 @@ const QuizList = () => {
     const fetchQuizzes = async () => {
         setLoading(true);
         setError(null);
-
+    
         try {
             if (!userToken) {
                 throw new Error("Authentication token is missing");
             }
-
+    
             const endpoint = "quiz/getUserQuizCategory";
             const method = "GET";
             const headers = {
                 "Content-Type": "application/json",
                 "auth-token": userToken,
             };
-
+            
+    
             const data = await fetchData(endpoint, method, {}, headers);
-            console.log("data:",data)
-
+            console.log("data:", data)
+    
             if (!data) {
                 throw new Error("No data received from server");
             }
-
+    
             if (data.success) {
                 const groupedQuizzes = data.data.quizzes.reduce((acc, quiz) => {
                     const existingGroup = acc.find(group => group.group_name === quiz.group_name);
-
+    
                     if (existingGroup) {
                         existingGroup.quizzes.push({
                             id: quiz.QuizName,
                             title: quiz.QuizName,
                             questions: quiz.Total_Question_No,
-                            points: quiz.MaxScore
-                            
+                            points: quiz.MaxScore,
+                            QuizID: quiz.QuizID,  // Add QuizID here
+                            group_id: quiz.group_id  // Add group_id here
                         });
                     } else {
                         acc.push({
                             id: quiz.group_name,
                             group_name: quiz.group_name,
+                            group_id: quiz.group_id,  // Add group_id to the group object
                             quizzes: [{
                                 id: quiz.QuizName,
                                 title: quiz.QuizName,
                                 questions: quiz.Total_Question_No,
-                                points: quiz.MaxScore
+                                points: quiz.MaxScore,
+                                QuizID: quiz.QuizID,  // Add QuizID here
+                                group_id: quiz.group_id  // Add group_id here
                             }]
                         });
                     }
                     return acc;
                 }, []);
-
+    
                 setQuizzes(groupedQuizzes);
             } else {
                 throw new Error(data.message || "Failed to fetch quizzes");
@@ -79,13 +84,26 @@ const QuizList = () => {
             setLoading(false);
         }
     };
-
     useEffect(() => {
         fetchQuizzes();
     }, []);
 
-    const handleQuizClick = (quiz) => {
-        navigate(`/Quiz`, { state: { quiz } });
+    const handleQuizClick = (quiz, group) => {
+        console.log("Passing quiz data:", {
+            ...quiz,
+            group_id: group.group_id,  // Use the group_id from the group object
+            QuizID: quiz.QuizID  // Use the QuizID from the quiz object
+        });
+    
+        navigate(`/Quiz`, {
+            state: {
+                quiz: {
+                    ...quiz,
+                    group_id: group.group_id,  // Use the group_id from the group object
+                    QuizID: quiz.QuizID  // Use the QuizID from the quiz object
+                }
+            }
+        });
     };
 
     const scrollToQuizzes = () => {
@@ -161,7 +179,7 @@ const QuizList = () => {
                                             <p className="text-gray-600 mb-4">Points: {quiz.points}</p>
                                             <button
                                                 className="w-full bg-DGXblue text-white py-2 px-4 rounded-lg transition duration-200 hover:bg-blue-600"
-                                                onClick={() => handleQuizClick(quiz)}
+                                                onClick={() => handleQuizClick(quiz, subject)}
                                             >
                                                 Start Quiz
                                             </button>

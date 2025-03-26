@@ -786,84 +786,107 @@ export const getQuizQuestions = async (req, res) => {
   let success = false;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const warningMessage = "Data is not in the right format";
-    console.error(warningMessage, errors.array());
-    logWarning(warningMessage);
-    res.status(400).json({ success, data: errors.array(), message: warningMessage });
-    return;
+    return res.status(400).json({
+      success,
+      data: errors.array(),
+      message: "Data is not in the right format"
+    });
   }
 
   try {
-    // Convert quizGroupID to number explicitly
-    const quizGroupID = parseInt(req.body.quizGroupID);
-    const QuizName = req.body.QuizName;
+    const { quizGroupID, QuizID } = req.body; // Changed from QuizName to QuizID
 
-    if (isNaN(quizGroupID)) {
-      throw new Error("quizGroupID must be a valid number");
+    if (!quizGroupID || !QuizID) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        message: "Both quizGroupID and QuizID are required"
+      });
+    }
+
+    const groupId = parseInt(quizGroupID);
+    const quizId = parseInt(QuizID); // Parse QuizID as integer
+    if (isNaN(groupId) ){
+      return res.status(400).json({
+        success: false,
+        data: null,
+        message: "quizGroupID must be a valid number"
+      });
+    }
+    if (isNaN(quizId)) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        message: "QuizID must be a valid number"
+      });
     }
 
     connectToDatabase(async (err, conn) => {
       if (err) {
-        const errorMessage = "Failed to connect to database";
-        logError(err);
-        res.status(500).json({ success: false, data: err, message: errorMessage });
-        return;
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message: "Database connection failed"
+        });
       }
 
       try {
         const query = `
           SELECT 
-            question_id,
-            Questions.question_text,
-            negativeMarks,
-            totalMarks,
-            QuizDuration, 
-            option_text,
-            is_correct
-          FROM Questions
-          LEFT JOIN QuizMapping ON Questions.id = QuizMapping.QuestionsID
-          LEFT JOIN QuizDetails ON QuizMapping.quizGroupID = QuizDetails.QuizCategory
-          LEFT JOIN QuestionOptions ON Questions.id = QuestionOptions.question_id
-          WHERE QuizMapping.quizGroupID = ? AND QuizDetails.QuizName = ?
-          GROUP BY 
-            QuestionOptions.question_id,
-            question_text, 
-            QuizMapping.negativeMarks,
-            QuizDetails.QuizDuration,
+            quizGroupID,
+            QuizMapping.quizId,
+            QuestionsID,
+            question_text,
+            Questions.image,
+            QuestionOptions.id,
+            QuestionOptions.is_correct,
             QuestionOptions.option_text,
-            QuestionOptions.is_correct, 
-            totalMarks
+            QuestionOptions.image,
+            QuizDetails.QuizName,
+            totalMarks,
+            negativeMarks,
+            QuizDuration
+          FROM QuizMapping
+          LEFT JOIN Questions ON QuizMapping.QuestionsID = Questions.id
+          LEFT JOIN QuestionOptions ON QuizMapping.QuestionsID = QuestionOptions.question_id
+          LEFT JOIN QuizDetails ON QuizMapping.quizId = QuizDetails.QuizID
+          WHERE quizGroupID = ? AND QuizMapping.quizId = ?
         `;
 
-        const questions = await queryAsync(conn, query, [quizGroupID, QuizName]);
+        const questions = await queryAsync(conn, query, [groupId, quizId]);
+
+        if (!questions || questions.length === 0) {
+          closeConnection();
+          return res.status(404).json({
+            success: false,
+            data: null,
+            message: "No questions found for this quiz"
+          });
+        }
 
         success = true;
         closeConnection();
-        const infoMessage = "Quiz questions fetched successfully";
-        logInfo(infoMessage);
-        res.status(200).json({ success, data: { questions }, message: infoMessage });
+        return res.status(200).json({
+          success,
+          data: { questions },
+          message: "Quiz questions fetched successfully"
+        });
       } catch (queryErr) {
-        logError(queryErr);
         closeConnection();
-        res.status(500).json({ 
-          success: false, 
-          data: { 
-            error: queryErr.message,
-            stack: queryErr.stack 
-          }, 
-          message: 'Something went wrong please try again' 
+        console.error("Query error:", queryErr);
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message: "Failed to execute query"
         });
       }
     });
   } catch (error) {
-    logError(error);
-    res.status(500).json({ 
-      success: false, 
-      data: { 
-        error: error.message,
-        stack: error.stack 
-      }, 
-      message: 'Something went wrong please try again' 
+    console.error("Unexpected error:", error);
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: "Internal server error"
     });
   }
 };
