@@ -49,7 +49,7 @@ const Navbar = () => {
         { label: 'Quiz', to: '/QuizInterface', icon: faBook }, 
         { label: 'Contact Us', to: '/ContactUs', icon: faEnvelope },
         { label: 'Community Guidelines', to: '/CommunityGuidelines', icon: faBook },
-       
+        { label: 'OUR LEARN HUB', to: '/Lms', icon: faBook }
     ];
 
 

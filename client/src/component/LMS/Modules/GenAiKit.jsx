@@ -1,0 +1,445 @@
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import FeedbackForm from "../FeedBackForm";
+
+const GenAiKit = () => {
+    const { category, subcategory } = useParams();
+    const navigate = useNavigate();
+    const [selectedFileId, setSelectedFileId] = useState(null);
+    const [expandedSubcategory, setExpandedSubcategory] = useState(null);
+    const [selectedFileType, setSelectedFileType] = useState("ppt");
+    const [feedback, setFeedback] = useState([]);
+
+    // Data for Generative AI Kit
+    const subcategories = [
+        {
+            id: 1,
+            title: "Module 1 - Introduction to the Industrial Metaverse Teaching Kit",
+            path: "intro-industrial-metaverse",
+            nested: [
+                { 
+                    id: 11, 
+                    title: "Demos", 
+                    path: "demos", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_DEMOS", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 12, 
+                    title: "DLI Online Courses", 
+                    path: "dli-courses", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_DLI", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 13, 
+                    title: "Knowledge Checks", 
+                    path: "knowledge-checks", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_KNOWLEDGE", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 14, 
+                    title: "Labs", 
+                    path: "labs", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_LABS", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 15, 
+                    title: "Lecture Slides", 
+                    path: "lecture-slides", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_LECTURES", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 16, 
+                    title: "Lecture Slides", 
+                    path: "lecture-slides", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_LECTURES_2", 
+                    type: "ppt" 
+                }
+            ],
+        },
+        {
+            id: 3,
+            title: "Module 3 - Large Language Models and the Transformer",
+            path: "llm-transformer",
+            nested: [
+                { 
+                    id: 31, 
+                    title: "DLI Online Courses", 
+                    path: "dli-courses", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD3_DLI", 
+                    type: "pdf" 
+                }
+            ],
+        },
+        {
+            id: 4,
+            title: "Module 4 - LLM Scaling Laws and LLM Families",
+            path: "llm-scaling-families",
+            nested: [
+                { 
+                    id: 41, 
+                    title: "DLI Online Courses", 
+                    path: "dli-courses", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD4_DLI", 
+                    type: "pdf" 
+                }
+            ],
+        },
+        {
+            id: 6,
+            title: "Module 6 - Diffusion Models in Generative AI",
+            path: "diffusion-models",
+            nested: [
+                { 
+                    id: 61, 
+                    title: "Demos", 
+                    path: "demos", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_DEMOS/1", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 62, 
+                    title: "Demos", 
+                    path: "demos", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_DEMOS/2", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 63, 
+                    title: "Demos", 
+                    path: "demos", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_DEMOS/3", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 64, 
+                    title: "DLI Online Courses", 
+                    path: "dli-courses", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_DLI", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 65, 
+                    title: "Knowledge Checks 1", 
+                    path: "knowledge-checks", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_KNOWLEDGE", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 66, 
+                    title: "Knowledge Checks 2", 
+                    path: "knowledge-checks", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_KNOWLEDGE/1", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 67, 
+                    title: "Knowledge Checks 3", 
+                    path: "knowledge-checks", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_KNOWLEDGE/2", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 68, 
+                    title: "Labs", 
+                    path: "labs", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_LABS", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 69, 
+                    title: "Lecture Slides", 
+                    path: "lecture-slides", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_LECTURES", 
+                    type: "ppt" 
+                }
+            ],
+        },
+        {
+            id: 7,
+            title: "Module 7 - Model Training (Pre-Training, Instruction Following, and PEFT)",
+            path: "model-training",
+            nested: [
+                { 
+                    id: 71, 
+                    title: "DLI Online Courses", 
+                    path: "dli-courses", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD7_DLI", 
+                    type: "pdf" 
+                }
+            ],
+        },
+        {
+            id: 8,
+            title: "Module 8 - LLM Orchestration",
+            path: "llm-orchestration",
+            nested: [
+                { 
+                    id: 81, 
+                    title: "Demos", 
+                    path: "demos", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_DEMOS1", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 82, 
+                    title: "Demos", 
+                    path: "demos", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_DEMOS2", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 83, 
+                    title: "Demos", 
+                    path: "demos", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_DEMOS3", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 84, 
+                    title: "DLI Online Courses", 
+                    path: "dli-courses", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_DLI1", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 85, 
+                    title: "DLI Online Courses", 
+                    path: "dli-courses", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_DLI2", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 86, 
+                    title: "DLI Online Courses", 
+                    path: "dli-courses", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_DLI3", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 87, 
+                    title: "Knowledge Checks", 
+                    path: "knowledge-checks", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_KNOWLEDGE", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 88, 
+                    title: "Knowledge Checks", 
+                    path: "knowledge-checks", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_KNOWLEDGE1", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 89, 
+                    title: "Knowledge Checks", 
+                    path: "knowledge-checks", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_KNOWLEDGE2", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 90, 
+                    title: "Labs", 
+                    path: "labs", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_LABS", 
+                    type: "pdf" 
+                },
+                { 
+                    id: 91, 
+                    title: "Lecture Slides", 
+                    path: "lecture-slides", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_LECTURES", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 92, 
+                    title: "Lecture Slides", 
+                    path: "lecture-slides", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_LECTURES1", 
+                    type: "ppt" 
+                },
+                { 
+                    id: 93, 
+                    title: "Lecture Slides", 
+                    path: "lecture-slides", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD8_LECTURES2", 
+                    type: "ppt" 
+                },
+            ],
+        },
+        {
+            id: 9,
+            title: "Module 9 - Scaling Model Training to Distributed Workloads",
+            path: "scaling-training",
+            nested: [
+                { 
+                    id: 92, 
+                    title: "DLI Online Courses", 
+                    path: "dli-courses", 
+                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD9_DLI", 
+                    type: "pdf" 
+                }
+            ],
+        }
+    ];
+
+    const handleFeedbackSubmit = (fileId, rating, comment) => {
+        const newFeedback = {
+            fileId,
+            rating,
+            comment,
+            timestamp: new Date().toISOString(),
+        };
+
+        const updatedFeedback = [...feedback, newFeedback];
+        localStorage.setItem("userFeedback", JSON.stringify(updatedFeedback));
+        setFeedback(updatedFeedback);
+        sendFeedbackToServer(newFeedback);
+    };
+
+    const getEmbedURL = (fileId, type = "ppt") => {
+        switch (type) {
+            case "ppt":
+                return `https://docs.google.com/presentation/d/${fileId}/embed`;
+            case "pdf":
+                return `https://drive.google.com/file/d/${fileId}/preview`;
+            case "mp4":
+                return `https://drive.google.com/uc?export=download&id=${fileId}`;
+            default:
+                return "";
+        }
+    };
+
+    useEffect(() => {
+        if (subcategories.length > 0 && !selectedFileId) {
+            const firstSubcategory = subcategories[0];
+            if (firstSubcategory.nested && firstSubcategory.nested.length > 0) {
+                setSelectedFileId(firstSubcategory.nested[0].fileId);
+                setSelectedFileType(firstSubcategory.nested[0].type);
+            }
+        }
+    }, [subcategories]);
+
+    const handleSubcategoryClick = (path, fileId, type = "ppt") => {
+        if (fileId) {
+            setSelectedFileId(fileId);
+            setSelectedFileType(type);
+        }
+    };
+
+    const toggleNestedSubcategories = (id) => {
+        setExpandedSubcategory((prev) => (prev === id ? null : id));
+    };
+
+    useEffect(() => {
+        const disableRightClick = (e) => {
+            e.preventDefault();
+        };
+
+        const disableKeyboardShortcuts = (e) => {
+            if (e.ctrlKey && (e.key === 's' || e.key === 'p')) {
+                e.preventDefault();
+            }
+        };
+
+        document.addEventListener('contextmenu', disableRightClick);
+        document.addEventListener('keydown', disableKeyboardShortcuts);
+
+        return () => {
+            document.removeEventListener('contextmenu', disableRightClick);
+            document.removeEventListener('keydown', disableKeyboardShortcuts);
+        };
+    }, []);
+
+    return (
+        <div className="flex h-screen bg-background text-foreground">
+            {/* Sidebar */}
+            <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700">
+                <h2 className="text-lg font-semibold mb-4">Generative AI Kit</h2>
+                <ul className="space-y-2">
+                    {subcategories.map((sub) => (
+                        <li key={sub.id}>
+                            <div
+                                className={`hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer ${subcategory === sub.path ? "bg-gray-700 text-white" : ""
+                                    }`}
+                                onClick={() => {
+                                    if (sub.nested) {
+                                        toggleNestedSubcategories(sub.id);
+                                    } else {
+                                        handleSubcategoryClick(sub.path, sub.fileId, sub.type);
+                                    }
+                                }}
+                            >
+                                {sub.title}
+                            </div>
+                            {/* Nested subcategories */}
+                            {sub.nested && expandedSubcategory === sub.id && (
+                                <ul className="pl-4 mt-2 space-y-2">
+                                    {sub.nested.map((nestedSub) => (
+                                        <li
+                                            key={nestedSub.id}
+                                            className={`hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer ${subcategory === nestedSub.path ? "bg-gray-700 text-white" : ""
+                                                }`}
+                                            onClick={() => handleSubcategoryClick(nestedSub.path, nestedSub.fileId, nestedSub.type)}
+                                        >
+                                            {nestedSub.title}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 p-4 flex flex-col items-center justify-center">
+                <h1 className="text-4xl font-bold mb-4 text-center">Generative AI Teaching Kit</h1>
+                {selectedFileId && (
+                    <div className="w-full max-w-7xl h-[90vh] border rounded-lg shadow overflow-hidden relative"
+                        onContextMenu={(e) => e.preventDefault()}>
+                        {/* Transparent overlay to block the pop-out button */}
+                        <div
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                right: 0,
+                                width: "50px",
+                                height: "50px",
+                                backgroundColor: "transparent",
+                                zIndex: 10,
+                            }}
+                        />
+                        {selectedFileType === "mp4" ? (
+                            <video
+                                key={selectedFileId}
+                                src={getEmbedURL(selectedFileId, selectedFileType)}
+                                className="w-full h-full"
+                                controls
+                            />
+                        ) : (
+                            <iframe
+                                key={selectedFileId}
+                                src={getEmbedURL(selectedFileId, selectedFileType)}
+                                className="w-full h-full"
+                                allowFullScreen
+                            />
+                        )}
+                    </div>
+                )}
+                {selectedFileId && (
+                    <FeedbackForm
+                        fileId={selectedFileId}
+                        onSubmit={handleFeedbackSubmit}
+                    />
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default GenAiKit;

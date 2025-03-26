@@ -46,8 +46,6 @@ import us8 from '../public/us8.jpg'
 import us9 from '../public/us9.jpg'
 import bg1 from '../public/bg1.jpg'
 import defaultProfile from '../public/defaultProfile.jpeg'
-import blg1 from '../public/blg1.png'
-import blg2 from '../public/blg2.png'
 
 
 
@@ -55,8 +53,6 @@ import blg2 from '../public/blg2.png'
 
 
 export default {
-    blg1,
-    blg2,
     nvidiaPP,
     verifyImg,
     Refresh,

@@ -86,18 +86,24 @@ const QuizTable = () => {
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "N/A";
+    
+    // Create date object from the string
     const date = new Date(dateString);
-    const datePart = date.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-    const timePart = date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-    return `${datePart}, ${timePart}`;
+    
+    // Subtract 5 hours and 30 minutes (for timezone adjustment)
+    const adjustedDate = new Date(date.getTime() - (5 * 60 * 60 * 1000) - (30 * 60 * 1000));
+    
+    // Format the adjusted date
+    const options = {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    };
+    
+    return adjustedDate.toLocaleString('en-US', options);
   };
 
   const handleDelete = async (quizId) => {
@@ -185,7 +191,7 @@ const QuizTable = () => {
   };
 
   if (loading) {
-    return <LoadPage />; // Render the LoadPage component while loading
+    return <LoadPage />;
   }
 
   if (error) {
@@ -193,7 +199,7 @@ const QuizTable = () => {
   }
 
   if (!isDataLoaded) {
-    return <LoadPage />; // Render the LoadPage component while data is being loaded
+    return <LoadPage />;
   }
 
   return (
@@ -206,48 +212,47 @@ const QuizTable = () => {
         />
       </div>
       {quizzes.length > 0 ? (
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-DGXgreen">
-                <th className="border p-2">#</th>
-                <th className="border p-2">Quiz Category</th>
-                <th className="border p-2">Quiz Name</th>
-                <th className="border p-2">Level</th>
-                <th className="border p-2">Duration</th>
-                <th className="border p-2">Negative Marking</th>
-                <th className="border p-2">Start Date & Time</th>
-                <th className="border p-2">End Date & Time</th>
-                <th className="border p-2">Visibility</th>
-                <th className="border p-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quizzes.map((quiz, index) => {
-                console.log("Quiz data:", quiz); // Log individual quiz data
-                return (
-                  <tr key={quiz.QuizID} className="text-center">
-                    <td className="border p-2">{index + 1}</td>
-                    <td className="border p-2"> {getCategoryName(quiz.QuizCategory)}</td>
-                    <td className="border p-2">{quiz.QuizName}</td>
-                    <td className="border p-2">{getLevelName(quiz.QuizLevel)}</td> {/* Use getLevelName here */}
-                    <td className="border p-2">{quiz.QuizDuration} mins</td>
-                    <td className="border p-2">{quiz.NegativeMarking ? "Yes" : "No"}</td>
-                    <td className="border p-2">{formatDateTime(quiz.StartDateAndTime)}</td>
-                    <td className="border p-2">{formatDateTime(quiz.EndDateTime)}</td>
-                    <td className="border p-2">{quiz.QuizVisibility}</td>
-                    <td className="border p-2">
-                      <button
-                        onClick={() => handleDelete(quiz.QuizID)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <table className="w-full border-collapse border border-gray-300">
+          <thead>
+            <tr className="bg-DGXgreen">
+              <th className="border p-2">#</th>
+              <th className="border p-2">Quiz Category</th>
+              <th className="border p-2">Quiz Name</th>
+              <th className="border p-2">Level</th>
+              <th className="border p-2">Duration</th>
+              <th className="border p-2">Negative Marking</th>
+              <th className="border p-2">Start Date & Time</th>
+              <th className="border p-2">End Date & Time</th>
+              <th className="border p-2">Visibility</th>
+              <th className="border p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {quizzes.map((quiz, index) => {
+              return (
+                <tr key={quiz.QuizID} className="text-center">
+                  <td className="border p-2">{index + 1}</td>
+                  <td className="border p-2"> {getCategoryName(quiz.QuizCategory)}</td>
+                  <td className="border p-2">{quiz.QuizName}</td>
+                  <td className="border p-2">{getLevelName(quiz.QuizLevel)}</td>
+                  <td className="border p-2">{quiz.QuizDuration} mins</td>
+                  <td className="border p-2">{quiz.NegativeMarking ? "Yes" : "No"}</td>
+                  <td className="border p-2">{formatDateTime(quiz.StartDateAndTime)}</td>
+                  <td className="border p-2">{formatDateTime(quiz.EndDateTime)}</td>
+                  <td className="border p-2">{quiz.QuizVisibility}</td>
+                  <td className="border p-2">
+                    <button
+                      onClick={() => handleDelete(quiz.QuizID)}
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       ) : (
         <p className="text-center text-gray-500">No quizzes found.</p>
       )}
