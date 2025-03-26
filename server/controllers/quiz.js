@@ -806,7 +806,7 @@ export const getQuizQuestions = async (req, res) => {
 
     const groupId = parseInt(quizGroupID);
     const quizId = parseInt(QuizID); // Parse QuizID as integer
-    if (isNaN(groupId) ){
+    if (isNaN(groupId)) {
       return res.status(400).json({
         success: false,
         data: null,
@@ -831,27 +831,49 @@ export const getQuizQuestions = async (req, res) => {
       }
 
       try {
-        const query = `
-          SELECT 
-            quizGroupID,
-            QuizMapping.quizId,
-            QuestionsID,
-            question_text,
-            Questions.image,
-            QuestionOptions.id,
-            QuestionOptions.is_correct,
-            QuestionOptions.option_text,
-            QuestionOptions.image,
-            QuizDetails.QuizName,
-            totalMarks,
-            negativeMarks,
-            QuizDuration
-          FROM QuizMapping
-          LEFT JOIN Questions ON QuizMapping.QuestionsID = Questions.id
-          LEFT JOIN QuestionOptions ON QuizMapping.QuestionsID = QuestionOptions.question_id
-          LEFT JOIN QuizDetails ON QuizMapping.quizId = QuizDetails.QuizID
-          WHERE quizGroupID = ? AND QuizMapping.quizId = ?
-        `;
+        // const query = `
+        //   SELECT 
+        //     quizGroupID,
+        //     QuizMapping.quizId,
+        //     QuestionsID,
+        //     question_text,
+        //     Questions.image,
+        //     QuestionOptions.id,
+        //     QuestionOptions.is_correct,
+        //     QuestionOptions.option_text,
+        //     QuestionOptions.image,
+        //     QuizDetails.QuizName,
+        //     QuestionOptions.is_correct
+        //     totalMarks,
+        //     negativeMarks,
+        //     QuizDuration
+        //   FROM QuizMapping
+        //   LEFT JOIN Questions ON QuizMapping.QuestionsID = Questions.id
+        //   LEFT JOIN QuestionOptions ON QuizMapping.QuestionsID = QuestionOptions.question_id
+        //   LEFT JOIN QuizDetails ON QuizMapping.quizId = QuizDetails.QuizID
+        //   LEFT JOIN QuestionOptions on QuizMapping.QuestionsID = QuestionOptions.question_id
+        //   WHERE quizGroupID = ? AND QuizMapping.quizId = ?
+        // `;
+
+        const query = `SELECT 
+    qm.quizGroupID,
+    qm.quizId,
+    qm.QuestionsID,
+    q.question_text,
+    q.image AS question_image,
+    qo.id AS option_id,
+    qo.is_correct,
+    qo.option_text,
+    qo.image AS option_image,
+    qd.QuizName,
+    qm.totalMarks,
+    qm.negativeMarks,
+    qd.QuizDuration
+FROM QuizMapping qm
+LEFT JOIN Questions q ON qm.QuestionsID = q.id
+LEFT JOIN QuestionOptions qo ON qm.QuestionsID = qo.question_id
+LEFT JOIN QuizDetails qd ON qm.quizId = qd.QuizID
+WHERE qm.quizGroupID = ? AND qm.quizId = ?;`;
 
         const questions = await queryAsync(conn, query, [groupId, quizId]);
 
@@ -888,5 +910,104 @@ export const getQuizQuestions = async (req, res) => {
       data: null,
       message: "Internal server error"
     });
+  }
+};
+
+export const submitQuiz = async (req, res) => {
+  console.log("Incoming quiz submission:", req.body);
+  let success = false;
+  const userId = req.user.id; // Assuming you have user authentication
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+          success, 
+          errors: errors.array(), 
+          message: "Invalid data format" 
+      });
+  }
+
+  try {
+      const { quizId, answers } = req.body;
+      
+      connectToDatabase(async (err, conn) => {
+          if (err) {
+              console.error("Database connection error:", err);
+              return res.status(500).json({ 
+                  success: false, 
+                  message: "Database connection failed" 
+              });
+          }
+
+          try {
+              // Begin transaction
+              await queryAsync(conn, "BEGIN TRANSACTION");
+              
+              // Get user details
+              const userQuery = `SELECT UserID, Name FROM Community_User 
+                               WHERE ISNULL(delStatus,0) = 0 AND EmailId = ?`;
+              const userRows = await queryAsync(conn, userQuery, [userId]);
+              
+              if (userRows.length === 0) {
+                  await queryAsync(conn, "ROLLBACK");
+                  return res.status(404).json({ 
+                      success: false, 
+                      message: "User not found" 
+                  });
+              }
+
+              const user = userRows[0];
+              const currentDate = new Date().toISOString();
+              
+              // Insert each answer
+              for (const answer of answers) {
+                  if (!answer) continue; // Skip unanswered questions
+                  
+                  const insertQuery = `
+                  INSERT INTO quiz_score (
+                      userID, quizID, questionID, answerID, correctAns, 
+                      marks, AuthAdd, AddOnDt, editOnDt, delStatus
+                  ) VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE(), 0)
+                  `;
+                  
+                  // For each selected option (handles multiple correct answers)
+                  for (const option of answer.options) {
+                      await queryAsync(conn, insertQuery, [
+                          user.UserID,
+                          quizId,
+                          answer.questionId,
+                          option.id,
+                          option.is_correct,
+                          answer.marksAwarded,
+                          user.Name
+                      ]);
+                  }
+              }
+
+              // Commit transaction
+              await queryAsync(conn, "COMMIT");
+              closeConnection();
+              
+              return res.status(200).json({ 
+                  success: true,
+                  message: "Quiz submitted successfully" 
+              });
+
+          } catch (queryErr) {
+              await queryAsync(conn, "ROLLBACK");
+              closeConnection();
+              console.error("Database query error:", queryErr);
+              return res.status(500).json({ 
+                  success: false, 
+                  message: "Failed to submit quiz" 
+              });
+          }
+      });
+  } catch (error) {
+      console.error("Server error:", error);
+      return res.status(500).json({ 
+          success: false, 
+          message: "Internal server error" 
+      });
   }
 };
