@@ -35,6 +35,7 @@ const QuizList = () => {
             };
 
             const data = await fetchData(endpoint, method, {}, headers);
+            console.log("data:",data)
 
             if (!data) {
                 throw new Error("No data received from server");
@@ -50,6 +51,7 @@ const QuizList = () => {
                             title: quiz.QuizName,
                             questions: quiz.Total_Question_No,
                             points: quiz.MaxScore
+                            
                         });
                     } else {
                         acc.push({

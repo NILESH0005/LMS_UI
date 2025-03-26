@@ -756,13 +756,13 @@ export const getUserQuizCategory = async (req, res) => {
       }
 
       try {
-        const query = `select group_name, QuizDetails.QuizName,count(QuestionsID) as Total_Question_No, SUM(totalMarks) as MaxScore
+        const query = `select group_name, QuizDetails.QuizName,count(QuestionsID) as Total_Question_No, SUM(totalMarks) as MaxScore , group_id, QuizDetails.QuizID
         from
         QuizMapping
         left join GroupMaster on QuizMapping.quizGroupID = GroupMaster.group_id
         left join QuizDetails on QuizMapping.quizId = QuizDetails.QuizID
         where isnull(QuizMapping.delStatus,0)=0
-        group by GroupMaster.group_name,QuizDetails.QuizName`;
+        group by GroupMaster.group_name,QuizDetails.QuizName, GroupMaster.group_id, QuizDetails.QuizID`;
         const quizzes = await queryAsync(conn, query);
 
         success = true;
@@ -779,5 +779,91 @@ export const getUserQuizCategory = async (req, res) => {
   } catch (error) {
     logError(error);
     res.status(500).json({ success: false, data: {}, message: 'Something went wrong please try again' });
+  }
+};
+
+export const getQuizQuestions = async (req, res) => {
+  let success = false;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const warningMessage = "Data is not in the right format";
+    console.error(warningMessage, errors.array());
+    logWarning(warningMessage);
+    res.status(400).json({ success, data: errors.array(), message: warningMessage });
+    return;
+  }
+
+  try {
+    // Convert quizGroupID to number explicitly
+    const quizGroupID = parseInt(req.body.quizGroupID);
+    const QuizName = req.body.QuizName;
+
+    if (isNaN(quizGroupID)) {
+      throw new Error("quizGroupID must be a valid number");
+    }
+
+    connectToDatabase(async (err, conn) => {
+      if (err) {
+        const errorMessage = "Failed to connect to database";
+        logError(err);
+        res.status(500).json({ success: false, data: err, message: errorMessage });
+        return;
+      }
+
+      try {
+        const query = `
+          SELECT 
+            question_id,
+            Questions.question_text,
+            negativeMarks,
+            totalMarks,
+            QuizDuration, 
+            option_text,
+            is_correct
+          FROM Questions
+          LEFT JOIN QuizMapping ON Questions.id = QuizMapping.QuestionsID
+          LEFT JOIN QuizDetails ON QuizMapping.quizGroupID = QuizDetails.QuizCategory
+          LEFT JOIN QuestionOptions ON Questions.id = QuestionOptions.question_id
+          WHERE QuizMapping.quizGroupID = ? AND QuizDetails.QuizName = ?
+          GROUP BY 
+            QuestionOptions.question_id,
+            question_text, 
+            QuizMapping.negativeMarks,
+            QuizDetails.QuizDuration,
+            QuestionOptions.option_text,
+            QuestionOptions.is_correct, 
+            totalMarks
+        `;
+
+        const questions = await queryAsync(conn, query, [quizGroupID, QuizName]);
+
+        success = true;
+        closeConnection();
+        const infoMessage = "Quiz questions fetched successfully";
+        logInfo(infoMessage);
+        res.status(200).json({ success, data: { questions }, message: infoMessage });
+      } catch (queryErr) {
+        logError(queryErr);
+        closeConnection();
+        res.status(500).json({ 
+          success: false, 
+          data: { 
+            error: queryErr.message,
+            stack: queryErr.stack 
+          }, 
+          message: 'Something went wrong please try again' 
+        });
+      }
+    });
+  } catch (error) {
+    logError(error);
+    res.status(500).json({ 
+      success: false, 
+      data: { 
+        error: error.message,
+        stack: error.stack 
+      }, 
+      message: 'Something went wrong please try again' 
+    });
   }
 };

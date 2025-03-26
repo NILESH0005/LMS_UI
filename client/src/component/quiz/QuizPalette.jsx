@@ -97,7 +97,7 @@ const QuizPalette = ({ questionStatus, currentQuestion, setCurrentQuestion, time
       </div>
 
       {/* Filter */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-sm">Filter:</span>
           <select className="border border-gray-300 rounded px-2 py-1 text-sm w-full">
@@ -107,7 +107,7 @@ const QuizPalette = ({ questionStatus, currentQuestion, setCurrentQuestion, time
             <option>Marked</option>
           </select>
         </div>
-      </div>
+      </div> */}
 
       {/* Action buttons */}
       <div className="grid grid-cols-2 gap-2">
