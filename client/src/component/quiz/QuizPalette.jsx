@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
 // Define the cn function locally
-const cn = (...classes) => classes.filter(Boolean).join(' ');
+const cn = (...classes) => classes.filter(Boolean).join(" ");
 
 const QuizPalette = ({
   questionStatus,
@@ -9,22 +9,22 @@ const QuizPalette = ({
   setCurrentQuestion,
   timer,
   totalQuestions,
-  onSubmitQuiz
+  onSubmitQuiz,
 }) => {
   const getStatusClass = (status, questionNumber) => {
     if (questionNumber === currentQuestion + 1) {
-      return 'bg-red-500 text-white ring-2 ring-offset-2 ring-red-500';
+      return "bg-red-500 text-white ring-2 ring-offset-2 ring-red-500";
     }
 
     switch (status) {
-      case 'answered':
-        return 'bg-green-500 text-white';
-      case 'not-answered':
-        return 'bg-red-500 text-white';
-      case 'marked':
-        return 'bg-purple-500 text-white';
+      case "answered":
+        return "bg-green-500 text-white";
+      case "not-answered":
+        return "bg-red-500 text-white";
+      case "marked":
+        return "bg-purple-500 text-white";
       default:
-        return 'bg-gray-200 text-gray-700';
+        return "bg-gray-200 text-gray-700";
     }
   };
 
@@ -53,18 +53,20 @@ const QuizPalette = ({
       <div className="mb-6">
         <h3 className="text-gray-700 mb-2">Question Palette:</h3>
         <div className="grid grid-cols-5 gap-2">
-          {Array.from({ length: totalQuestions }, (_, i) => i + 1).map((num) => (
-            <button
-              key={num}
-              className={cn(
-                'w-8 h-8 flex items-center justify-center rounded text-sm',
-                getStatusClass(questionStatus[num] || 'not-visited', num)
-              )}
-              onClick={() => setCurrentQuestion(num - 1)}
-            >
-              {num}
-            </button>
-          ))}
+          {Array.from({ length: totalQuestions }, (_, i) => i + 1).map(
+            (num) => (
+              <button
+                key={num}
+                className={cn(
+                  "w-8 h-8 flex items-center justify-center rounded text-sm",
+                  getStatusClass(questionStatus[num] || "not-visited", num)
+                )}
+                onClick={() => setCurrentQuestion(num - 1)}
+              >
+                {num}
+              </button>
+            )
+          )}
         </div>
       </div>
 
@@ -108,16 +110,7 @@ const QuizPalette = ({
       <div className="grid grid-cols-2 gap-2">
         <button
           className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-          onClick={async () => {
-            const confirmSubmit = window.confirm("Are you sure you want to submit the quiz?");
-            if (confirmSubmit) {
-              try {
-                await onSubmitQuiz();
-              } catch (error) {
-                console.error("Submission error:", error);
-              }
-            }
-          }}
+          onClick={onSubmitQuiz}
         >
           Submit Quiz
         </button>

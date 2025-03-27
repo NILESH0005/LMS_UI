@@ -48,8 +48,29 @@ import QuizList from './component/quiz/QuizList.jsx';
 import Quiz from './component/quiz/Quiz.jsx';
 import QuestionBank from './Admin/Components/Quiz/QuestionBank.jsx';
 import QuizQuestions from './Admin/Components/Quiz/QuizQuestions.jsx';
+import Lms from './component/LMS/Lms.jsx';
 
 // import BlogManager from './Admin/Components/BlogManager.jsx';
+import TeachingModules from './component/LMS/TeachingModules.jsx'
+
+// import BlogManager from './Admin/Components/BlogManager.jsx';
+import DeepLearningKit from './component/LMS/Modules/DeepLearningKit.jsx';
+import AiRoboticsKit from './component/LMS/Modules/AiRoboticsKit.jsx';
+import NvidiaIntro from './component/LMS/Modules/NvidiaIntro.jsx';
+import IndustrialMetaverseKit from './component/LMS/Modules/IndustrialMetaverseKit.jsx';
+import GenAiKit from './component/LMS/Modules/GenAiKit.jsx';
+import DatasetModules from './component/LMS/DatasetModules.jsx';
+import Regression from './component/LMS/Regression.jsx';
+import Pretrained from './component/LMS/Pretrained.jsx';
+import ObjectClassification from './component/LMS/ObjectClassification.jsx';
+import Generative from './component/LMS/Generative.jsx';
+import DigitalLearning from './component/LMS/DigitalLearning.jsx';
+import ComputerVision from './component/LMS/ComputerVision.jsx'
+import Annotation from './component/LMS/Annotation.jsx';
+import Algorithms from './component/LMS/Algorithms.jsx';
+import LeaderBoard from './component/LMS/LeaderBoard.jsx';
+import Chatbot from './component/LMS/ChatBot.jsx';
+import QuizResult from './component/quiz/QuizResult.jsx';
 
 
 
@@ -112,6 +133,7 @@ function App() {
             <Route path='/QuizList' element={<QuizList />} />
             <Route path='/Quiz' element={<Quiz/>} />
             <Route path='/QuizQuestions' element={<QuizQuestions/>} />
+            <Route path='/quiz-result' element={<QuizResult/>} />
             
 
             
@@ -127,6 +149,33 @@ function App() {
             {/* <Route path='/Calendar' element={<Calendar />} /> */}
             <Route path='/GeneralUserCalendar' element={<GeneralUserCalendar />} />
             {/* <Route path='/BlogManager' element={<BlogManager/>}/> */}
+          
+              {/* LMS */}
+                          <Route path='/Lms' element={<Lms />} />
+                          <Route path='/teaching-modules' element={<TeachingModules />} />
+                          <Route path="/edge-ai-robotics-kit" element={<AiRoboticsKit />} />
+                          <Route path="/deep-learning-kit" element={<DeepLearningKit />} />
+                          <Route path="/generative-ai-kit" element={<GenAiKit />} />
+                          <Route path="/industrial-metaverse-kit" element={<IndustrialMetaverseKit />} />
+                          <Route path="/nvidia-intro" element={<NvidiaIntro />} />
+                          
+              
+                          <Route path='/data-modules' element={<DatasetModules />} />
+                          <Route path='/regression-modules' element={<Regression />} />
+                          <Route path='/pretrained-modules' element={<Pretrained />} />
+                          <Route path='/object-classification-modules' element={<ObjectClassification />} />
+                          <Route path='/generative-ai-modules' element={<Generative />} />
+                          <Route path='/digital-learning-modules' element={<DigitalLearning />} />
+                          <Route path='/computer-vision-modules' element={<ComputerVision />} />
+                          <Route path='/annotation-modules' element={<Annotation />} />
+                          <Route path='/algorithms-modules' element={<Algorithms />} />
+                          
+                          
+                          {/* LeaderBoard and Chatabot */}
+                          <Route path='/leaderboard' element={<LeaderBoard />} />
+                          <Route path='/chatbot' element={<Chatbot />} />
+              
+          
           </Routes>
         </div>
         <Footer />
