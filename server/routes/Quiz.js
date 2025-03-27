@@ -15,6 +15,8 @@ router.post('/createQuizQuestionMapping', fetchUser, createQuizQuestionMapping)
 router.get('/getUserQuizCategory', fetchUser, getUserQuizCategory)
 router.post('/getQuizQuestions', fetchUser, getQuizQuestions)
 router.post('/submitQuiz', fetchUser, submitQuiz)
+// router.get('/getQuizResults/:quizId', fetchUser, getQuizResults)
+
 
 
 

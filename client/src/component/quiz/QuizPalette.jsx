@@ -108,11 +108,14 @@ const QuizPalette = ({
       <div className="grid grid-cols-2 gap-2">
         <button
           className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-          onClick={() => {
-            // Add confirmation dialog
+          onClick={async () => {
             const confirmSubmit = window.confirm("Are you sure you want to submit the quiz?");
             if (confirmSubmit) {
-              onSubmitQuiz();
+              try {
+                await onSubmitQuiz();
+              } catch (error) {
+                console.error("Submission error:", error);
+              }
             }
           }}
         >

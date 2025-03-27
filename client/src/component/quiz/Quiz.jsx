@@ -3,10 +3,11 @@ import { useLocation } from 'react-router-dom';
 import QuizHeader from './QuizHeader';
 import QuizPalette from './QuizPalette';
 import ApiContext from '../../context/ApiContext';
+import Loader from '../LoadPage';
+import Swal from 'sweetalert2';
 
 const Quiz = () => {
   const location = useLocation();
-
   const quiz = location.state?.quiz || {};
 
   const STORAGE_KEY = `quiz_attempt_${quiz.QuizID}`;
@@ -21,14 +22,12 @@ const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
-  // const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [timer, setTimer] = useState({ hours: 0, minutes: 30, seconds: 0 });
   const [questionStatus, setQuestionStatus] = useState({});
 
   const loadSavedAnswers = () => {
     try {
       const savedData = localStorage.getItem(STORAGE_KEY);
-      console.log(`Loading from localStorage (key: ${STORAGE_KEY}):`, savedData);
       return savedData ? JSON.parse(savedData) : null;
     } catch (error) {
       console.error("Failed to load saved answers:", error);
@@ -38,11 +37,7 @@ const Quiz = () => {
 
   const saveAnswersToStorage = (answers) => {
     try {
-      console.log("Saving to localStorage:", answers);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
-      // Verify it was stored correctly
-      const verify = localStorage.getItem(STORAGE_KEY);
-      console.log("Storage verification:", verify);
     } catch (error) {
       console.error("Failed to save answers:", error);
     }
@@ -51,7 +46,6 @@ const Quiz = () => {
   const clearAnswerFromStorage = (questionIndex) => {
     const savedData = loadSavedAnswers();
     if (savedData) {
-      console.log("Clearing answer for question:", questionIndex);
       const updatedAnswers = savedData.answers.map((answer, idx) =>
         idx === questionIndex ? null : answer
       );
@@ -68,27 +62,21 @@ const Quiz = () => {
   });
 
   useEffect(() => {
-    console.log("Received quiz data:", quiz);
     if (quiz.QuizID && quiz.group_id) {
       fetchQuizQuestions();
-
     }
   }, [quiz]);
+
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === STORAGE_KEY) {
-        console.log("LocalStorage updated:", {
-          key: e.key,
-          newValue: e.newValue,
-          oldValue: e.oldValue
-        });
+        console.log("LocalStorage updated:", e);
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [STORAGE_KEY]);
-
 
   const fetchQuizQuestions = async () => {
     setLoading(true);
@@ -107,13 +95,10 @@ const Quiz = () => {
       };
       const body = {
         quizGroupID: quiz.group_id,
-        QuizID: quiz.QuizID // Only using QuizID now
+        QuizID: quiz.QuizID
       };
 
-      console.log("Sending request with:", body); // Debug log
-
       const data = await fetchData(endpoint, method, body, headers);
-      console.log("API Response:", data);
 
       if (!data) {
         throw new Error("No data received from server");
@@ -124,7 +109,7 @@ const Quiz = () => {
         setQuestions(transformedQuestions);
 
         if (transformedQuestions.length > 0) {
-          const duration = transformedQuestions[0].duration || 30; // Default to 30 minutes
+          const duration = transformedQuestions[0].duration || 30;
           const hours = Math.floor(duration / 60);
           const minutes = duration % 60;
           setTimer({ hours, minutes, seconds: 0 });
@@ -144,12 +129,16 @@ const Quiz = () => {
     } catch (err) {
       console.error("Error fetching questions:", err);
       setError(err.message || "Something went wrong, please try again.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.message || "Failed to load questions",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // Transform the API response into a more usable format
   const transformQuestions = (apiQuestions) => {
     const questionMap = {};
 
@@ -163,13 +152,13 @@ const Quiz = () => {
           totalMarks: item.totalMarks,
           duration: item.QuizDuration,
           options: [],
-          correctAnswers: [] // For multiple correct answers
+          correctAnswers: []
         };
       }
 
       questionMap[item.QuestionsID].options.push({
         id: item.id,
-        option_text: item.option_text.trim(), // Trim whitespace
+        option_text: item.option_text.trim(),
         is_correct: item.is_correct
       });
 
@@ -185,12 +174,15 @@ const Quiz = () => {
     const interval = setInterval(() => {
       setTimer((prev) => {
         let { hours, minutes, seconds } = prev;
+
+        if (hours === 0 && minutes === 0 && seconds === 0) {
+          clearInterval(interval);
+          handleTimeUp();
+          return prev;
+        }
+
         if (seconds === 0) {
           if (minutes === 0) {
-            if (hours === 0) {
-              clearInterval(interval);
-              return prev;
-            }
             hours -= 1;
             minutes = 59;
           } else {
@@ -200,24 +192,32 @@ const Quiz = () => {
         } else {
           seconds -= 1;
         }
+
         return { hours, minutes, seconds };
       });
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
+  const handleTimeUp = async () => {
+    await Swal.fire({
+      title: 'Time Up!',
+      text: 'Your time for this quiz has ended.',
+      icon: 'warning',
+      confirmButtonText: 'Submit Now'
+    });
+    handleQuizSubmit();
+  };
+
   const handleAnswerClick = (selectedOption) => {
     const currentQuestionData = questions[currentQuestion];
-
-    // Find the selected option object(s)
     const selectedOptions = currentQuestionData.options
       .filter(opt => opt.option_text === selectedOption);
 
-    // Determine marks based on correctness
     const isCorrect = selectedOptions.some(opt => opt.is_correct === 1);
     const marks = isCorrect ? currentQuestionData.totalMarks : -currentQuestionData.negativeMarks;
 
-    // Create answer object with all needed information
     const newAnswer = {
       questionId: currentQuestionData.id,
       questionText: currentQuestionData.question_text,
@@ -238,7 +238,6 @@ const Quiz = () => {
     setSelectedAnswers(newAnswers);
     setQuestionStatus(prev => ({ ...prev, [currentQuestion + 1]: "answered" }));
 
-    // Save to local storage
     saveAnswersToStorage({
       quizId: quiz.QuizID,
       groupId: quiz.group_id,
@@ -247,7 +246,6 @@ const Quiz = () => {
   };
 
   const handleSaveAndNext = () => {
-    // Save is already handled in handleAnswerClick
     if (currentQuestion + 1 < questions.length) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
@@ -260,11 +258,8 @@ const Quiz = () => {
     newAnswers[currentQuestion] = null;
     setSelectedAnswers(newAnswers);
     setQuestionStatus(prev => ({ ...prev, [currentQuestion + 1]: "not-answered" }));
-
-    // Clear from storage
     clearAnswerFromStorage(currentQuestion);
   };
-
 
   const handleSkip = () => {
     if (currentQuestion + 1 < questions.length) {
@@ -281,93 +276,160 @@ const Quiz = () => {
 
   const handleInstantResult = () => {
     const correct = questions.reduce((acc, question, index) => {
-      if (selectedAnswers[index] === question.correctAnswer) {
+      if (selectedAnswers[index]?.isCorrect) {
         return acc + 1;
       }
       return acc;
     }, 0);
-    alert(`Your instant result: ${correct} out of ${questions.length}`);
-  };
 
+    Swal.fire({
+      title: 'Instant Result',
+      html: `You've answered <b>${correct}</b> out of <b>${questions.length}</b> questions correctly.`,
+      icon: 'info'
+    });
+  };
 
   const handleQuizSubmit = async () => {
     if (!userToken) {
-      console.log("Authentication token missing");
+      Swal.fire({
+        icon: 'error',
+        title: 'Authentication Error',
+        text: 'Please login to submit the quiz',
+      });
       return;
     }
-  
+
     const savedData = loadSavedAnswers();
     if (!savedData) {
-      setSubmitError("No quiz data found to submit");
+      Swal.fire({
+        icon: 'error',
+        title: 'Submission Error',
+        text: 'No quiz data found to submit',
+      });
       return;
     }
-  
+
+    // Calculate total score locally
+    const localCalculation = questions.reduce((acc, question, index) => {
+      const answer = savedData.answers[index];
+      if (answer) {
+        if (answer.isCorrect) {
+          acc.correctAnswers++;
+          acc.totalScore += question.totalMarks;
+        } else {
+          acc.totalScore -= question.negativeMarks;
+        }
+      }
+      return acc;
+    }, { correctAnswers: 0, totalScore: 0 });
+
+    const totalPossibleMarks = questions.reduce((sum, question) => sum + question.totalMarks, 0);
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      html: `
+        <p class="mt-4">You won't be able to change your answers after submission!</p>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes!'
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    const swalInstance = Swal.fire({
+      title: 'Submitting...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     const endpoint = "quiz/submitQuiz";
     const method = "POST";
     const headers = {
       'Content-Type': 'application/json',
       'auth-token': userToken
     };
-  
-    // Prepare answers ensuring proper data types
+
     const preparedAnswers = savedData.answers
       .filter(a => a !== null)
       .map(answer => ({
-        questionId: Number(answer.questionId), // Ensure number type
+        questionId: Number(answer.questionId),
         questionText: String(answer.questionText),
         options: answer.options.map(option => ({
-          id: Number(option.id), // Ensure number type
+          id: Number(option.id),
           text: String(option.text),
-          is_correct: Number(option.is_correct) // Convert to number (0 or 1)
+          is_correct: Number(option.is_correct)
         })),
         marksAwarded: Number(answer.marksAwarded),
         isCorrect: Boolean(answer.isCorrect),
         maxMarks: Number(answer.maxMarks),
         negativeMarks: Number(answer.negativeMarks)
       }));
-  
+
     const body = {
-      quizId: Number(savedData.quizId), // Ensure number type
-      groupId: Number(savedData.groupId), // Ensure number type
+      quizId: Number(savedData.quizId),
+      groupId: Number(savedData.groupId),
       answers: preparedAnswers
     };
-  
+
     try {
       setSubmitting(true);
       setSubmitError(null);
-  
+
       const data = await fetchData(endpoint, method, body, headers);
-  
+
       if (!data.success) {
-        console.log("Error occurred while submitting quiz");
         throw new Error(data.message || "Submission failed");
       }
-  
-      // Success case
+
       setSubmitSuccess(true);
       setFinalScore(data.data?.totalScore || 0);
       localStorage.removeItem(STORAGE_KEY);
-  
-      console.log("Quiz submitted successfully:", data);
-      alert(`Quiz submitted successfully! Your score: ${data.data?.totalScore || 0}`);
-  
+
+      await swalInstance.close();
+
+      await Swal.fire({
+        title: 'Quiz Submitted!',
+        html: `
+          <div class="text-left">
+            <p><b>Correct Answers:</b> ${data.data?.correctAnswers || localCalculation.correctAnswers} out of ${data.data?.totalQuestions || questions.length}</p>
+          </div>
+        `,
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+
     } catch (error) {
       console.error("Quiz submission error:", error);
-      setSubmitError(error.message || "Failed to submit quiz. Please try again.");
+      setSubmitError(error.message);
+
+      await swalInstance.close();
+
+      Swal.fire({
+        title: 'Submission Failed',
+        html: `
+          <div class="text-left">
+            <p>${error.message || "Failed to submit quiz. Please try again."}</p>
+            
+            <p><b>Score:</b> ${localCalculation.totalScore}</p>
+            <p><b>Correct Answers:</b> ${localCalculation.correctAnswers}</p>
+          </div>
+        `,
+        icon: 'error'
+      });
     } finally {
       setSubmitting(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-DGXblue mx-auto"></div>
-          <p className="mt-4 text-lg text-gray-700">Loading questions...</p>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error) {
@@ -419,45 +481,56 @@ const Quiz = () => {
             <div className="p-6 border-b border-gray-300">
               <p className="text-lg mb-6">{questions[currentQuestion]?.question_text}</p>
               <div className="space-y-3">
-                {questions[currentQuestion]?.options?.map((option, index) => (
+                {questions[currentQuestion]?.options?.map((option) => (
                   <label key={option.id} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="radio"
                       name="answer"
                       value={option.option_text}
                       checked={
-                        selectedAnswers[currentQuestion]?.optionTexts?.includes(option.option_text)
+                        selectedAnswers[currentQuestion]?.options?.some(
+                          opt => opt.text === option.option_text
+                        )
                       }
                       onChange={() => handleAnswerClick(option.option_text)}
                       className="w-4 h-4"
                     />
-                    {/* <input
-                      type="radio"
-                      name="answer" 
-
-                      value={option.option_text}
-                      checked={selectedAnswers[currentQuestion] === option.option_text}
-                      onChange={() => handleAnswerClick(option.option_text)}
-                      className="w-4 h-4"
-                    /> */}
                     <span>{option.option_text}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            {/* Action buttons */}
             <div className="flex justify-between p-4">
               <div className="flex gap-2">
-                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded" onClick={handleMarkForReview}>Mark for Review & Next</button>
-                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded" onClick={handleClearResponse}>Clear Response</button>
-                <button className="px-4 py-2 bg-blue-200 text-blue-800 rounded" onClick={handleInstantResult}>Instant Result</button>
+                <button
+                  className="px-4 py-2 bg-blue-200 text-blue-800 rounded"
+                  onClick={handleMarkForReview}
+                >
+                  Mark for Review & Next
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-200 text-blue-800 rounded"
+                  onClick={handleClearResponse}
+                >
+                  Clear Response
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-200 text-blue-800 rounded"
+                  onClick={handleInstantResult}
+                >
+                  Instant Result
+                </button>
               </div>
-              <button className="px-4 py-2 bg-blue-700 text-white rounded" onClick={handleSaveAndNext}>Save & Next</button>
+              <button
+                className="px-4 py-2 bg-blue-700 text-white rounded"
+                onClick={handleSaveAndNext}
+              >
+                {currentQuestion + 1 === questions.length ? 'Finish' : 'Save & Next'}
+              </button>
             </div>
           </div>
 
-          {/* Sidebar - 1/4 width on large screens */}
           <QuizPalette
             questionStatus={questionStatus}
             currentQuestion={currentQuestion}
