@@ -70,6 +70,7 @@ import Annotation from './component/LMS/Annotation.jsx';
 import Algorithms from './component/LMS/Algorithms.jsx';
 import LeaderBoard from './component/LMS/LeaderBoard.jsx';
 import Chatbot from './component/LMS/ChatBot.jsx';
+import QuizResult from './component/quiz/QuizResult.jsx';
 
 
 
@@ -132,6 +133,7 @@ function App() {
             <Route path='/QuizList' element={<QuizList />} />
             <Route path='/Quiz' element={<Quiz/>} />
             <Route path='/QuizQuestions' element={<QuizQuestions/>} />
+            <Route path='/quiz-result' element={<QuizResult/>} />
             
 
             

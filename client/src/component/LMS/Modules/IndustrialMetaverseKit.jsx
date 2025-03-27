@@ -126,7 +126,7 @@ const IndustrialMetaverseKit = () => {
                     id: 41, 
                     title: "Lecture 1 Slides", 
                     path: "lecture-1-slides", 
-                    fileId: "0mG9kd5wpFGNpjyWskFtAk3C2oSPhLPRx", 
+                    fileId: "14dVN7J8d4mi3-h0hAce91zNrKAywWB62", 
                     type: "ppt" 
                 },
                 { 
@@ -147,7 +147,7 @@ const IndustrialMetaverseKit = () => {
                     id: 71, 
                     title: "Lecture 1 Slides", 
                     path: "lecture-1-slides", 
-                    fileId: "1nH0le6xqGHOqkzXtlGuBl4D3pTQiMQSy", 
+                    fileId: "1AQV9RlC6CHJ59kFMpFqNtHh5THy-DMwI", 
                     type: "ppt" 
                 },
                 { 

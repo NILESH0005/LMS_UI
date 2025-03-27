@@ -21,31 +21,31 @@ const QuizList = () => {
     const fetchQuizzes = async () => {
         setLoading(true);
         setError(null);
-    
+
         try {
             if (!userToken) {
                 throw new Error("Authentication token is missing");
             }
-    
+
             const endpoint = "quiz/getUserQuizCategory";
             const method = "GET";
             const headers = {
                 "Content-Type": "application/json",
                 "auth-token": userToken,
             };
-            
-    
+
+
             const data = await fetchData(endpoint, method, {}, headers);
             console.log("data:", data)
-    
+
             if (!data) {
                 throw new Error("No data received from server");
             }
-    
+
             if (data.success) {
                 const groupedQuizzes = data.data.quizzes.reduce((acc, quiz) => {
                     const existingGroup = acc.find(group => group.group_name === quiz.group_name);
-    
+
                     if (existingGroup) {
                         existingGroup.quizzes.push({
                             id: quiz.QuizName,
@@ -72,7 +72,7 @@ const QuizList = () => {
                     }
                     return acc;
                 }, []);
-    
+
                 setQuizzes(groupedQuizzes);
             } else {
                 throw new Error(data.message || "Failed to fetch quizzes");
@@ -85,8 +85,16 @@ const QuizList = () => {
         }
     };
     useEffect(() => {
-        fetchQuizzes();
-    }, []);
+        // Only fetch quizzes if we have a token
+        if (userToken) {
+            fetchQuizzes();
+        } else {
+            setLoading(false);
+            setError("Please login to access quizzes");
+            // Alternatively, you could redirect to login here:
+            // navigate('/login');
+        }
+    }, [userToken]); // 
 
     const handleQuizClick = (quiz, group) => {
         console.log("Passing quiz data:", {
@@ -94,7 +102,7 @@ const QuizList = () => {
             group_id: group.group_id,  // Use the group_id from the group object
             QuizID: quiz.QuizID  // Use the QuizID from the quiz object
         });
-    
+
         navigate(`/Quiz`, {
             state: {
                 quiz: {

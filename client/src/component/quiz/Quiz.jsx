@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import QuizHeader from './QuizHeader';
 import QuizPalette from './QuizPalette';
 import ApiContext from '../../context/ApiContext';
@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 
 const Quiz = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const quiz = location.state?.quiz || {};
 
   const STORAGE_KEY = `quiz_attempt_${quiz.QuizID}`;
@@ -62,10 +63,12 @@ const Quiz = () => {
   });
 
   useEffect(() => {
-    if (quiz.QuizID && quiz.group_id) {
+    if (userToken && quiz.QuizID && quiz.group_id) {
       fetchQuizQuestions();
+    } else {
+      setLoading(false);
     }
-  }, [quiz]);
+  }, [quiz, userToken]);
 
   useEffect(() => {
     const handleStorageChange = (e) => {
@@ -376,11 +379,19 @@ const Quiz = () => {
   
       await swalInstance.close();
       
-      await Swal.fire({
-        title: 'Quiz Submitted!',
-        html: `Your score: <b>${data.data?.totalScore || 0}</b>`,
-        icon: 'success',
-        confirmButtonText: 'OK'
+      // Navigate to QuizResult with all necessary data
+      navigate('/quiz-result', {
+        state: {
+          quiz: quiz,
+          score: data.data?.totalScore || 0,
+          totalQuestions: questions.length,
+          answers: selectedAnswers.filter(a => a !== null),
+          correctAnswers: questions.reduce((acc, q, idx) => {
+            if (selectedAnswers[idx]?.isCorrect) acc++;
+            return acc;
+          }, 0),
+          timeTaken: `${timer.hours}h ${timer.minutes}m ${timer.seconds}s`
+        }
       });
   
     } catch (error) {

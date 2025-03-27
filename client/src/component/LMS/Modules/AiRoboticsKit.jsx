@@ -21,21 +21,21 @@ const AiRoboticsKit = () => {
                     id: 11, 
                     title: "Labs", 
                     path: "labs", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_LABS", 
+                    fileId: "15bR6ZPmAM4poFKaq5ld6cS87bAubERlh", 
                     type: "pdf" 
                 },
                 { 
                     id: 12, 
                     title: "Lecture Slides", 
                     path: "lecture-slides", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_LECTURES", 
+                    fileId: "1mul-7RboG3eOhwZItA8seYlHpnZLe2xk", 
                     type: "ppt" 
                 },
                 { 
                     id: 13, 
                     title: "Quiz Questions and Answers", 
                     path: "quiz-qa", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_QUIZ", 
+                    fileId: "1XKH8W55_OT1G8Exn6grbG44q5Z89B9i9/", 
                     type: "pdf" 
                 }
             ],
@@ -49,21 +49,21 @@ const AiRoboticsKit = () => {
                     id: 21, 
                     title: "Labs", 
                     path: "labs", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD2_LABS", 
+                    fileId: "1NUIdYNK8zaUteKMGTpBP8A5hZ63fEsxu/", 
                     type: "pdf" 
                 },
                 { 
                     id: 22, 
                     title: "Lecture Slides", 
                     path: "lecture-slides", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD2_LECTURES", 
+                    fileId: "1JjvhJdoo-HyrCIkC04FDXPCWKg8cGx3V", 
                     type: "ppt" 
                 },
                 { 
                     id: 23, 
                     title: "Quiz Questions and Answers", 
                     path: "quiz-qa", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD2_QUIZ", 
+                    fileId: "1ZsvED56_Z69yjVROt1DzLwnoFZibHBEp", 
                     type: "pdf" 
                 }
             ],
@@ -77,14 +77,14 @@ const AiRoboticsKit = () => {
                     id: 31, 
                     title: "Labs", 
                     path: "labs", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD3_LABS", 
+                    fileId: "1HEZdYNDzJydx1ExYoyJd7_iCjLL8SPiW", 
                     type: "pdf" 
                 },
                 { 
                     id: 32, 
                     title: "Lecture Slides", 
                     path: "lecture-slides", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD3_LECTURES", 
+                    fileId: "1OQxcvPYrO2CD69O8Jgg_7wySnvh8kLPC", 
                     type: "ppt" 
                 },
                 { 
@@ -105,21 +105,21 @@ const AiRoboticsKit = () => {
                     id: 41, 
                     title: "Labs", 
                     path: "labs", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD4_LABS", 
+                    fileId: "1wt_4PzUUw3i5T6KsI6Gsv9Cs1H_ZzpsA", 
                     type: "pdf" 
                 },
                 { 
                     id: 42, 
                     title: "Lecture Slides", 
                     path: "lecture-slides", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD4_LECTURES", 
+                    fileId: "1cib91-UB4PKe1aqj0dMyvyN6LLygqXTG", 
                     type: "ppt" 
                 },
                 { 
                     id: 43, 
                     title: "Quiz Questions and Answers", 
                     path: "quiz-qa", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD4_QUIZ", 
+                    fileId: "1sl3esCZx2Smm-QC_lDYfk5U6bmkTy9hw", 
                     type: "pdf" 
                 }
             ],
@@ -128,7 +128,7 @@ const AiRoboticsKit = () => {
             id: 5,
             title: "Module 5 - Resources Link",
             path: "resources-link",
-            fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_RESOURCES",
+            fileId: "1lyclFJ2YZy_WGzMFSDOUjlDuRO1BLNH1",
             type: "pdf"
         }
     ];

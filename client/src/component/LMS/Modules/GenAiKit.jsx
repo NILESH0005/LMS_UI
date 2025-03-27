@@ -21,43 +21,43 @@ const GenAiKit = () => {
                     id: 11, 
                     title: "Demos", 
                     path: "demos", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_DEMOS", 
+                    fileId: "1lrnOJ6OxB6oH1Qv3W7IJMWEIH-_4xRqA", 
                     type: "ppt" 
                 },
                 { 
                     id: 12, 
                     title: "DLI Online Courses", 
                     path: "dli-courses", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_DLI", 
-                    type: "pdf" 
+                    fileId: "1Rezo5LlgGySUUhvw8mggUEWm85xsKY57", 
+                    type: "ppt" 
                 },
                 { 
                     id: 13, 
                     title: "Knowledge Checks", 
                     path: "knowledge-checks", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_KNOWLEDGE", 
+                    fileId: "1dmb0dahI3lbXphJZJUHt4IwEwPwq6u40", 
                     type: "pdf" 
                 },
                 { 
                     id: 14, 
                     title: "Labs", 
                     path: "labs", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_LABS", 
-                    type: "pdf" 
+                    fileId: "1gue58GtQcVGLXAlhza1mT9zFxS1fIEfT", 
+                    type: "ipynb" 
                 },
                 { 
                     id: 15, 
                     title: "Lecture Slides", 
                     path: "lecture-slides", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_LECTURES", 
-                    type: "ppt" 
+                    fileId: "1xnP-5e33tP7MSPVazY4UHzufVbNl4pwN", 
+                    type: "csv" 
                 },
                 { 
                     id: 16, 
                     title: "Lecture Slides", 
                     path: "lecture-slides", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD1_LECTURES_2", 
-                    type: "ppt" 
+                    fileId: "1jzDvRk5-BYGI4Kd7lNmM0zyVnDpRoA2R", 
+                    type: "ipynb" 
                 }
             ],
         },
@@ -70,7 +70,7 @@ const GenAiKit = () => {
                     id: 31, 
                     title: "DLI Online Courses", 
                     path: "dli-courses", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD3_DLI", 
+                    fileId: "1BngleGOQ9u1GIGX0yialYZtTPV1UuNn6", 
                     type: "pdf" 
                 }
             ],
@@ -84,7 +84,7 @@ const GenAiKit = () => {
                     id: 41, 
                     title: "DLI Online Courses", 
                     path: "dli-courses", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD4_DLI", 
+                    fileId: "1uZN0ZNADa0MwpxP9gYp6nFclSg8Lj4mo", 
                     type: "pdf" 
                 }
             ],
@@ -98,63 +98,63 @@ const GenAiKit = () => {
                     id: 61, 
                     title: "Demos", 
                     path: "demos", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_DEMOS/1", 
-                    type: "ppt" 
+                    fileId: "1CXMExl5uR3YoQUqQN7rUaVC5h_KODjEl", 
+                    type: "html" 
                 },
                 { 
                     id: 62, 
                     title: "Demos", 
                     path: "demos", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_DEMOS/2", 
+                    fileId: "1CXMExl5uR3YoQUqQN7rUaVC5h_KODjEl/2", 
                     type: "ppt" 
                 },
                 { 
                     id: 63, 
                     title: "Demos", 
                     path: "demos", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_DEMOS/3", 
+                    fileId: "1MYK7UlxMEu0WW5eh218qwCnHsHiab_J1/3", 
                     type: "ppt" 
                 },
                 { 
                     id: 64, 
                     title: "DLI Online Courses", 
                     path: "dli-courses", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_DLI", 
+                    fileId: "1JY0W12G21NizFGUFeUl4UrDAgj_pv3PY", 
                     type: "pdf" 
                 },
                 { 
                     id: 65, 
                     title: "Knowledge Checks 1", 
                     path: "knowledge-checks", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_KNOWLEDGE", 
+                    fileId: "1-AEoJWfgYih85cOIdGUgmo8ViK2RiwHK", 
                     type: "pdf" 
                 },
                 { 
                     id: 66, 
                     title: "Knowledge Checks 2", 
                     path: "knowledge-checks", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_KNOWLEDGE/1", 
+                    fileId: "1-AEoJWfgYih85cOIdGUgmo8ViK2RiwHK", 
                     type: "pdf" 
                 },
                 { 
                     id: 67, 
                     title: "Knowledge Checks 3", 
                     path: "knowledge-checks", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_KNOWLEDGE/2", 
+                    fileId: "1-AEoJWfgYih85cOIdGUgmo8ViK2RiwHK", 
                     type: "pdf" 
                 },
                 { 
                     id: 68, 
                     title: "Labs", 
                     path: "labs", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_LABS", 
+                    fileId: "1qgpOkp_zip1zm6MXEiepVWR7CI5R7GPg", 
                     type: "pdf" 
                 },
                 { 
                     id: 69, 
                     title: "Lecture Slides", 
                     path: "lecture-slides", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD6_LECTURES", 
+                    fileId: "1byEUFn57_60wq8i6f1mpRYkB-G_NEWGV", 
                     type: "ppt" 
                 }
             ],
@@ -168,7 +168,7 @@ const GenAiKit = () => {
                     id: 71, 
                     title: "DLI Online Courses", 
                     path: "dli-courses", 
-                    fileId: "YOUR_GOOGLE_DRIVE_FILE_ID_FOR_MOD7_DLI", 
+                    fileId: "1oNQkQ2mKl9dm6OiNc1zBRx-EbURPL4wI", 
                     type: "pdf" 
                 }
             ],
