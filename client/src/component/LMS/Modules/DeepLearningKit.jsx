@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-// import FeedbackForm from "../FeedBackForm.jsx";
+import FeedbackForm from "../FeedBackForm.jsx";
 
 const DeepLearningKit = () => {
   const { category, subcategory } = useParams();
@@ -44,6 +44,7 @@ const DeepLearningKit = () => {
           fileId: "1SB8U0anqOUHV28hVKOIrFXI_AEdDr6Gx",
           type: "ppt",
         },
+        { id: 27, title: "Assessment", path: "QuizList", type: "link" },
       ],
     },
     {
@@ -75,6 +76,7 @@ const DeepLearningKit = () => {
         {
           id: 271,
           title: "Assessment",
+          path: "/component/quiz/QuizList",
           type: "link",
         },
       ],
@@ -108,6 +110,7 @@ const DeepLearningKit = () => {
         {
           id: 272,
           title: "Assessment",
+          path: "/component/quiz/QuizList",
           type: "link",
         },
       ],
@@ -469,10 +472,10 @@ const DeepLearningKit = () => {
 
               {selectedFileId && (
                 <div className="w-full max-w-7xl mt-6">
-                  {/* <FeedbackForm
+                  <FeedbackForm
                     fileId={selectedFileId}
                     onSubmit={handleFeedbackSubmit}
-                  /> */}
+                  />
                 </div>
               )}
             </div>
