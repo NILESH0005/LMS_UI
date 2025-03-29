@@ -26,6 +26,30 @@ import Annotation from './component/LMS/Annotation.jsx';
 import Algorithms from './component/LMS/Algorithms.jsx';
 import LeaderBoard from './component/LMS/LeaderBoard.jsx';
 import Chatbot from './component/LMS/ChatBot.jsx';
+import Guide from './component/LMS/Object Modules/Guide.jsx';
+import Hands from './component/LMS/Object Modules/Hands.jsx';
+import Aws from './component/LMS/Annotationsubmodule/Aws.jsx';
+import Cvat from './component/LMS/Annotationsubmodule/Cvat.jsx';
+import Vtt from './component/LMS/Annotationsubmodule/Vtt.jsx';
+import DeepSpeech from './component/LMS/AlgorithmModule/DeepSpeech.jsx';
+import Detr from './component/LMS/AlgorithmModule/Detr.jsx';
+import Lstm from './component/LMS/AlgorithmModule/Lstm.jsx';
+import Resnet50 from './component/LMS/AlgorithmModule/Resnet50.jsx';
+import Handson from './component/LMS/RegressionDoc/Handson.jsx';
+import Guidereg from './component/LMS/RegressionDoc/Guidereg.jsx';
+import Mask_Rcnn from './component/LMS/CompVis/Mask_Rcnn.jsx';
+import Vision_trans from './component/LMS/CompVis/Vision_trans.jsx';
+import Faster_rcnn from './component/LMS/CompVis/Faster_rcnn.jsx';
+import SSD from './component/LMS/CompVis/SSD.jsx';
+import Mnist from './component/LMS/DatasetModule/Mnist.jsx';
+import Pre_deepspeech from './component/LMS/Pretrained_models/Pre_deepspeech.jsx';
+import Pre_detr from './component/LMS/Pretrained_models/Pre_detr.jsx';
+import Pre_lstm from './component/LMS/Pretrained_models/Pre_lstm.jsx';
+import Pre_resnet from './component/LMS/Pretrained_models/Pre_resnet.jsx';
+import Genaiguide from './component/LMS/GenAimodels/Genaiguide.jsx';
+import Genaimodels from './component/LMS/GenAimodels/Genaimodels.jsx';
+import Tutorials from './component/LMS/DigitalLearningModule/Tutorials.jsx';
+import Resource from './component/LMS/DigitalLearningModule/Resource.jsx';
 
 
 
@@ -65,12 +89,52 @@ function App() {
             <Route path='/annotation-modules' element={<Annotation />} />
             <Route path='/algorithms-modules' element={<Algorithms />} />
 
+            {/* Object Classification */}
+            <Route path='/ObjectGuide' element={<Guide />} />
+            <Route path='/ObjectClass' element={<Hands />} />
+
+              {/* Annotation tools */}
+            <Route path='/Annsage' element={<Aws />} />
+            <Route path='/Anncvat' element={<Cvat />} />
+            <Route path='/Annvtt' element={<Vtt   />} />
 
             {/* LeaderBoard and Chatabot */}
             <Route path='/leaderboard' element={<LeaderBoard />} />
             <Route path='/chatbot' element={<Chatbot />} />
 
+            {/* Algorithm Module */}
+            <Route path='/deepspeech' element={<DeepSpeech />} />
+            <Route path='/detr' element={<Detr />} />
+            <Route path='/lstm' element={<Lstm />} />
+            <Route path='/resnet' element={<Resnet50 />} />
+               
+            {/* Regression Module */}
+            <Route path='/reg_guide' element={<Guidereg />} />
+            <Route path='/reg_handson' element={<Handson  />} />
+            
+            {/* Computer Vision Modules */}
+            <Route path='/fasterrcnn' element={<Faster_rcnn />} />
+            <Route path='/maskrcnn' element={<Mask_Rcnn />} />
+            <Route path='/ssd' element={<SSD />} />
+            <Route path='/visiontran' element={<Vision_trans />} />
+            
+         
+            {/* Dataset Module */}
+            <Route path='/mnist-dataset' element={<Mnist />} />
+            
 
+            {/* Pretrained Models */}
+            <Route path='/predeepspeech' element={<Pre_deepspeech />} />
+            <Route path='/predetr' element={<Pre_detr />} />
+              <Route path='/prelstm' element={<Pre_lstm />} />
+            <Route path='/preresnet' element={<Pre_resnet />} />
+
+           {/* Generative AI Models */}
+           <Route path='/genaiguide' element={<Genaiguide />} />
+           <Route path='/genaimodel' element={<Genaimodels />} />
+            {/* Digital Learning Models */}
+            <Route path='/tutorials' element={<Tutorials />} />
+           <Route path='/resources' element={<Resource />} />
           </Routes>
         </div>
       </div>
