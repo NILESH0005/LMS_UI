@@ -50,6 +50,15 @@ import Genaiguide from './component/LMS/GenAimodels/Genaiguide.jsx';
 import Genaimodels from './component/LMS/GenAimodels/Genaimodels.jsx';
 import Tutorials from './component/LMS/DigitalLearningModule/Tutorials.jsx';
 import Resource from './component/LMS/DigitalLearningModule/Resource.jsx';
+import Vgg from './component/LMS/Annotationsubmodule/Vgg.jsx';
+import Labelimg from './component/LMS/Annotationsubmodule/Labelimg.jsx';
+import Labelme from './component/LMS/Annotationsubmodule/Labelme.jsx';
+import Make_Blobs from './component/LMS/DatasetModule/Make_Blobs.jsx';
+import Iris from './component/LMS/DatasetModule/Iris.jsx';
+import Imageclass from './component/LMS/DatasetModule/Imageclass.jsx';
+import Humanevol from './component/LMS/DatasetModule/Humanevol.jsx';
+import Housepred from './component/LMS/DatasetModule/Housepred.jsx';
+import Cifar from './component/LMS/DatasetModule/Cifar.jsx';
 
 
 
@@ -97,6 +106,9 @@ function App() {
             <Route path='/Annsage' element={<Aws />} />
             <Route path='/Anncvat' element={<Cvat />} />
             <Route path='/Annvtt' element={<Vtt   />} />
+            <Route path='/annvgg' element={<Vgg   />} />
+            <Route path='/annlimg' element={<Labelimg   />} />
+            <Route path='/annlme' element={<Labelme   />} />
 
             {/* LeaderBoard and Chatabot */}
             <Route path='/leaderboard' element={<LeaderBoard />} />
@@ -121,6 +133,12 @@ function App() {
          
             {/* Dataset Module */}
             <Route path='/mnist-dataset' element={<Mnist />} />
+            <Route path='/makeblobs' element={<Make_Blobs />} />
+            <Route path='/iris' element={<Iris />} />
+            <Route path='/imageclass' element={<Imageclass />} />
+            <Route path='/humanevol' element={<Humanevol />} />
+            <Route path='/housepred' element={<Housepred />} />
+            <Route path='/cifar' element={<Cifar />} />
             
 
             {/* Pretrained Models */}

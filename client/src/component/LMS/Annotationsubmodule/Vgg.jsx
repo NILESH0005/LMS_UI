@@ -1,28 +1,28 @@
 import React, { useState } from "react";
 import FeedbackForm from "../FeedBackForm";
 
-const Cvat = () => {
+const Vgg = () => {
     const [feedback, setFeedback] = useState([]);
     
-    // CVAT Guide PDF file
-    const cvatFile = {
-        id: "1eXDbttCuLUvKmnV5qtwXYjJfZvXn2JKd", // Replace with actual PDF ID
-        title: "CVAT Annotation Guide",
-        description: "Complete guide for Computer Vision Annotation Tool (CVAT)",
+    // VGG documentation file
+    const vggFile = {
+        id: "18bMeqoEy3YhZKmnvEnEW33hTAf6Mg8Oc", // Replace with actual PDF ID
+        title: "VGG Network Documentation",
+        description: "Complete guide to VGG convolutional neural network architecture",
         type: "pdf"
     };
 
     const handleFeedbackSubmit = (rating, comment) => {
         const newFeedback = {
-            fileId: cvatFile.id,
-            fileName: cvatFile.title,
-            fileType: cvatFile.type,
+            fileId: vggFile.id,
+            fileName: vggFile.title,
+            fileType: vggFile.type,
             rating,
             comment,
             timestamp: new Date().toISOString()
         };
         const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("cvatFeedback", JSON.stringify(updatedFeedback));
+        localStorage.setItem("vggFeedback", JSON.stringify(updatedFeedback));
         setFeedback(updatedFeedback);
         sendFeedbackToServer(newFeedback);
     };
@@ -45,12 +45,12 @@ const Cvat = () => {
 
     return (
         <div className="flex h-screen bg-background text-foreground">
-            {/* Navigation Sidebar (simplified for single file) */}
+            {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700">
-                <h2 className="text-xl font-bold mb-6">CVAT Resources</h2>
+                <h2 className="text-xl font-bold mb-6">VGG Resources</h2>
                 <div className="p-3 rounded bg-gray-700 border-l-4 border-blue-500">
-                    <span className="font-medium">{cvatFile.title}</span>
-                    <span className="text-sm text-gray-300 mt-1 block">{cvatFile.description}</span>
+                    <span className="font-medium">{vggFile.title}</span>
+                    <span className="text-sm text-gray-300 mt-1 block">{vggFile.description}</span>
                 </div>
             </div>
 
@@ -58,10 +58,10 @@ const Cvat = () => {
             <div className="flex-1 flex flex-col p-6">
                 <div className="mb-6">
                     <h1 className="text-3xl font-bold text-gray-800">
-                        {cvatFile.title}
+                        {vggFile.title}
                     </h1>
                     <p className="text-gray-600 mt-2">
-                        {cvatFile.description}
+                        {vggFile.description}
                     </p>
                 </div>
                 
@@ -72,10 +72,10 @@ const Cvat = () => {
                     <div className="absolute top-0 right-0 w-14 h-14 z-10" />
                     
                     <iframe
-                        src={`https://drive.google.com/file/d/${cvatFile.id}/preview`}
+                        src={`https://drive.google.com/file/d/${vggFile.id}/preview`}
                         className="w-full h-full"
                         allowFullScreen
-                        title={`${cvatFile.title} Viewer`}
+                        title={`${vggFile.title} Viewer`}
                         sandbox="allow-scripts allow-same-origin"
                     />
                 </div>
@@ -83,9 +83,9 @@ const Cvat = () => {
                 {/* Feedback section */}
                 <div className="mt-8 w-full max-w-3xl mx-auto">
                     <FeedbackForm 
-                        fileId={cvatFile.id}
-                        fileName={cvatFile.title}
-                        fileType={cvatFile.type}
+                        fileId={vggFile.id}
+                        fileName={vggFile.title}
+                        fileType={vggFile.type}
                         onSubmit={handleFeedbackSubmit}
                     />
                 </div>
@@ -96,8 +96,8 @@ const Cvat = () => {
 
 const sendFeedbackToServer = (feedback) => {
     // Implement your feedback submission logic
-    console.log("Submitting CVAT feedback:", feedback);
-    // Example: axios.post('/api/feedback/cvat', feedback)
+    console.log("Submitting VGG feedback:", feedback);
+    // Example: axios.post('/api/feedback/vgg', feedback)
 };
 
-export default Cvat;
+export default Vgg;

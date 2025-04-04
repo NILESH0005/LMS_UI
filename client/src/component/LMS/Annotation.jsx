@@ -55,8 +55,10 @@ export const Annotation = () => {
     const routes = {
       "AWS SageMaker": "/Annsage",
       "CVAT": "/Anncvat",
-       "VOTT(Visual Object Tagging Tool)": "/Anvtt",
-       "LabelMe": "/ObjectClass",
+      "VOTT(Visual Object Tagging Tool)": "/Annvtt",
+      "LabelMe": "/annlme",
+      "VGG":"/annvgg",
+      "LabelImg":"/annlimg",
     };
 
     const route = routes[title];
