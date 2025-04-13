@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import FeedbackForm from "../FeedBackForm";
 
 const Pre_deepspeech = () => {
     const [selectedFileId, setSelectedFileId] = useState(null);
-    const [selectedFileType, setSelectedFileType] = useState("pdf");
+    const [selectedFileName, setSelectedFileName] = useState("");
+    const [selectedFileType, setSelectedFileType] = useState("");
     const [feedback, setFeedback] = useState([]);
 
     // Pre-DeepSpeech files
@@ -11,27 +12,32 @@ const Pre_deepspeech = () => {
         {
             id: 1,
             title: "Pre-DeepSpeech Guide (PDF)",
-            fileId: "1q4gPAu6jj03aleNUrc86rSOs1i_pnNAf/", // Replace with actual PDF ID
+            fileId: "1q4gPAu6jj03aleNUrc86rSOs1i_pnNAf", // Replace with actual PDF ID
             type: "pdf",
-            icon: "📄",
-            description: "Preparation guide for DeepSpeech implementation"
+            description: "Guide to pre-processing for DeepSpeech implementation"
         },
         {
             id: 2,
             title: "Pre-Processing Notebook (IPYNB)",
             fileId: "1AL6Jx_XYsjktrfIUHwtYNTZne7FLY67n", // Replace with actual notebook ID
-            type: "ipynb",
-            icon: "📓",
-            description: "Jupyter notebook with data preprocessing steps"
+            type: "pdf", // Using pdf type for Google Drive preview
+            description: "Jupyter notebook with pre-processing implementation"
+        },
+        {
+            id: 3,
+            title: "Assignment",
+            icon: "📓"
         }
     ];
 
     const handleFeedbackSubmit = (fileId, rating, comment) => {
         const newFeedback = {
             fileId,
+            fileName: selectedFileName,
+            fileType: selectedFileType,
             rating,
             comment,
-            timestamp: new Date().toISOString(),
+            timestamp: new Date().toISOString()
         };
         const updatedFeedback = [...feedback, newFeedback];
         localStorage.setItem("preDeepSpeechFeedback", JSON.stringify(updatedFeedback));
@@ -39,90 +45,88 @@ const Pre_deepspeech = () => {
         sendFeedbackToServer(newFeedback);
     };
 
-    const getEmbedURL = (fileId, type) => {
-        switch (type) {
-            case "pdf":
-                return `https://drive.google.com/file/d/${fileId}/preview`;
-            case "ipynb":
-                return `https://nbviewer.jupyter.org/urls/docs.google.com/uc?export=download&id=${fileId}`;
-            default:
-                return "";
-        }
-    };
-
     // Set first file as default on component mount
-    useEffect(() => {
+    useState(() => {
         if (preDeepSpeechFiles.length > 0 && !selectedFileId) {
             setSelectedFileId(preDeepSpeechFiles[0].fileId);
+            setSelectedFileName(preDeepSpeechFiles[0].title);
             setSelectedFileType(preDeepSpeechFiles[0].type);
         }
 
         // Security measures
         const disableRightClick = (e) => e.preventDefault();
-        const disableKeys = (e) => {
-            if (e.ctrlKey && (e.key === 's' || e.key === 'p')) e.preventDefault();
+        const disableShortcuts = (e) => {
+            if (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.key === 'c')) e.preventDefault();
         };
 
         document.addEventListener('contextmenu', disableRightClick);
-        document.addEventListener('keydown', disableKeys);
+        document.addEventListener('keydown', disableShortcuts);
 
         return () => {
             document.removeEventListener('contextmenu', disableRightClick);
-            document.removeEventListener('keydown', disableKeys);
+            document.removeEventListener('keydown', disableShortcuts);
         };
     }, []);
 
     return (
         <div className="flex h-screen bg-background text-foreground">
-            {/* Sidebar */}
+            {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700">
-                <h2 className="text-lg font-semibold mb-4">Pre-DeepSpeech Materials</h2>
-                <ul className="space-y-2">
-                    {preDeepSpeechFiles.map((file) => (
+                <h2 className="text-xl font-bold mb-6">Pre-DeepSpeech</h2>
+                <ul className="space-y-3">
+                    {preDeepSpeechFiles.map(file => (
                         <li key={file.id}>
                             <button
                                 onClick={() => {
                                     setSelectedFileId(file.fileId);
+                                    setSelectedFileName(file.title);
                                     setSelectedFileType(file.type);
                                 }}
-                                className={`flex items-center w-full p-3 rounded text-left hover:bg-gray-700 ${
-                                    selectedFileId === file.fileId ? "bg-gray-700" : ""
+                                className={`flex flex-col w-full p-3 rounded text-left hover:bg-gray-700 transition-colors ${
+                                    selectedFileId === file.fileId ? "bg-gray-700 border-l-4 border-blue-500" : ""
                                 }`}
                             >
-                                <span className="mr-3 text-lg">{file.icon}</span>
-                                <div>
-                                    <div className="font-medium">{file.title}</div>
-                                    <div className="text-xs text-gray-300 mt-1">{file.description}</div>
-                                </div>
+                                <span className="font-medium">{file.title}</span>
+                                <span className="text-sm text-gray-300 mt-1">{file.description}</span>
                             </button>
                         </li>
                     ))}
                 </ul>
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1 p-4 flex flex-col">
-                <h1 className="text-3xl font-bold mb-6 text-center">Pre-DeepSpeech Preparation</h1>
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col p-6">
+                <div className="mb-6">
+                    <h1 className="text-3xl font-bold text-gray-800">
+                        {selectedFileName || "Select a Resource"}
+                    </h1>
+                    <p className="text-gray-600 mt-2">
+                        {preDeepSpeechFiles.find(f => f.fileId === selectedFileId)?.description || ""}
+                    </p>
+                </div>
                 
                 {selectedFileId && (
                     <>
-                        <div className="flex-1 w-full border rounded-xl shadow-lg overflow-hidden relative bg-white"
+                        <div className="flex-1 w-full border rounded-xl shadow-lg relative overflow-hidden bg-white"
                             onContextMenu={(e) => e.preventDefault()}>
-                            {/* Block Google Drive's pop-out button */}
-                            <div className="absolute top-0 right-0 w-12 h-12 z-10" />
+                            {/* Block Google Drive pop-out button */}
+                            <div className="absolute top-0 right-0 w-14 h-14 z-10" />
                             
                             <iframe
-                                key={`${selectedFileId}-${selectedFileType}`}
-                                src={getEmbedURL(selectedFileId, selectedFileType)}
+                                key={selectedFileId}
+                                src={`https://drive.google.com/file/d/${selectedFileId}/preview`}
                                 className="w-full h-full"
                                 allowFullScreen
-                                title={preDeepSpeechFiles.find(f => f.fileId === selectedFileId)?.title || "Content Viewer"}
+                                title={`${selectedFileName} Viewer`}
+                                sandbox="allow-scripts allow-same-origin"
                             />
                         </div>
 
-                        <div className="mt-6 w-full max-w-2xl mx-auto">
-                            <FeedbackForm
+                        <div className="mt-8 w-full max-w-3xl mx-auto">
+                            <FeedbackForm 
                                 fileId={selectedFileId}
+                                fileName={selectedFileName}
+                                fileType={selectedFileType}
                                 onSubmit={handleFeedbackSubmit}
                             />
                         </div>
@@ -134,8 +138,8 @@ const Pre_deepspeech = () => {
 };
 
 const sendFeedbackToServer = (feedback) => {
-    // Implement your feedback submission logic here
-    console.log("Submitting feedback:", feedback);
+    // Implement your feedback submission logic
+    console.log("Submitting Pre-DeepSpeech feedback:", feedback);
     // Example: axios.post('/api/feedback/pre-deepspeech', feedback)
 };
 

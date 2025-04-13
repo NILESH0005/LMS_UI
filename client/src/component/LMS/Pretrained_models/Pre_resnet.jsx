@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import FeedbackForm from "../FeedBackForm";
 
 const Pre_resnet = () => {
     const [selectedFileId, setSelectedFileId] = useState(null);
-    const [selectedFileType, setSelectedFileType] = useState("pdf");
-    const [isDownloading, setIsDownloading] = useState(false);
+    const [selectedFileName, setSelectedFileName] = useState("");
+    const [selectedFileType, setSelectedFileType] = useState("");
     const [feedback, setFeedback] = useState([]);
 
     // Pre-ResNet files
@@ -12,7 +12,7 @@ const Pre_resnet = () => {
         {
             id: 1,
             title: "ResNet Guide (PDF)",
-            fileId: "1j4-WIz0YJnqTAS4Eh3VuFbXPrJUxQEfL", // Replace with actual PDF ID
+            fileId: "1j4-WIz0YJnqTAS4Eh3VuFbXPrJUxQEfL",
             type: "pdf",
             icon: "📄",
             description: "Implementation guide for ResNet"
@@ -20,7 +20,7 @@ const Pre_resnet = () => {
         {
             id: 2,
             title: "Training Notebook (IPYNB)",
-            fileId: "1FAYpq27JJoK3ZYtkbiuZmOhfoPKI3MpZ", // Replace with actual notebook ID
+            fileId: "1FAYpq27JJoK3ZYtkbiuZmOhfoPKI3MpZ",
             type: "ipynb",
             icon: "📓",
             description: "Jupyter notebook with training code"
@@ -28,20 +28,27 @@ const Pre_resnet = () => {
         {
             id: 3,
             title: "Pre-trained Weights (H5)",
-            fileId: "1Qr7MY5wMpCCRnb9XokJDx2mXRIgvE9f0/", // Replace with actual weights file ID
+            fileId: "1Qr7MY5wMpCCRnb9XokJDx2mXRIgvE9f0",
             type: "h5",
             icon: "⚖️",
             description: "Pre-trained model weights",
-            size: "~90MB" // Example size
+            size: "~90MB"
+        },
+        {
+            id: 4,
+            title: "Assignment",
+            icon: "📓"
         }
     ];
 
     const handleFeedbackSubmit = (fileId, rating, comment) => {
         const newFeedback = {
             fileId,
+            fileName: selectedFileName,
+            fileType: selectedFileType,
             rating,
             comment,
-            timestamp: new Date().toISOString(),
+            timestamp: new Date().toISOString()
         };
         const updatedFeedback = [...feedback, newFeedback];
         localStorage.setItem("preResnetFeedback", JSON.stringify(updatedFeedback));
@@ -49,178 +56,154 @@ const Pre_resnet = () => {
         sendFeedbackToServer(newFeedback);
     };
 
-    const getEmbedURL = (fileId, type) => {
-        switch (type) {
-            case "pdf":
-                return `https://drive.google.com/file/d/${fileId}/preview`;
-            case "ipynb":
-                return `https://nbviewer.jupyter.org/urls/docs.google.com/uc?export=download&id=${fileId}`;
-            default:
-                return "";
-        }
-    };
-
-    const handleDownload = async (fileId, fileName) => {
-        setIsDownloading(true);
-        try {
-            // First get the confirmation token for large files
-            const response = await fetch(`https://drive.google.com/uc?export=download&id=${fileId}`);
-            const html = await response.text();
-            
-            // Parse the confirmation token from the response
-            const matches = html.match(/confirm=([^&]+)/);
-            const confirmToken = matches ? matches[1] : null;
-            
-            // Create the final download URL
-            const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}&confirm=${confirmToken}`;
-            
-            // Create temporary anchor element
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.setAttribute('download', fileName || 'resnet_weights.h5');
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error("Download failed:", error);
-        } finally {
-            setIsDownloading(false);
-        }
+    const handleDownload = (fileId, fileName, fileType) => {
+        const link = document.createElement('a');
+        link.href = `https://drive.google.com/uc?export=download&id=${fileId}`;
+        link.setAttribute('download', `${fileName.toLowerCase().replace(/\s+/g, '_')}.${fileType}`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     // Set first file as default on component mount
-    useEffect(() => {
+    useState(() => {
         if (preResnetFiles.length > 0 && !selectedFileId) {
-            const firstFile = preResnetFiles.find(f => f.type !== "h5");
-            if (firstFile) {
-                setSelectedFileId(firstFile.fileId);
-                setSelectedFileType(firstFile.type);
-            }
+            setSelectedFileId(preResnetFiles[0].fileId);
+            setSelectedFileName(preResnetFiles[0].title);
+            setSelectedFileType(preResnetFiles[0].type);
         }
 
         // Security measures
         const disableRightClick = (e) => e.preventDefault();
-        const disableKeys = (e) => {
-            if (e.ctrlKey && (e.key === 's' || e.key === 'p')) e.preventDefault();
+        const disableShortcuts = (e) => {
+            if (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.key === 'c')) e.preventDefault();
         };
 
         document.addEventListener('contextmenu', disableRightClick);
-        document.addEventListener('keydown', disableKeys);
+        document.addEventListener('keydown', disableShortcuts);
 
         return () => {
             document.removeEventListener('contextmenu', disableRightClick);
-            document.removeEventListener('keydown', disableKeys);
+            document.removeEventListener('keydown', disableShortcuts);
         };
     }, []);
 
+    const renderFileContent = () => {
+        if (!selectedFileId) return null;
+
+        const currentFile = preResnetFiles.find(f => f.fileId === selectedFileId);
+
+        switch(currentFile.type) {
+            case "pdf":
+                return (
+                    <iframe
+                        key={selectedFileId}
+                        src={`https://drive.google.com/file/d/${selectedFileId}/preview`}
+                        className="w-full h-full"
+                        allowFullScreen
+                        title={`${selectedFileName} Viewer`}
+                        sandbox="allow-scripts allow-same-origin"
+                    />
+                );
+            case "ipynb":
+                return (
+                    <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                        <div className="text-6xl mb-4">{currentFile.icon}</div>
+                        <h3 className="text-xl font-semibold mb-2">{currentFile.title}</h3>
+                        <p className="text-gray-500 mb-6">{currentFile.description}</p>
+                        <button
+                            onClick={() => handleDownload(currentFile.fileId, currentFile.title, "ipynb")}
+                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            Download Notebook
+                        </button>
+                    </div>
+                );
+            case "h5":
+                return (
+                    <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                        <div className="text-6xl mb-4">{currentFile.icon}</div>
+                        <h3 className="text-xl font-semibold mb-2">{currentFile.title}</h3>
+                        <p className="text-gray-500 mb-2">{currentFile.description}</p>
+                        <p className="text-gray-400 text-sm mb-6">Size: {currentFile.size}</p>
+                        <button
+                            onClick={() => handleDownload(currentFile.fileId, currentFile.title, "h5")}
+                            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                        >
+                            Download Weights
+                        </button>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
         <div className="flex h-screen bg-background text-foreground">
-            {/* Sidebar */}
+            {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700">
-                <h2 className="text-lg font-semibold mb-4">Pre-ResNet Materials</h2>
-                <ul className="space-y-2">
-                    {preResnetFiles.map((file) => (
+                <h2 className="text-xl font-bold mb-6">Pre-ResNet Resources</h2>
+                <ul className="space-y-3">
+                    {preResnetFiles.map(file => (
                         <li key={file.id}>
-                            {file.type === "h5" ? (
-                                <button
-                                    onClick={() => handleDownload(file.fileId, 'resnet_weights.h5')}
-                                    disabled={isDownloading}
-                                    className={`flex items-center w-full p-3 rounded text-left hover:bg-gray-700 ${
-                                        isDownloading ? 'bg-gray-600' : ''
-                                    }`}
-                                >
-                                    <span className="mr-3 text-lg">{file.icon}</span>
-                                    <div>
-                                        <div className="font-medium">{file.title}</div>
-                                        <div className="text-xs text-gray-300 mt-1">{file.description}</div>
-                                        <div className="text-xs text-gray-400 mt-1">Size: {file.size}</div>
-                                    </div>
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => {
-                                        setSelectedFileId(file.fileId);
-                                        setSelectedFileType(file.type);
-                                    }}
-                                    className={`flex items-center w-full p-3 rounded text-left hover:bg-gray-700 ${
-                                        selectedFileId === file.fileId ? "bg-gray-700" : ""
-                                    }`}
-                                >
-                                    <span className="mr-3 text-lg">{file.icon}</span>
-                                    <div>
-                                        <div className="font-medium">{file.title}</div>
-                                        <div className="text-xs text-gray-300 mt-1">{file.description}</div>
-                                    </div>
-                                </button>
-                            )}
+                            <button
+                                onClick={() => {
+                                    setSelectedFileId(file.fileId);
+                                    setSelectedFileName(file.title);
+                                    setSelectedFileType(file.type);
+                                }}
+                                className={`flex items-center w-full p-3 rounded text-left hover:bg-gray-700 transition-colors ${
+                                    selectedFileId === file.fileId ? "bg-gray-700 border-l-4 border-blue-500" : ""
+                                }`}
+                            >
+                                <span className="text-xl mr-2">{file.icon}</span>
+                                <div className="flex flex-col">
+                                    <span className="font-medium">{file.title}</span>
+                                    <span className="text-sm text-gray-300 mt-1">{file.description}</span>
+                                    {file.size && <span className="text-xs text-gray-400 mt-1">{file.size}</span>}
+                                </div>
+                            </button>
                         </li>
                     ))}
                 </ul>
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1 p-4 flex flex-col">
-                <h1 className="text-3xl font-bold mb-6 text-center">Pre-ResNet Preparation</h1>
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col p-6">
+                <div className="mb-6">
+                    <h1 className="text-3xl font-bold text-gray-800">
+                        {selectedFileName || "Select a Resource"}
+                    </h1>
+                    <p className="text-gray-600 mt-2">
+                        {preResnetFiles.find(f => f.fileId === selectedFileId)?.description || ""}
+                    </p>
+                </div>
                 
-                {selectedFileType === "h5" ? (
-                    <div className="flex-1 flex items-center justify-center">
-                        <div className="bg-white rounded-xl shadow-lg p-8 text-center max-w-md">
-                            <div className="text-6xl mb-4">⚖️</div>
-                            <h2 className="text-2xl font-semibold mb-2">Model Weights Download</h2>
-                            <p className="text-gray-600 mb-4">Click the download button in the sidebar to get the weights file</p>
-                            <div className="bg-gray-100 rounded-lg p-4 mb-6 text-left">
-                                <h3 className="font-medium mb-2">File Information:</h3>
-                                <ul className="text-sm space-y-1">
-                                    <li>• Format: HDF5 (.h5)</li>
-                                    <li>• Contains: Pre-trained weights</li>
-                                    <li>• Size: ~90MB</li>
-                                    <li>• Framework: TensorFlow/Keras</li>
-                                </ul>
-                            </div>
-                            <button
-                                onClick={() => handleDownload(preResnetFiles[2].fileId, 'resnet_weights.h5')}
-                                disabled={isDownloading}
-                                className={`px-4 py-2 rounded-lg font-medium text-white ${
-                                    isDownloading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
-                                } transition-colors`}
-                            >
-                                {isDownloading ? 'Downloading...' : 'Download Weights'}
-                            </button>
-                        </div>
-                    </div>
-                ) : selectedFileId ? (
-                    <>
-                        <div className="flex-1 w-full border rounded-xl shadow-lg overflow-hidden relative bg-white"
-                            onContextMenu={(e) => e.preventDefault()}>
-                            {/* Block Google Drive's pop-out button */}
-                            <div className="absolute top-0 right-0 w-12 h-12 z-10" />
-                            
-                            <iframe
-                                key={`${selectedFileId}-${selectedFileType}`}
-                                src={getEmbedURL(selectedFileId, selectedFileType)}
-                                className="w-full h-full"
-                                allowFullScreen
-                                title={preResnetFiles.find(f => f.fileId === selectedFileId)?.title || "Content Viewer"}
-                            />
-                        </div>
+                <div className="flex-1 w-full border rounded-xl shadow-lg relative overflow-hidden bg-white"
+                    onContextMenu={(e) => e.preventDefault()}>
+                    {/* Block Google Drive pop-out button */}
+                    <div className="absolute top-0 right-0 w-14 h-14 z-10" />
+                    
+                    {renderFileContent()}
+                </div>
 
-                        <div className="mt-6 w-full max-w-2xl mx-auto">
-                            <FeedbackForm
-                                fileId={selectedFileId}
-                                onSubmit={handleFeedbackSubmit}
-                            />
-                        </div>
-                    </>
-                ) : null}
+                <div className="mt-8 w-full max-w-3xl mx-auto">
+                    <FeedbackForm 
+                        fileId={selectedFileId}
+                        fileName={selectedFileName}
+                        fileType={selectedFileType}
+                        onSubmit={handleFeedbackSubmit}
+                    />
+                </div>
             </div>
         </div>
     );
 };
 
 const sendFeedbackToServer = (feedback) => {
-    // Implement your feedback submission logic here
-    console.log("Submitting feedback:", feedback);
+    // Implement your feedback submission logic
+    console.log("Submitting Pre-ResNet feedback:", feedback);
     // Example: axios.post('/api/feedback/pre-resnet', feedback)
 };
 
