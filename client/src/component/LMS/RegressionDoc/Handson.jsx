@@ -1,51 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FeedbackForm from "../FeedBackForm";
 
 const HandsOn = () => {
+    const [selectedSection, setSelectedSection] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [expandedSections, setExpandedSections] = useState({});
     const [feedback, setFeedback] = useState([]);
 
     // Hands-on files data
-    const handsOnFiles = [
+    const handsOnSections = [
         {
             id: 1,
             title: "1. Linear Regression - Multiple Variables",
-            nested: [
+            description: "Implementation of multiple variable linear regression",
+            files: [
                 { 
-                    id: 11, 
-                    title: "equation.jpg", 
-                    fileId: "1B9ucXC7eCDfjDZaSAR_5yRuYz2l8gYzs", 
-                    type: "jpg" 
+                    id: "1BKFEXU2A6pRicr_ImWLG6rupeC8a7m58", 
+                    name: "equation.jpg", 
+                    type: "image"
                 },
                 { 
-                    id: 12, 
-                    title: "General equationjpg", 
-                    fileId: "1vw3gnUtGYv44wh-5ubBBt_kyeX1iGwGq", 
-                    type: "jpg" 
+                    id: "1vw3gnUtGYv44wh-5ubBBt_kyeX1iGwGq", 
+                    name: "General equation.jpg", 
+                    type: "image"
                 },
                 { 
-                    id: 13, 
-                    title: "home equation.jpg", 
-                    fileId: "1RaxiRYNNb1stK5IxqjsexO5hRuwIica0", 
-                    type: "jpg" 
+                    id: "1RaxiRYNNb1stK5IxqjsexO5hRuwIica0", 
+                    name: "home equation.jpg", 
+                    type: "image"
                 },
                 { 
-                    id: 14, 
-                    title: "Homeprices.jpg", 
-                    fileId: "1A5RdbslH4YfAfc4vqg9mO22Fs-h1nowX", 
-                    type: "jpg" 
+                    id: "1A5RdbslH4YfAfc4vqg9mO22Fs-h1nowX", 
+                    name: "Homeprices.jpg", 
+                    type: "image"
                 },
                 { 
-                    id: 15, 
-                    title: "Implementation.ipynb", 
-                    fileId: "YOUR_NB1_ID", 
-                    type: "ipynb" 
+                    id: "1kr9ViZopgeQCYNDMc6OtTdqOvpV57mKo", 
+                    name: "Implementation.ipynb", 
+                    type: "notebook"
                 },
                 { 
-                    id: 16, 
-                    title: "Dataset.csv", 
-                    fileId: "1r8RTVkGO6VEuqL7eij_l3sxpIGSLXiZb", 
+                    id: "1r8RTVkGO6VEuqL7eij_l3sxpIGSLXiZb", 
+                    name: "Dataset.csv", 
                     type: "csv",
                     download: true
                 }
@@ -54,67 +49,60 @@ const HandsOn = () => {
         {
             id: 2,
             title: "2. Linear Regression - Single Variable",
-            nested: [
+            description: "Implementation of single variable linear regression",
+            files: [
                 { 
-                    id: 21, 
-                    title: "Graph 1.jpg", 
-                    fileId: "YOUR_IMG5_ID", 
-                    type: "jpg" 
+                    id: "1kkvcjCy0E8XyrRUw08WBLMiMtLNhA5za", 
+                    name: "homepricetable.jpg", 
+                    type: "image"
                 },
                 { 
-                    id: 22, 
-                    title: "Graph 2.jpg", 
-                    fileId: "YOUR_IMG6_ID", 
-                    type: "jpg" 
+                    id: "1W27R7K25Tmmz1f2enxJ67M5sXyreac0z", 
+                    name: "scatterplot.jpg", 
+                    type: "image"
                 },
                 { 
-                    id: 23, 
-                    title: "Implementation.ipynb", 
-                    fileId: "YOUR_NB2_ID", 
-                    type: "ipynb" 
+                    id: "15IH_YfX1UCl64CB_z-dp7QhanoLASn3n", 
+                    name: "Implementation.ipynb", 
+                    type: "notebook"
                 },
                 { 
-                    id: 24, 
-                    title: "Training Data.csv", 
-                    fileId: "YOUR_CSV2_ID", 
+                    id: "1nE6UJCWpasW-RppS0PTjj7BMSfW6_OmH", 
+                    name: "Training Data.csv", 
                     type: "csv",
                     download: true
                 },
                 { 
-                    id: 25, 
-                    title: "Test Data.csv", 
-                    fileId: "YOUR_CSV3_ID", 
+                    id: "1VQGrBoSmHiW0HOe1t6MRuuBRA6yAps4y", 
+                    name: "Test Data.csv", 
                     type: "csv",
                     download: true
                 },
                 { 
-                    id: 26, 
-                    title: "Results.png", 
-                    fileId: "YOUR_PNG1_ID", 
-                    type: "png" 
+                    id: "1-cuppr8xVrRpX5aFlQmBJ5nx_QPD1-Ti", 
+                    name: "equation.png", 
+                    type: "image"
                 },
                 { 
-                    id: 27, 
-                    title: "Comparison.png", 
-                    fileId: "YOUR_PNG2_ID", 
-                    type: "png" 
+                    id: "1pBUM83NRcfPfIqC-0h_5lKbet7x1fAjb", 
+                    name: "linear_equation.png", 
+                    type: "image"
                 }
             ]
         },
         {
             id: 3,
             title: "3. Logistic Regression - Singleclass",
-            nested: [
+            description: "Implementation of single class logistic regression",
+            files: [
                 { 
-                    id: 31, 
-                    title: "Implementation.ipynb", 
-                    fileId: "YOUR_NB3_ID", 
-                    type: "ipynb" 
+                    id: "1Fjw-4o-rgNT6qgXxKy7ZQZxhnD6_PhJg", 
+                    name: "Implementation.ipynb", 
+                    type: "notebook"
                 },
                 { 
-                    id: 32, 
-                    title: "Dataset.csv", 
-                    fileId: "YOUR_CSV4_ID", 
+                    id: "1DpbzhaMC5DNORKgxBNW06iIOIGttFjmj", 
+                    name: "Dataset.csv", 
                     type: "csv",
                     download: true
                 }
@@ -123,34 +111,27 @@ const HandsOn = () => {
         {
             id: 4,
             title: "4. Logistic Regression - Multiclass",
-            nested: [
+            description: "Implementation of multiclass logistic regression",
+            files: [
                 { 
-                    id: 41, 
-                    title: "Implementation.ipynb", 
-                    fileId: "YOUR_NB4_ID", 
-                    type: "ipynb" 
+                    id: "1nV2GLrqlO75Jh1USTtS1FM24VhqDDdhF", 
+                    name: "Implementation.ipynb", 
+                    type: "notebook"
                 }
             ]
         },
         {
             id: 5,
             title: "Assignment",
+            description: "Hands-on assignment",
             icon: "📓"
         }
     ];
 
-    const toggleSection = (sectionId) => {
-        setExpandedSections(prev => ({
-            ...prev,
-            [sectionId]: !prev[sectionId]
-        }));
-    };
-
-    const handleFeedbackSubmit = (fileId, rating, comment) => {
+    const handleFeedbackSubmit = (sectionId, rating, comment) => {
         const newFeedback = {
-            fileId,
-            fileName: selectedFile?.title,
-            fileType: selectedFile?.type,
+            sectionId,
+            sectionTitle: selectedSection?.title,
             rating,
             comment,
             timestamp: new Date().toISOString()
@@ -161,165 +142,159 @@ const HandsOn = () => {
         sendFeedbackToServer(newFeedback);
     };
 
-    const handleDownload = (fileId, fileName, fileType) => {
-        const link = document.createElement('a');
-        link.href = `https://drive.google.com/uc?export=download&id=${fileId}`;
-        link.setAttribute('download', `${fileName.toLowerCase().replace(/\s+/g, '_')}.${fileType}`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
+    useEffect(() => {
+        if (handsOnSections.length > 0 && !selectedSection) {
+            setSelectedSection(handsOnSections[0]);
+            if (handsOnSections[0].files && handsOnSections[0].files.length > 0) {
+                setSelectedFile(handsOnSections[0].files[0]);
+            }
+        }
+
+        // Security measures
+        const disableRightClick = (e) => e.preventDefault();
+        const disableShortcuts = (e) => {
+            if (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.key === 'c')) e.preventDefault();
+        };
+
+        document.addEventListener('contextmenu', disableRightClick);
+        document.addEventListener('keydown', disableShortcuts);
+
+        return () => {
+            document.removeEventListener('contextmenu', disableRightClick);
+            document.removeEventListener('keydown', disableShortcuts);
+        };
+    }, []);
 
     const renderFileContent = () => {
         if (!selectedFile) return (
-            <div className="flex items-center justify-center h-full text-gray-500">
-                Select a file to preview
+            <div className="flex justify-center items-center h-full text-gray-400">
+                <p>Select a file to preview</p>
             </div>
         );
 
-        const imageTypes = ['jpg', 'jpeg', 'png', 'gif'];
-        const isImage = imageTypes.includes(selectedFile.type.toLowerCase());
+        // Common iframe props
+        const iframeProps = {
+            className: "w-full h-full",
+            title: selectedFile.name,
+            allowFullScreen: true,
+            frameBorder: "0"
+        };
 
-        if (isImage) {
-            return (
-                <div className="flex items-center justify-center h-full">
-                    <img 
-                        src={`https://drive.google.com/uc?export=view&id=${selectedFile.fileId}`}
-                        alt={selectedFile.title}
-                        className="max-h-full max-w-full object-contain"
-                    />
-                </div>
-            );
-        }
-
-        switch(selectedFile.type.toLowerCase()) {
-            case "pdf":
+        switch (selectedFile.type) {
+            case "notebook":
                 return (
-                    <iframe
-                        src={`https://drive.google.com/file/d/${selectedFile.fileId}/preview`}
-                        className="w-full h-full"
-                        allowFullScreen
-                        title={`${selectedFile.title} Viewer`}
-                        sandbox="allow-scripts allow-same-origin"
-                    />
+                    <div className="w-full h-full">
+                        <iframe
+                            src={`https://drive.google.com/file/d/${selectedFile.id}/preview`}
+                            {...iframeProps}
+                        />
+                    </div>
                 );
-            case "ipynb":
+            case "image":
                 return (
-                    <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                        <div className="text-6xl mb-4">📓</div>
-                        <h3 className="text-xl font-semibold mb-2">{selectedFile.title}</h3>
-                        <button
-                            onClick={() => handleDownload(selectedFile.fileId, selectedFile.title, "ipynb")}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            Download Notebook
-                        </button>
+                    <div className="w-full h-full">
+                        <iframe
+                            src={`https://drive.google.com/file/d/${selectedFile.id}/preview`}
+                            {...iframeProps}
+                        />
                     </div>
                 );
             case "csv":
                 return (
                     <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                         <div className="text-6xl mb-4">📊</div>
-                        <h3 className="text-xl font-semibold mb-2">{selectedFile.title}</h3>
-                        <button
-                            onClick={() => handleDownload(selectedFile.fileId, selectedFile.title, "csv")}
+                        <h3 className="text-xl font-semibold mb-2">{selectedFile.name}</h3>
+                        <a
+                            href={`https://drive.google.com/uc?export=download&id=${selectedFile.id}`}
                             className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                            download
                         >
                             Download CSV File
-                        </button>
+                        </a>
                     </div>
                 );
             default:
                 return (
-                    <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                        <div className="text-6xl mb-4">📁</div>
-                        <h3 className="text-xl font-semibold mb-2">{selectedFile.title}</h3>
-                        <button
-                            onClick={() => handleDownload(selectedFile.fileId, selectedFile.title, selectedFile.type)}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            Download File
-                        </button>
+                    <div className="flex justify-center items-center h-full text-gray-500">
+                        <p>Unsupported file type</p>
                     </div>
                 );
-        }
-    };
-
-    const getFileIcon = (type) => {
-        switch(type.toLowerCase()) {
-            case 'pdf': return '📄';
-            case 'ipynb': return '📓';
-            case 'jpg':
-            case 'jpeg':
-            case 'png':
-            case 'gif': return '🖼️';
-            case 'csv': return '📊';
-            default: return '📁';
         }
     };
 
     return (
         <div className="flex h-screen bg-background text-foreground">
             {/* Navigation Sidebar */}
-            <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
+            <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700">
                 <h2 className="text-xl font-bold mb-6">Hands-on Exercises</h2>
-                <div className="space-y-2">
-                    {handsOnFiles.map(section => (
-                        <div key={section.id} className="mb-4">
+                <ul className="space-y-3">
+                    {handsOnSections.map(section => (
+                        <li key={section.id}>
                             <button
-                                onClick={() => toggleSection(section.id)}
-                                className="flex items-center justify-between w-full p-3 rounded text-left hover:bg-gray-700 transition-colors"
+                                onClick={() => {
+                                    setSelectedSection(section);
+                                    if (section.files && section.files.length > 0) {
+                                        setSelectedFile(section.files[0]);
+                                    } else {
+                                        setSelectedFile(null);
+                                    }
+                                }}
+                                className={`flex flex-col w-full p-3 rounded text-left hover:bg-gray-700 transition-colors ${
+                                    selectedSection?.id === section.id ? "bg-gray-700 border-l-4 border-blue-500" : ""
+                                }`}
                             >
                                 <span className="font-medium">{section.title}</span>
-                                <span>{expandedSections[section.id] ? '▼' : '▶'}</span>
+                                <span className="text-sm text-gray-300 mt-1">{section.description}</span>
                             </button>
-                            
-                            {expandedSections[section.id] && (
-                                <ul className="ml-4 mt-2 space-y-2">
-                                    {section.nested.map(file => (
-                                        <li key={file.id}>
-                                            <button
-                                                onClick={() => setSelectedFile(file)}
-                                                className={`flex items-center w-full p-2 rounded text-left hover:bg-gray-700 transition-colors ${
-                                                    selectedFile?.id === file.id ? "bg-gray-700" : ""
-                                                }`}
-                                            >
-                                                <span className="mr-2">{getFileIcon(file.type)}</span>
-                                                <span className="text-sm">{file.title}</span>
-                                                {file.download && (
-                                                    <span className="ml-auto text-xs text-gray-400">(download)</span>
-                                                )}
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
+                        </li>
                     ))}
-                </div>
+                </ul>
             </div>
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col p-6">
                 <div className="mb-6">
                     <h1 className="text-3xl font-bold text-gray-800">
-                        {selectedFile?.title || "Hands-on Exercises"}
+                        {selectedSection?.title || "Select an Exercise"}
                     </h1>
                     <p className="text-gray-600 mt-2">
-                        {selectedFile ? `Viewing ${selectedFile.type.toUpperCase()} file` : "Select a file to view"}
+                        {selectedSection?.description || ""}
                     </p>
+                    
+                    {/* File selector tabs */}
+                    {selectedSection?.files && (
+                        <div className="flex space-x-2 mt-4 overflow-x-auto">
+                            {selectedSection.files.map(file => (
+                                <button
+                                    key={file.id}
+                                    onClick={() => setSelectedFile(file)}
+                                    className={`px-4 py-2 rounded-t-lg whitespace-nowrap ${
+                                        selectedFile?.id === file.id
+                                            ? "bg-white text-gray-800 border-t border-l border-r border-gray-300"
+                                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                    }`}
+                                >
+                                    {file.name}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
                 
-                <div className="flex-1 w-full border rounded-xl shadow-lg relative overflow-hidden bg-white">
+                {/* Content display area */}
+                <div className="flex-1 w-full border rounded-b-lg rounded-r-lg shadow-lg bg-white overflow-hidden relative">
+                    {/* Block Google Drive pop-out button */}
+                    <div className="absolute top-0 right-0 w-14 h-14 z-10" />
+                    
                     {renderFileContent()}
                 </div>
 
-                {selectedFile && (
+                {/* Feedback section */}
+                {selectedSection && (
                     <div className="mt-8 w-full max-w-3xl mx-auto">
                         <FeedbackForm 
-                            fileId={selectedFile.fileId}
-                            fileName={selectedFile.title}
-                            fileType={selectedFile.type}
+                            fileId={selectedSection.id}
+                            fileName={selectedSection.title}
                             onSubmit={handleFeedbackSubmit}
                         />
                     </div>
