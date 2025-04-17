@@ -17,7 +17,7 @@ const navigate = useNavigate();
       title: "Course Resource",
       description: "Curated collection of free  courses for structured AI learning.",
       progress: 65,
-      thumbnail: "digital.avif",
+      thumbnail: "digital1.avif",
     }
   ];
 
