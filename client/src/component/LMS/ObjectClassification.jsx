@@ -13,19 +13,68 @@ export const ObjectClassification = () => {
       progress: 70,
       thumbnail: "objectclas.jpeg",
     },
+    // {
+    //   id: 2,
+    //   title: "Practical Implementation",
+    //   description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
+    //   progress: 65,
+    //   thumbnail: "Objectclas1.jpeg",
+    // },
     {
       id: 2,
-      title: "Practical Implementation",
+      title: "CNN-CIFAR-10",
+      description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
+      progress: 65,
+      thumbnail: "Objectclas1.jpeg",
+    },
+    {
+      id: 3,
+      title: "GoogleNet",
+      description: "Learn to categorize images into predefined classes using deep learning models like CNNs, covering architectures (ResNet, EfficientNet), datasets (ImageNet, CIFAR), and evaluation metrics (accuracy, confusion matrices).",
+      progress: 70,
+      thumbnail: "objectclas.jpeg",
+    },
+    {
+      id: 4,
+      title: "AlexNet",
+      description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
+      progress: 65,
+      thumbnail: "Objectclas1.jpeg",
+    },
+    {
+      id: 5,
+      title: "ConvNeXt",
+      description: "Learn to categorize images into predefined classes using deep learning models like CNNs, covering architectures (ResNet, EfficientNet), datasets (ImageNet, CIFAR), and evaluation metrics (accuracy, confusion matrices).",
+      progress: 70,
+      thumbnail: "objectclas.jpeg",
+    },
+    {
+      id: 6,
+      title: "Vgg16",
+      description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
+      progress: 65,
+      thumbnail: "Objectclas1.jpeg",
+    },
+    {
+      id: 7,
+      title: "KNN",
       description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
       progress: 65,
       thumbnail: "Objectclas1.jpeg",
     }
+
   ];
 
   const handleCardClick = (title) => {
     const routes = {
       "Guides": "/ObjectGuide",
       "Practical Implementation": "/ObjectClass",
+      "GoogleNet":"/googlenet",
+      "AlexNet":"/alexnet",
+      "Vgg16":"/vgg16",
+      "ConvNeXt":"/convnext",
+      "KNN":"/knn",
+      "CNN-CIFAR-10":"/cnncifar"
   
     };
 

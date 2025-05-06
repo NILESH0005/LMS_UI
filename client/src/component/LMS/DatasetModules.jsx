@@ -56,6 +56,41 @@ export const DatasetModules = () => {
       progress: 90,
       thumbnail: "cifar.png",
     },
+    {
+      id: 8,
+      title: "ESC-50",
+      description: "Dataset for image classification with 10 classes.",
+      progress: 90,
+      thumbnail: "cifar.png",
+    },
+    {
+      id: 9,
+      title: "Heart Disease",
+      description: "Dataset for image classification with 10 classes.",
+      progress: 90,
+      thumbnail: "cifar.png",
+    },
+    {
+      id: 10,
+      title: "Image Caption",
+      description: "Dataset for image classification with 10 classes.",
+      progress: 90,
+      thumbnail: "cifar.png",
+    },
+    {
+      id: 11,
+      title: "IMDB",
+      description: "Dataset for image classification with 10 classes.",
+      progress: 90,
+      thumbnail: "cifar.png",
+    },
+    {
+      id: 12,
+      title: "Rotten Tomatoes",
+      description: "Dataset for image classification with 10 classes.",
+      progress: 90,
+      thumbnail: "cifar.png",
+    },
   ];
 
  
@@ -68,6 +103,12 @@ export const DatasetModules = () => {
       "Human Evolution Vid Dataset": "/humanevol",
       "House Prediction": "/housepred",
       "CIFAR-10": "/cifar",
+      "ESC-50":"/esc",
+      "Heart Disease":"/heart_disease",
+      "Image Caption":"/image_caption",
+      "IMDB":"/imdb",
+      "Rotten Tomatoes":"/rotten_tomatoes",
+
     };
 
     const route = routes[title];

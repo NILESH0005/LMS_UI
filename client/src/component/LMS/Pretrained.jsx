@@ -32,6 +32,34 @@ const navigate = useNavigate();
       description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
       progress: 65,
       thumbnail: "Resnet50.png",
+    },
+    {
+      id: 5,
+      title: "BLIP",
+      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
+      progress: 65,
+      thumbnail: "Resnet50.png",
+    },
+    {
+      id: 6,
+      title: "TS",
+      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
+      progress: 65,
+      thumbnail: "Resnet50.png",
+    },
+    {
+      id: 7,
+      title: "TAPAS",
+      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
+      progress: 65,
+      thumbnail: "Resnet50.png",
+    },
+    {
+      id: 8,
+      title: "DenseNet",
+      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
+      progress: 65,
+      thumbnail: "Resnet50.png",
     }
   ];
 
@@ -41,6 +69,10 @@ const navigate = useNavigate();
       "DETR": "/predetr",
       "LSTM": "/prelstm",
       "Resnet50": "/preresnet",
+      "BLIP":"/preblip",
+      "TS":"/prets",
+      "TAPAS":"/pretapas",
+      "DenseNet":"/predensenet"
   
     };
 

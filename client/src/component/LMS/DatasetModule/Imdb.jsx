@@ -1,52 +1,34 @@
 import React, { useState, useEffect } from "react";
 import FeedbackForm from "../FeedBackForm";
 
-const Make_Blobs = () => {
+const Imdb = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [feedback, setFeedback] = useState([]);
 
-    // File configurations
-    const blobFiles = [
+    // Files array will be provided by you
+    const ImdbFiles = [
         {
-            id: "14e72jkJJRjkqLjnWp33KVu4oLbSd0nnH",
-            title: "Blobs Dataset (CSV)",
-            type: "csv",
-            description: "Synthetic dataset for clustering algorithms",
-            size: "1.8MB",
-            lastUpdated: "2024-03-15",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=14e72jkJJRjkqLjnWp33KVu4oLbSd0nnH"
-        },
-        {
-            id: "1RWfd6X-njKfxzcScR3PotRjolL2lmJtb",
-            title: "K-Means Clustering (Notebook)",
-            type: "notebook",
-            description: "Implementation of K-Means clustering in Python",
-            size: "2.3MB",
-            lastUpdated: "2024-02-28",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1RWfd6X-njKfxzcScR3PotRjolL2lmJtb"
-        },
-        {
-            id: "1C9nkXZG83C9AuxAF98MShWo2xvNvnrOh",
-            title: "Unsupervised Learning (PDF Guide)",
+            id: "1ENHAaTTwhJ55a_2800hxSEjQ_PLQ8mdu",
+            title: "IMDB Movie Review Dataset Link",
             type: "pdf",
-            description: "README on unsupervised learning techniques",
-            size: "3.1MB",
-            lastUpdated: "2024-01-10"
+            description: "Documentation about the heart disease dataset",
+            size: "2.3MB",
+            lastUpdated: "2024-03-10"
         },
         {
-            id: "assignment",
-            title: "Clustering Assignment",
-            type: "assignment",
-            description: "Hands-on clustering exercises",
-            size: "1.2MB",
-            lastUpdated: "2024-04-05"
+            id: "1zGh0mxWl35eka7BYapMvqEcfXmertfNW",
+            title: "IMDB Sentiment Analysis",
+            type: "notebook",
+            description: "Jupyter notebook for heart disease prediction",
+            size: "3.1MB",
+            lastUpdated: "2024-03-15",
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1zGh0mxWl35eka7BYapMvqEcfXmertfNW"
         }
     ];
 
-    // Set default file on component mount
     useEffect(() => {
-        if (blobFiles.length > 0 && !selectedFile) {
-            setSelectedFile(blobFiles[1]); // Default to notebook
+        if (ImdbFiles.length > 0 && !selectedFile) {
+            setSelectedFile(ImdbFiles[0]); // Default to first file
         }
 
         // Security measures
@@ -74,7 +56,7 @@ const Make_Blobs = () => {
 
         const link = document.createElement('a');
         link.href = file.downloadUrl;
-        link.setAttribute('download', `${file.title}.${file.type}`);
+        link.setAttribute('download', `${file.title}.${file.type === 'notebook' ? 'ipynb' : file.type}`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -93,60 +75,47 @@ const Make_Blobs = () => {
         };
         
         const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("blobsFeedback", JSON.stringify(updatedFeedback));
+        localStorage.setItem("ImdbFeedback", JSON.stringify(updatedFeedback));
         setFeedback(updatedFeedback);
         
         console.log("Feedback submitted:", newFeedback);
     };
 
     const FileDisplay = ({ file }) => {
-        if (file.type === 'pdf') {
+        // Previewable file types (pdf, images, videos)
+        if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'webm'].includes(file.type)) {
             return (
                 <div className="w-full h-full border rounded-xl shadow-lg overflow-hidden bg-white">
                     <iframe
                         src={`https://drive.google.com/file/d/${file.id}/preview`}
-                        className="w-full h-full min-h-[70vh]"
+                        className="w-full min-h-[70vh]"
                         allowFullScreen
                         title={`${file.title} Preview`}
                         sandbox="allow-same-origin allow-scripts"
                     />
                     <div className="p-4 border-t flex justify-end">
-                        <button 
-                            onClick={() => handleDownload(file)}
+                        {/* <button 
+                            onClick={() => handleDownload({
+                                ...file,
+                                downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`
+                            })}
                             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                         >
-                            Download PDF
-                        </button>
+                            Download {file.type.toUpperCase()}
+                        </button> */}
                     </div>
                 </div>
             );
         }
 
-        // For CSV, Notebook, and Assignment files
+        // Non-previewable files (download only)
         return (
             <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
                 <div className="text-center max-w-md">
-                    <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
-                         style={{
-                             backgroundColor: file.type === 'csv' ? '#DCFCE7' : 
-                                            file.type === 'notebook' ? '#E0E7FF' : '#FEF3C7',
-                         }}>
-                        {file.type === 'csv' && (
-                            <svg className="w-10 h-10 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                        )}
-                        {file.type === 'notebook' && (
-                            <svg className="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                            </svg>
-                        )}
-                        {file.type === 'assignment' && (
-                            <svg className="w-10 h-10 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-                            </svg>
-                        )}
+                    <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-indigo-100">
+                        <svg className="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                        </svg>
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
@@ -156,20 +125,9 @@ const Make_Blobs = () => {
                     </div>
                     <button
                         onClick={() => handleDownload(file)}
-                        disabled={!file.downloadUrl}
-                        className={`px-6 py-3 rounded-lg text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                            file.downloadUrl 
-                                ? file.type === 'csv' 
-                                    ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
-                                    : file.type === 'notebook'
-                                    ? 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500'
-                                    : 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500'
-                                : 'bg-gray-400 cursor-not-allowed'
-                        }`}
+                        className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
-                        {file.downloadUrl 
-                            ? `Download ${file.type.toUpperCase()}` 
-                            : 'Download Not Available'}
+                        Download {file.type === 'notebook' ? 'Jupyter Notebook (.ipynb)' : `${file.type.toUpperCase()} File`}
                     </button>
                 </div>
             </div>
@@ -180,9 +138,9 @@ const Make_Blobs = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">Make_Blobs Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
                 <nav className="space-y-2">
-                    {blobFiles.map(file => (
+                    {ImdbFiles.map(file => (
                         <button
                             key={file.id}
                             onClick={() => setSelectedFile(file)}
@@ -193,25 +151,13 @@ const Make_Blobs = () => {
                             }`}
                         >
                             <div className="flex items-center">
-                                {file.type === 'pdf' && (
+                                {['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4'].includes(file.type) ? (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
                                     </svg>
-                                )}
-                                {file.type === 'notebook' && (
+                                ) : (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
-                                    </svg>
-                                )}
-                                {file.type === 'csv' && (
-                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd"/>
-                                    </svg>
-                                )}
-                                {file.type === 'assignment' && (
-                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                                        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
                                     </svg>
                                 )}
                                 <span className="font-medium">{file.title}</span>
@@ -258,4 +204,4 @@ const Make_Blobs = () => {
     );
 };
 
-export default Make_Blobs;
+export default Imdb;

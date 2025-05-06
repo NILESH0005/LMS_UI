@@ -35,7 +35,6 @@ import DeepSpeech from './component/LMS/AlgorithmModule/DeepSpeech.jsx';
 import Detr from './component/LMS/AlgorithmModule/Detr.jsx';
 import Lstm from './component/LMS/AlgorithmModule/Lstm.jsx';
 import Resnet50 from './component/LMS/AlgorithmModule/Resnet50.jsx';
-import Handson from './component/LMS/RegressionDoc/Handson.jsx';
 import Guidereg from './component/LMS/RegressionDoc/Guidereg.jsx';
 import Mask_Rcnn from './component/LMS/CompVis/Mask_Rcnn.jsx';
 import Vision_trans from './component/LMS/CompVis/Vision_trans.jsx';
@@ -59,6 +58,27 @@ import Imageclass from './component/LMS/DatasetModule/Imageclass.jsx';
 import Humanevol from './component/LMS/DatasetModule/Humanevol.jsx';
 import Housepred from './component/LMS/DatasetModule/Housepred.jsx';
 import Cifar from './component/LMS/DatasetModule/Cifar.jsx';
+import Esc from './component/LMS/DatasetModule/Esc.jsx';
+import Heart_disease from './component/LMS/DatasetModule/Heart_disease.jsx';
+import Image_caption from './component/LMS/DatasetModule/Image_caption.jsx';
+import Imdb from './component/LMS/DatasetModule/Imdb.jsx';
+import Rotten_tomatoes from './component/LMS/DatasetModule/Rotten_tomatoes.jsx';
+import Pre_blip from './component/LMS/Pretrained_models/Pre_blip.jsx';
+import Pre_ts from './component/LMS/Pretrained_models/Pre_ts.jsx';
+import Pre_tapas from './component/LMS/Pretrained_models/Pre_tapas.jsx';
+import Pre_densenet from './component/LMS/Pretrained_models/Pre_densenet.jsx';
+import Alexnet from './component/LMS/Object Modules/Alexnet.jsx';
+import Googlenet from './component/LMS/Object Modules/Googlenet.jsx';
+import Vgg16 from './component/LMS/Object Modules/Vgg16.jsx';
+import Convnext from './component/LMS/Object Modules/Convnext.jsx';
+import Cnn_cifar from './component/LMS/Object Modules/Cnn_cifar.jsx';
+import Knn from './component/LMS/Object Modules/Knn.jsx';
+import Lg1 from './component/LMS/RegressionDoc/Lg1.jsx';
+import Lg2 from './component/LMS/RegressionDoc/Lg2.jsx';
+import Lg3 from './component/LMS/RegressionDoc/Lg3.jsx';
+import Lg4 from './component/LMS/RegressionDoc/Lg4.jsx';
+import Lg5 from './component/LMS/RegressionDoc/Lg5.jsx';
+import Lg6 from './component/LMS/RegressionDoc/Lg6.jsx';
 
 
 
@@ -101,6 +121,12 @@ function App() {
             {/* Object Classification */}
             <Route path='/ObjectGuide' element={<Guide />} />
             <Route path='/ObjectClass' element={<Hands />} />
+            <Route path='/alexnet' element={<Alexnet />} />
+            <Route path='/googlenet' element={<Googlenet />} />
+            <Route path='/vgg16' element={<Vgg16 />} />
+            <Route path='/convnext' element={<Convnext />} />
+            <Route path='/cnncifar' element={<Cnn_cifar />} />
+            <Route path='/knn' element={<Knn />} />
 
               {/* Annotation tools */}
             <Route path='/Annsage' element={<Aws />} />
@@ -122,7 +148,12 @@ function App() {
                
             {/* Regression Module */}
             <Route path='/reg_guide' element={<Guidereg />} />
-            <Route path='/reg_handson' element={<Handson  />} />
+            <Route path='/lg1' element={<Lg1 />} />
+            <Route path='/lg2' element={<Lg2  />} />
+            <Route path='/lg3' element={<Lg3 />} />
+            <Route path='/lg4' element={<Lg4  />} />
+            <Route path='/lg5' element={<Lg5 />} />
+            <Route path='/lg6' element={<Lg6  />} />
             
             {/* Computer Vision Modules */}
             <Route path='/fasterrcnn' element={<Faster_rcnn />} />
@@ -139,6 +170,11 @@ function App() {
             <Route path='/humanevol' element={<Humanevol />} />
             <Route path='/housepred' element={<Housepred />} />
             <Route path='/cifar' element={<Cifar />} />
+            <Route path='/esc' element={<Esc />} />
+            <Route path='/heart_disease' element={<Heart_disease />} />
+            <Route path='/image_caption' element={<Image_caption />} />
+            <Route path='/imdb' element={<Imdb />} />
+            <Route path='/rotten_tomatoes' element={<Rotten_tomatoes />} />
             
 
             {/* Pretrained Models */}
@@ -146,6 +182,10 @@ function App() {
             <Route path='/predetr' element={<Pre_detr />} />
               <Route path='/prelstm' element={<Pre_lstm />} />
             <Route path='/preresnet' element={<Pre_resnet />} />
+            <Route path='/preblip' element={<Pre_blip />} />
+            <Route path='/prets' element={<Pre_ts />} />
+              <Route path='/pretapas' element={<Pre_tapas />} />
+            <Route path='/predensenet' element={<Pre_densenet />} />
 
            {/* Generative AI Models */}
            <Route path='/genaiguide' element={<Genaiguide />} />

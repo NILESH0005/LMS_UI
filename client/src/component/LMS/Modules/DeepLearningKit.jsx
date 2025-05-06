@@ -286,7 +286,7 @@ const DeepLearningKit = () => {
       case "pdf":
         return `https://drive.google.com/file/d/${fileId}/preview`;
       case "mp4":
-        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+        return `https://drive.google.com/file/d/${fileId}/preview`;
       case "txt":
         return `https://drive.google.com/uc?export=view&id=${fileId}`;
       default:
@@ -453,21 +453,29 @@ const DeepLearningKit = () => {
                   }}
                 />
 
-                {selectedFileType === "mp4" ? (
-                  <video
-                    key={selectedFileId}
-                    src={getEmbedURL(selectedFileId, selectedFileType)}
-                    className="w-full h-full"
-                    controls
-                  />
-                ) : (
-                  <iframe
-                    key={selectedFileId}
-                    src={getEmbedURL(selectedFileId, selectedFileType)}
-                    className="w-full h-full"
-                    allowFullScreen
-                  />
-                )}
+{selectedFileType === "mp4" ? (
+  <div className="w-full h-full flex items-center justify-center bg-black">
+    <video
+      key={selectedFileId}
+      controls
+      controlsList="nodownload"
+      className="max-w-full max-h-full"
+    >
+      <source
+        src={`https://drive.google.com/uc?export=download&id=${selectedFileId}`}
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+) : (
+  <iframe
+    key={selectedFileId}
+    src={getEmbedURL(selectedFileId, selectedFileType)}
+    className="w-full h-full"
+    allowFullScreen
+  />
+)}
               </div>
 
               {selectedFileId && (

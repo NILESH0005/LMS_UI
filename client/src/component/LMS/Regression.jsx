@@ -14,19 +14,64 @@ export const Regression = () => {
        thumbnail: "Regression.png",
      },
      {
-       id: 2,
-       title: "Practical Implementation",
-       description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
-       progress: 65,
-       thumbnail: "Regression2.png",
-     }
+      id: 2,
+      title: "Home Price Prediction-Single Varable",
+      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      progress: 65,
+      thumbnail: "Regression2.png",
+    },
+    {
+      id: 3,
+      title: "Home Price Prediction-Multi Varable",
+      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      progress: 65,
+      thumbnail: "Regression2.png",
+    },
+    {
+      id: 4,
+      title: "Binary Logistic Regression: Predicting Life Insurance Purchase Based on Age",
+      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      progress: 65,
+      thumbnail: "Regression2.png",
+    },
+    {
+      id: 5,
+      title: "Multiclass Classification with Logistic Regression",
+      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      progress: 65,
+      thumbnail: "Regression2.png",
+    },
+    {
+      id: 6,
+      title: "Salary Prediction using Linear Regression",
+      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      progress: 65,
+      thumbnail: "Regression2.png",
+    },
+    {
+      id: 7,
+      title: "Employee Retention Prediction",
+      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      progress: 65,
+      thumbnail: "Regression2.png",
+    },
+    {
+      id: 8,
+      title: "Linear Regression",
+      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      progress: 65,
+      thumbnail: "Regression2.png",
+    }
    ];
  
    const handleCardClick = (title) => {
      const routes = {
        "Guides": "/reg_guide",
-       "Practical Implementation": "/reg_handson",
-   
+       "Home Price Prediction-Single Varable":"/lg1 ",
+       "Home Price Prediction-Multi Varable":"/lg2 ",
+       "Binary Logistic Regression: Predicting Life Insurance Purchase Based on Age":"/lg3",
+       "Multiclass Classification with Logistic Regression":"/lg4",
+       "Salary Prediction using Linear Regression":"/lg6"
      };
  
      const route = routes[title];
