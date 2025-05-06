@@ -11,7 +11,7 @@ export const Regression = () => {
        title: "Guides",
        description: "Master the theory: Learn how regression models map relationships between variables to predict continuous outcomes, from assumptions to interpretation.",
        progress: 70,
-       thumbnail: "Regression.png",
+       thumbnail: "Regression.avif",
      },
      {
       id: 2,

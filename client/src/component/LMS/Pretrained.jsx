@@ -10,14 +10,14 @@ const navigate = useNavigate();
       title: "DeepSpeech",
       description: "An end-to-end automatic speech recognition (ASR) system using RNNs that converts audio to text, with pre-trained models available for English and other languages.",
       progress: 70,
-      thumbnail: "deepspeech1.png",
+      thumbnail: "deepspeech1.avif",
     },
     {
       id: 2,
       title: "DETR",
       description: "An object detection model combining CNNs with transformers, offering end-to-end training with pre-trained models for COCO dataset detection without anchor boxes.",
       progress: 65,
-      thumbnail: "Detr.png",
+      thumbnail: "Detr.avif",
     },
     {
       id: 3,
@@ -31,35 +31,35 @@ const navigate = useNavigate();
       title: "Resnet50",
       description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
       progress: 65,
-      thumbnail: "Resnet50.png",
+      thumbnail: "Resnet50.avif",
     },
     {
       id: 5,
       title: "BLIP",
       description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
       progress: 65,
-      thumbnail: "Resnet50.png",
+      thumbnail: "Resnet50.avif",
     },
     {
       id: 6,
       title: "TS",
       description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
       progress: 65,
-      thumbnail: "Resnet50.png",
+      thumbnail: "Resnet50.avif",
     },
     {
       id: 7,
       title: "TAPAS",
       description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
       progress: 65,
-      thumbnail: "Resnet50.png",
+      thumbnail: "Resnet50.avif",
     },
     {
       id: 8,
       title: "DenseNet",
       description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
       progress: 65,
-      thumbnail: "Resnet50.png",
+      thumbnail: "Resnet50.avif",
     }
   ];
 
