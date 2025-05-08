@@ -11,7 +11,7 @@ export const Lms = () => {
     {
       id: 1,
       title: "Teaching Kits",
-      description: "Access and render text files, PowerPoints, and Jupyter Notebooks",
+      description: "Learn from preloaded text files, PPTs, and notebooks",
       category: "teaching-kits",
       subcategory: "teaching-kits",
       image: "Teaching kit.avif",
@@ -19,7 +19,7 @@ export const Lms = () => {
     {
       id: 2,
       title: "Data Sets",
-      description: "Access structured/unstructured datasets with upload & manage options",
+      description: "Explore structured and unstructured datasets",
       category: "data-sets",
       subcategory: "data-sets",
       image: "Datasets.jpg",
@@ -27,7 +27,7 @@ export const Lms = () => {
     {
       id: 3,
       title: "Regression - Linear and Logistic",
-      description: "Explore linear and logistic regression models and applications",
+      description: "Learn linear and logistic regression techniques",
       category: "regression",
       subcategory: "regression",
       image: "Regression.jpg",
@@ -35,7 +35,7 @@ export const Lms = () => {
     {
       id: 4,
       title: "Pre-Trained Models",
-      description: "Access and utilize various pre-trained machine learning models",
+      description: "Study and experiment with pre-trained ML models",
       category: "pretrained-models",
       subcategory: "pretrained-models",
       image: "pre-trained.avif",
@@ -43,7 +43,7 @@ export const Lms = () => {
     {
       id: 5,
       title: "Object Classification",
-      description: "Learn and implement object classification techniques",
+      description: "Understand how objects are classified using AI",
       category: "object-classification",
       subcategory: "object-classification",
       image: "classification.png",
@@ -51,7 +51,7 @@ export const Lms = () => {
     {
       id: 6,
       title: "Generative AI and LLM",
-      description: "Explore generative AI and large language models",
+      description: "Explore how generative AI and LLMs work",
       category: "generative-ai",
       subcategory: "generative-ai",
       image: "generativeai.avif",
@@ -59,7 +59,7 @@ export const Lms = () => {
     {
       id: 7,
       title: "Digital Learning",
-      description: "Interactive digital learning resources and tools",
+      description: "Access interactive digital learning materials",
       category: "digital-learning",
       subcategory: "digital-learning",
       image: "digital.avif",
@@ -67,7 +67,7 @@ export const Lms = () => {
     {
       id: 8,
       title: "Computer Vision",
-      description: "Learn about image processing and computer vision techniques",
+      description: "Learn image processing and vision-based AI",
       category: "computer-vision",
       subcategory: "computer-vision",
       image: "computerVision.jpeg",
@@ -75,7 +75,7 @@ export const Lms = () => {
     {
       id: 9,
       title: "Annotation and Labeling",
-      description: "Tools and techniques for data annotation and labeling",
+      description: "Understand data labeling and annotation basics",
       category: "annotation",
       subcategory: "annotation",
       image: "annotation.jpeg",
@@ -83,11 +83,19 @@ export const Lms = () => {
     {
       id: 10,
       title: "Algorithms",
-      description: "Study various algorithms and their implementations",
+      description: "Study foundational algorithms used in AI/ML",
       category: "algorithms",
       subcategory: "algorithms",
       image: "algorithms.avif",
     },
+    {
+      id: 11,
+      title: "Concepts of AI, ML, and Deep Learning",
+      description: "Learn the core concepts behind AI, ML, and DL",
+      category: "concepts",
+      subcategory: "concepts",
+      image: "algorithms.avif",
+    }
   ];
 
 
@@ -103,7 +111,9 @@ export const Lms = () => {
       'digital-learning': '/digital-learning-modules',
       'computer-vision': '/computer-vision-modules',
       'annotation': '/annotation-modules',
-      'algorithms': '/algorithms-modules'
+      'algorithms': '/algorithms-modules',
+      'concepts': '/concepts-module'
+
     };
     
     navigate(pathMap[category] || '/', { state: { category, subcategory } });

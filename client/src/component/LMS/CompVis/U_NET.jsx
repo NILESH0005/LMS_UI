@@ -7,7 +7,23 @@ const U_NET = () => {
 
     // Files array will be provided by you
     const U_NETFiles = [
-        // File objects here
+        {
+            id: "1ihgjdms_V472wQ5GwENyPh3Y0CUyJPAQ",
+            title: "",
+            type: "pdf",
+            description: "",
+            size: "2.3MB",
+            lastUpdated: "2024-03-10"
+        },
+        {
+            id: "15aYU1C5tmBeCrLElBtKPHwLicyckvGGh",
+            title: "",
+            type: "notebook",
+            description: " ",
+            size: "3.1MB",
+            lastUpdated: "2024-03-15",
+            downloadUrl: "https://drive.google.com/uc?export=download&id=15aYU1C5tmBeCrLElBtKPHwLicyckvGGh"
+        }
     ];
 
     useEffect(() => {

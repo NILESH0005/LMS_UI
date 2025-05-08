@@ -7,7 +7,23 @@ const Image_To_Text = () => {
 
     // Files array will be provided by you
     const Image_To_TextFiles = [
-        // File objects here
+        {
+            id: "1evxlRWUNvKlimrEtxxduAjNFY_A4xD_K",
+            title: "",
+            type: "pdf",
+            description: "",
+            size: "2.3MB",
+            lastUpdated: "2024-03-10"
+        },
+        {
+            id: "1OJGOr3T5dZ-pCELPEumJpiX2rnz5kfrZ",
+            title: "",
+            type: "notebook",
+            description: " ",
+            size: "3.1MB",
+            lastUpdated: "2024-03-15",
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1OJGOr3T5dZ-pCELPEumJpiX2rnz5kfrZ"
+        }
     ];
 
     useEffect(() => {

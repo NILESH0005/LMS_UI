@@ -33,6 +33,34 @@ export const Algorithms = () => {
       description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
       progress: 75,
       thumbnail: "Resnet50.png",
+    },
+    {
+      id: 5,
+      title: "Decision Tree Classifier",
+      description: "An end-to-end automatic speech recognition (ASR) system using RNNs that converts audio to text, with pre-trained models available for English and other languages.",
+      progress: 35,
+      thumbnail: "deepspeech1.png",
+    },
+    {
+      id: 6,
+      title: "Gradient Descent",
+      description: "An object detection model combining CNNs with transformers, offering end-to-end training with pre-trained models for COCO dataset detection without anchor boxes.",
+      progress: 45,
+      thumbnail: "Detr.png",
+    },
+    {
+      id: 7,
+      title: "Linear Regression",
+      description: " specialized RNN architecture for sequence modeling that handles long-term dependencies, with pre-trained models widely used in time-series forecasting and NLP tasks like text generation.",
+      progress: 65,
+      thumbnail: "lstm.png",
+    },
+    {
+      id: 8,
+      title: "SVM",
+      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
+      progress: 75,
+      thumbnail: "Resnet50.png",
     }
   ];
 
@@ -41,7 +69,13 @@ export const Algorithms = () => {
       "DeepSpeech": "/deepspeech",
       "DETR": "/detr",
       "LSTM": "/lstm",
-      "Resnet50": "/resnet"
+      "Resnet50": "/resnet",
+      "Decision Tree Classifier":"/decisiontree",
+      "Gradient Descent":"/gradient",
+      "Linear Regression":"/linearregression",
+      "SVM":"/svm"
+
+
     };
 
     const route = routes[title];

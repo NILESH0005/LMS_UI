@@ -79,6 +79,15 @@ import Lg3 from './component/LMS/RegressionDoc/Lg3.jsx';
 import Lg4 from './component/LMS/RegressionDoc/Lg4.jsx';
 import Lg5 from './component/LMS/RegressionDoc/Lg5.jsx';
 import Lg6 from './component/LMS/RegressionDoc/Lg6.jsx';
+import Anomaly_Detection from './component/LMS/CompVis/Anomaly_Detection.jsx';
+import Image_Segmentation from './component/LMS/CompVis/Image_Segmentation.jsx';
+import Image_To_Text from './component/LMS/CompVis/Image_To_Text.jsx';
+import U_NET from './component/LMS/CompVis/U_NET.jsx';
+import DecisionTree from './component/LMS/AlgorithmModule/DecisionTree.jsx';
+import GradientDescent from './component/LMS/AlgorithmModule/GradientDescent.jsx';
+import LinearRegression from './component/LMS/AlgorithmModule/LinearRegression.jsx';
+import Svm from './component/LMS/AlgorithmModule/Svm.jsx';
+import Concepts from './component/LMS/Concepts.jsx';
 
 
 
@@ -117,6 +126,8 @@ function App() {
             <Route path='/computer-vision-modules' element={<ComputerVision />} />
             <Route path='/annotation-modules' element={<Annotation />} />
             <Route path='/algorithms-modules' element={<Algorithms />} />
+            <Route path='/concepts-module' element={<Concepts />} />
+
 
             {/* Object Classification */}
             <Route path='/ObjectGuide' element={<Guide />} />
@@ -145,6 +156,10 @@ function App() {
             <Route path='/detr' element={<Detr />} />
             <Route path='/lstm' element={<Lstm />} />
             <Route path='/resnet' element={<Resnet50 />} />
+            <Route path='/decisiontree' element={<DecisionTree />} />
+            <Route path='/gradient' element={<GradientDescent />} />
+            <Route path='/linearregression' element={<LinearRegression />} />
+            <Route path='/svm' element={<Svm />} />
                
             {/* Regression Module */}
             <Route path='/reg_guide' element={<Guidereg />} />
@@ -160,6 +175,10 @@ function App() {
             <Route path='/maskrcnn' element={<Mask_Rcnn />} />
             <Route path='/ssd' element={<SSD />} />
             <Route path='/visiontran' element={<Vision_trans />} />
+            <Route path='/anomalydetection' element={<Anomaly_Detection />} />
+            <Route path='/imagesegmentation' element={<Image_Segmentation />} />
+            <Route path='/imagetotext' element={<Image_To_Text />} />
+            <Route path='/unet' element={<U_NET />} />
             
          
             {/* Dataset Module */}

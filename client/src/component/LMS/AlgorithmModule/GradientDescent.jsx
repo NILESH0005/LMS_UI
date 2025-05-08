@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from "react";
 import FeedbackForm from "../FeedBackForm";
 
-const Anomaly_Detection = () => {
+const GradientDescent = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [feedback, setFeedback] = useState([]);
 
     // Files array will be provided by you
-    const Anomaly_DetectionFiles = [
+    const GradientDescentFiles = [
         {
-                  id: "1boxp5E5h3MO9LmKivPXnKB6fqB0xw50F",
-                  title: "",
-                  type: "pdf",
-                  description: "",
-                  size: "2.3MB",
-                  lastUpdated: "2024-03-10"
-              },
-              {
-                  id: "1_TCD8S8TpdWn28tCpinkLorviUio7ln9",
-                  title: "",
-                  type: "notebook",
-                  description: " ",
-                  size: "3.1MB",
-                  lastUpdated: "2024-03-15",
-                  downloadUrl: "https://drive.google.com/uc?export=download&id=1_TCD8S8TpdWn28tCpinkLorviUio7ln9"
-              }
+            id: "",
+            title: "1XKj7oJyZh6P3lzhsT6bwxZ0uC2I-Maaj",
+            type: "pdf",
+            description: "",
+            size: "2.3MB",
+            lastUpdated: "2024-03-10"
+        },
+        {
+            id: "1Nmp9Nd1-9wtJCXPx6S2V94-7ukWc8jNh",
+            title: "",
+            type: "notebook",
+            description: " ",
+            size: "3.1MB",
+            lastUpdated: "2024-03-15",
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1Nmp9Nd1-9wtJCXPx6S2V94-7ukWc8jNh"
+        }
     ];
 
     useEffect(() => {
-        if (Anomaly_DetectionFiles.length > 0 && !selectedFile) {
-            setSelectedFile(Anomaly_DetectionFiles[0]); // Default to first file
+        if (GradientDescentFiles.length > 0 && !selectedFile) {
+            setSelectedFile(GradientDescentFiles[0]); // Default to first file
         }
 
         // Security measures
@@ -75,7 +75,7 @@ const Anomaly_Detection = () => {
         };
         
         const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("Anomaly_DetectionFeedback", JSON.stringify(updatedFeedback));
+        localStorage.setItem("GradientDescentFeedback", JSON.stringify(updatedFeedback));
         setFeedback(updatedFeedback);
         
         console.log("Feedback submitted:", newFeedback);
@@ -94,6 +94,15 @@ const Anomaly_Detection = () => {
                         sandbox="allow-same-origin allow-scripts"
                     />
                     <div className="p-4 border-t flex justify-end">
+                        <button 
+                            onClick={() => handleDownload({
+                                ...file,
+                                downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`
+                            })}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                        >
+                            Download {file.type.toUpperCase()}
+                        </button>
                     </div>
                 </div>
             );
@@ -131,7 +140,7 @@ const Anomaly_Detection = () => {
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
                 <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
                 <nav className="space-y-2">
-                    {Anomaly_DetectionFiles.map(file => (
+                    {GradientDescentFiles.map(file => (
                         <button
                             key={file.id}
                             onClick={() => setSelectedFile(file)}
@@ -195,4 +204,4 @@ const Anomaly_Detection = () => {
     );
 };
 
-export default Anomaly_Detection;
+export default GradientDescent;

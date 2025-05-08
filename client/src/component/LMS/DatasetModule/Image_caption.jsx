@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FeedbackForm from "../FeedBackForm";
 
-const Image_caption= () => {
+const Image_caption = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [feedback, setFeedback] = useState([]);
 
@@ -23,6 +23,15 @@ const Image_caption= () => {
             size: "3.1MB",
             lastUpdated: "2024-03-15",
             downloadUrl: "https://drive.google.com/uc?export=download&id=1byvRkYeZUabDQmcvPzrxMmDbKaOdAtVT"
+        },
+        // Added new dataset link object
+        {
+            id: "dataset-link",
+            title: "Dataset Link",
+            type: "link",
+            description: "Kag100 Image Captioning Dataset on Hugging Face",
+            externalUrl: "https://huggingface.co/datasets/jpawan33/kag100-image-captioning-dataset",
+            lastUpdated: "2024-03-20"
         }
     ];
 
@@ -64,6 +73,10 @@ const Image_caption= () => {
         console.log(`Downloaded: ${file.title}`);
     };
 
+    const handleExternalLink = (url) => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
     const handleFeedbackSubmit = (rating, comment) => {
         const newFeedback = {
             fileId: selectedFile.id,
@@ -82,6 +95,39 @@ const Image_caption= () => {
     };
 
     const FileDisplay = ({ file }) => {
+        // Handle external links
+        if (file.type === 'link') {
+            return (
+                <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
+                    <div className="text-center max-w-md">
+                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-indigo-100">
+                            <svg className="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
+                        <p className="text-gray-500 mb-4">{file.description}</p>
+                        <div className="mb-6">
+                            <img 
+                                src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" 
+                                alt="Hugging Face Logo" 
+                                className="h-10 mx-auto mb-4"
+                            />
+                            <p className="text-sm text-gray-600">
+                                This dataset is hosted on Hugging Face Datasets. It contains image-caption pairs for training and evaluation.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => handleExternalLink(file.externalUrl)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Open Dataset Page
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
         // Previewable file types (pdf, images, videos)
         if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'webm'].includes(file.type)) {
             return (
@@ -138,7 +184,7 @@ const Image_caption= () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">Image Captioning Resources</h2>
                 <nav className="space-y-2">
                     {Image_captionFiles.map(file => (
                         <button
@@ -151,7 +197,11 @@ const Image_caption= () => {
                             }`}
                         >
                             <div className="flex items-center">
-                                {['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4'].includes(file.type) ? (
+                                {file.type === 'link' ? (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                                    </svg>
+                                ) : ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4'].includes(file.type) ? (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
                                     </svg>
@@ -184,14 +234,16 @@ const Image_caption= () => {
                         <div className="h-full">
                             <FileDisplay file={selectedFile} />
                             
-                            <div className="mt-8 max-w-3xl mx-auto">
-                                <FeedbackForm 
-                                    fileId={selectedFile.id}
-                                    fileName={selectedFile.title}
-                                    fileType={selectedFile.type}
-                                    onSubmit={handleFeedbackSubmit}
-                                />
-                            </div>
+                            {selectedFile.type !== 'link' && (
+                                <div className="mt-8 max-w-3xl mx-auto">
+                                    <FeedbackForm 
+                                        fileId={selectedFile.id}
+                                        fileName={selectedFile.title}
+                                        fileType={selectedFile.type}
+                                        onSubmit={handleFeedbackSubmit}
+                                    />
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="h-full flex items-center justify-center text-gray-500">

@@ -1,82 +1,31 @@
 import React from 'react'
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-
-export const ComputerVision = () => {
- const navigate = useNavigate();
+export const Concepts = () => {
+   const navigate = useNavigate();
  
    const models = [
      {
        id: 1,
-       title: "Faster_RCNN",
-       description: "Fast Region-based CNN for real-time object detection with region proposal networks.",
+       title: "Guides",
+       description: "Explore Concepts AI fundamentals: Learn how LLMs (GPT, Claude, Gemini) and diffusion models (Stable Diffusion, DALL·E) create text, images, and code using transformer architectures and attention mechanisms.",
        progress: 70,
-       thumbnail: "fasterrcnn.avif"
+       thumbnail: "Conceptsllm.jpg",
      },
      {
        id: 2,
-       title: "Mask_RCNN",
-       description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
+       title: "Models",
+       description: "Concepts AI models like GPT-4, Claude 3, Gemini, Llama 3, Stable Diffusion, and DALL·E revolutionize content creation through advanced text, image, and multimodal generation capabilities.",
        progress: 65,
-       thumbnail: "maskrcnn.avif"
-     },
-     {
-       id: 3,
-       title: "SSD",
-       description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
-       progress: 65,
-       thumbnail: "SSD object detection.avif",
-     },
-     {
-       id: 4,
-       title: "Vision_Transformers",
-       description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
-       progress: 65,
-       thumbnail: "visiontrans.avif"
-     },
-     {
-      id: 5,
-      title: "Anomaly Detection",
-      description: "Fast Region-based CNN for real-time object detection with region proposal networks.",
-      progress: 70,
-      thumbnail: "fasterrcnn.avif"
-    },
-    {
-      id: 6,
-      title: "Image Segmentation",
-      description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
-      progress: 65,
-      thumbnail: "maskrcnn.avif"
-    },
-    {
-      id: 7,
-      title: "Image To Text",
-      description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
-      progress: 65,
-      thumbnail: "SSD object detection.avif",
-    },
-    {
-      id: 8,
-      title: "U-NET",
-      description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
-      progress: 65,
-      thumbnail: "visiontrans.avif"
-    }
-    
-     
+       thumbnail: "Conceptsllm1.jpg",
+     }
    ];
  
    const handleCardClick = (title) => {
      const routes = {
-       "Faster_RCNN": "/fasterrcnn",
-       "Mask_RCNN": "/maskrcnn",
-        "SSD": "/ssd",
-        "Vision_Transformers": "/visiontran",
-        "Anomaly Detection":"/anomalydetection",
-        "Image Segmentation":"/imagesegmentation",
-        "Image To Text":"/imagetotext",
-        "U-NET":"/unet",
-        
+       "Guides": "/genaiguide",
+       "Models": "/genaimodel",
+   
      };
  
      const route = routes[title];
@@ -92,7 +41,7 @@ export const ComputerVision = () => {
        <div className="flex-1 flex flex-col">
          <header className="bg-white border-b border-gray-200 p-6">
            <h1 className="text-3xl font-bold">
-           Computer Vision Models
+           Concepts AI and Large Language Models (LLM)
            </h1>
          </header>
  
@@ -100,10 +49,10 @@ export const ComputerVision = () => {
            <div className="space-y-8">
              <div className="text-center">
                <h1 className="text-5xl font-bold mb-4">
-                 Computer Vision Models
+               Concepts AI and Large Language Models (LLM)
                </h1>
                <p className="text-gray-600">
-                 
+                 Explore state-of-the-art object classification and detection models
                </p>
              </div>
  
@@ -148,4 +97,4 @@ export const ComputerVision = () => {
      </div>
    );
 }
-export default ComputerVision;
+export default Concepts;
