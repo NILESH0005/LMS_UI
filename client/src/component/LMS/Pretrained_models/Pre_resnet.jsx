@@ -8,10 +8,16 @@ const Pre_resnet = () => {
     const Pre_resnetFiles = [
         {
            
+            title: "README",
+            id: "1bMFnwvuATooPrbQUHEtTajFozpeBg9Ez",
+            type: "pdf",
+            description: ""
+        },
+        {
+           
             title: "Research Paper",
             id: "1j4-WIz0YJnqTAS4Eh3VuFbXPrJUxQEfL",
-            type: "pdf",
-            
+            type: "pdf", 
             description: "Implementation guide for ResNet"
         },
         {
@@ -19,16 +25,15 @@ const Pre_resnet = () => {
             title: "Workbook",
             id: "1FAYpq27JJoK3ZYtkbiuZmOhfoPKI3MpZ",
             type: "notebook",
-             downloadUrl: "https://drive.google.com/uc?export=download&id=1FAYpq27JJoK3ZYtkbiuZmOhfoPKI3MpZ",
-            
-            description: "Jupyter notebook with training code"
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1FAYpq27JJoK3ZYtkbiuZmOhfoPKI3MpZ",     
+            description: ""
         },
         {
             
             title: "Pre-trained Weights (H5)",
             id: "1Qr7MY5wMpCCRnb9XokJDx2mXRIgvE9f0",
             type: "h5",
-           
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1Qr7MY5wMpCCRnb9XokJDx2mXRIgvE9f0",    
             description: "Pre-trained model weights",
             
         },
@@ -149,7 +154,7 @@ const Pre_resnet = () => {
                                         <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
                                     </svg>
                                 )}
-                                {file.type === 'link' && (
+                                {file.type === 'h5' && (
                                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                                 </svg>
@@ -172,7 +177,7 @@ const Pre_resnet = () => {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <div className="p-6 pb-0">
                     <h1 className="text-2xl font-bold text-gray-800">
-                        {selectedFile?.title || "Select a Resource"}
+                        {selectedFile?.title }
                     </h1>
                     <p className="text-gray-600 mt-1">
                         {selectedFile?.description }

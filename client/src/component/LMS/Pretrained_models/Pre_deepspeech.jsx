@@ -21,7 +21,7 @@ const Pre_deepspeech = () => {
     id: "1AL6Jx_XYsjktrfIUHwtYNTZne7FLY67n", // Replace with actual notebook ID
     type: "notebook", // Using pdf type for Google Drive preview
     description: "Jupyter notebook with pre-processing implementation",
-     downloadUrl: "https://drive.google.com/uc?export=download&id=1AL6Jx_XYsjktrfIUHwtYNTZne7FLY67n",
+    downloadUrl: "https://drive.google.com/uc?export=download&id=1AL6Jx_XYsjktrfIUHwtYNTZne7FLY67n",
     nbviewerUrl: "https://nbviewer.org/github/20maitrti/LMS/blob/main/DeepSpeech.ipynb"
 
 },
@@ -189,7 +189,7 @@ const Pre_deepspeech = () => {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <div className="p-6 pb-0">
                     <h1 className="text-2xl font-bold text-gray-800">
-                        {selectedFile?.title || "Select a Resource"}
+                        {selectedFile?.title }
                     </h1>
                     <p className="text-gray-600 mt-1">
                         {selectedFile?.description }

@@ -7,13 +7,19 @@ const Pre_lstm = () => {
 
     // Files array will be provided by you
     const Pre_lstmFiles = [
-       
+        {
+    
+            title: "README",
+            id: "1rrEAkJKTTlvw5QhmkCODhjZjYb_iW2o5",
+            type: "pdf",
+            description: "Complete guide to LSTM implementation"
+        },  
 {
     
     title: "Research Paper",
     id: "1vTzUkVtWJmDKiSdFocLrDvUKmZ71RSxp",
     type: "pdf",
-    description: "Complete guide to LSTM implementation"
+    description: ""
 },
 {
     id: "dataset-link",
@@ -87,35 +93,37 @@ const Pre_lstm = () => {
         if (file.type === 'link') {
             return (
                 <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
-                    <div className="text-center max-w-md">
-                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-indigo-100">
-                            <svg className="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
-                            </svg>
-                        </div>
-                        <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
-                        <p className="text-gray-500 mb-4">
-  Kag100 is a compact image captioning dataset with 100 diverse images, each paired with a meaningful text description. Ideal for testing or demonstrating image-to-text models.
-</p>
-<div className="mb-6">
-  <img 
-    src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" 
-    alt="Hugging Face Logo" 
-    className="h-10 mx-auto mb-4"
-  />
-  <p className="text-sm text-gray-600 text-center">
-    Hosted on Hugging Face, the Kag100 dataset enables experimentation with modern image captioning models such as BLIP, providing high-quality visual-text data in a lightweight format.
-  </p>
-</div>
-
-                        <button
-                            onClick={() => handleExternalLink(file.externalUrl)}
-                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
-                            Open Dataset Page
-                        </button>
-                    </div>
+                <div className="text-center max-w-md">
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-yellow-100">
+                    <svg className="w-10 h-10 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 3a1 1 0 000 2h1v10H4a1 1 0 100 2h12a1 1 0 100-2h-1V5h1a1 1 0 100-2H4zm3 2v10h6V5H7z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">GloVe 6B Embeddings</h3>
+                  <p className="text-gray-500 mb-4">
+                    GloVe (Global Vectors) is an unsupervised learning algorithm for obtaining vector representations for words, trained on 6 billion tokens from Wikipedia and Gigaword.
+                  </p>
+                  <div className="mb-6">
+                    <img 
+                      src="https://nlp.stanford.edu/images/glove-icon.png" 
+                      alt="GloVe Logo" 
+                      className="h-10 mx-auto mb-4"
+                      onError={(e) => { e.target.style.display = 'none'; }} // hide image if it fails to load
+                    />
+                    <p className="text-sm text-gray-600 text-center">
+                      Hosted by Stanford NLP, the GloVe 6B dataset includes word embeddings with 50, 100, 200, and 300 dimensions, ideal for NLP tasks like semantic similarity and word analogy.
+                    </p>
+                  </div>
+              
+                  <button
+                    onClick={() => handleExternalLink("http://nlp.stanford.edu/data/glove.6B.zip")}
+                    className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                  >
+                    Download GloVe 6B
+                  </button>
                 </div>
+              </div>
+              
             );
         }
         if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'webm'].includes(file.type)) {
@@ -207,7 +215,7 @@ const Pre_lstm = () => {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <div className="p-6 pb-0">
                     <h1 className="text-2xl font-bold text-gray-800">
-                        {selectedFile?.title || "Select a Resource"}
+                        {selectedFile?.title }
                     </h1>
                     <p className="text-gray-600 mt-1">
                         {selectedFile?.description }

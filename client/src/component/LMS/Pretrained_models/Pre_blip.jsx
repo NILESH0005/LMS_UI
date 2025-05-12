@@ -111,10 +111,7 @@ const Pre_blip = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                   
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -164,10 +161,10 @@ const Pre_blip = () => {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <div className="p-6 pb-0">
                     <h1 className="text-2xl font-bold text-gray-800">
-                        {selectedFile?.title || "Select a Resource"}
+                        {selectedFile?.title }
                     </h1>
                     <p className="text-gray-600 mt-1">
-                        {selectedFile?.description || "Choose from the sidebar"}
+                        {selectedFile?.description }
                     </p>
                 </div>
                 

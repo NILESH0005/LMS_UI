@@ -162,10 +162,10 @@ const Pre_ts = () => {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <div className="p-6 pb-0">
                     <h1 className="text-2xl font-bold text-gray-800">
-                        {selectedFile?.title || "Select a Resource"}
+                        {selectedFile?.title }
                     </h1>
                     <p className="text-gray-600 mt-1">
-                        {selectedFile?.description || "Choose from the sidebar"}
+                        {selectedFile?.description }
                     </p>
                 </div>
                 

@@ -8,7 +8,7 @@ const Resource = () => {
     const resourceFile = {
         id: 1,
         title: "Self Paced Learning Courses",
-        fileId: "1gmuZReZHgWZxjYY76qPo24GZj0XvQAFB", // Replace with actual PDF ID
+        fileId: "1gmuZReZHgWZxjYY76qPo24GZj0XvQAFBnpm", // Replace with actual PDF ID
         type: "pdf",
         description: "Complete catalog of self-paced learning resources",
         lastUpdated: "June 2023"

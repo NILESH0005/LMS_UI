@@ -20,15 +20,15 @@ const Pre_detr = () => {
             id: "Y1PXz4IWYG5r70oyR30vU0tQNHvWawu0xG",
             type: "notebook",
             downloadUrl: "https://drive.google.com/uc?export=download&id=Y1PXz4IWYG5r70oyR30vU0tQNHvWawu0xG",
-        
             description: "Jupyter notebook with data preprocessing steps"
         },
         {
             
-            title: "Dataset (TAR)",
+            title: "Model",
             id: "1g368MTzqE0xmUdsp0HTR2dZGzpe0nFaU",
-            type: "tar",
-            description: "Compressed dataset for DETR preparation",
+            type: "link",
+            description: "",
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1g368MTzqE0xmUdsp0HTR2dZGzpe0nFaU"
            
         },
         {
@@ -114,7 +114,7 @@ const Pre_detr = () => {
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
-                        Download {file.type === 'notebook' ? 'Jupyter Notebook (.ipynb)' : `${file.type.toUpperCase()} File`}
+                        Download {file.type === 'notebook' ? 'Jupyter Notebook (.ipynb)' : `Model File`}
                     </button>
                 </div>
             </div>
@@ -171,7 +171,7 @@ const Pre_detr = () => {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <div className="p-6 pb-0">
                     <h1 className="text-2xl font-bold text-gray-800">
-                        {selectedFile?.title || "Select a Resource"}
+                        {selectedFile?.title }
                     </h1>
                     <p className="text-gray-600 mt-1">
                         {selectedFile?.description }
