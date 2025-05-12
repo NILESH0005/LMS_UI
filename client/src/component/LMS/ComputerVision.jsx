@@ -6,61 +6,61 @@ export const ComputerVision = () => {
  const navigate = useNavigate();
  
    const models = [
-     {
-       id: 1,
-       title: "Faster_RCNN",
-       description: "Fast Region-based CNN for real-time object detection with region proposal networks.",
-       progress: 70,
-       thumbnail: "fasterrcnn.avif"
-     },
-     {
-       id: 2,
-       title: "Mask_RCNN",
-       description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
-       progress: 65,
-       thumbnail: "maskrcnn.avif"
-     },
-     {
-       id: 3,
-       title: "SSD",
-       description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
-       progress: 65,
-       thumbnail: "SSD object detection.avif",
-     },
-     {
-       id: 4,
-       title: "Vision_Transformers",
-       description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
-       progress: 65,
-       thumbnail: "visiontrans.avif"
-     },
-     {
-      id: 5,
-      title: "Anomaly Detection",
-      description: "Fast Region-based CNN for real-time object detection with region proposal networks.",
+    {
+      id: 1,
+      title: "Faster_RCNN",
+      description: "A two-stage object detection model that uses Region Proposal Networks (RPNs) for fast and accurate object localization.",
       progress: 70,
       thumbnail: "fasterrcnn.avif"
     },
     {
-      id: 6,
-      title: "Image Segmentation",
-      description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
+      id: 2,
+      title: "Mask_RCNN",
+      description: "An extension of Faster R-CNN that adds a branch for predicting object masks, enabling instance segmentation.",
       progress: 65,
       thumbnail: "maskrcnn.avif"
     },
     {
-      id: 7,
-      title: "Image To Text",
-      description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
+      id: 3,
+      title: "SSD",
+      description: "Single Shot MultiBox Detector that performs object detection in a single forward pass for real-time applications.",
       progress: 65,
-      thumbnail: "SSD object detection.avif",
+      thumbnail: "SSD object detection.avif"
+    },
+    {
+      id: 4,
+      title: "Vision_Transformers",
+      description: "Transformer-based architecture that applies self-attention mechanisms to image patches for image classification and recognition tasks.",
+      progress: 65,
+      thumbnail: "visiontrans.avif"
+    },
+    {
+      id: 5,
+      title: "Anomaly Detection",
+      description: "Techniques for identifying unusual patterns or outliers in image data, often used in industrial inspection or medical imaging.",
+      progress: 70,
+      thumbnail: ""
+    },
+    {
+      id: 6,
+      title: "Image Segmentation",
+      description: "The task of partitioning an image into meaningful regions to locate objects and boundaries more precisely.",
+      progress: 65,
+      thumbnail: ""
+    },
+    {
+      id: 7,
+      title: "Text Extraction",
+      description: "Techniques such as OCR for detecting and extracting text content from images and scanned documents.",
+      progress: 65,
+      thumbnail: ""
     },
     {
       id: 8,
       title: "U-NET",
-      description: "Extension of Faster RCNN that adds pixel-level segmentation capability.",
+      description: "A convolutional neural network architecture designed for biomedical image segmentation with encoder-decoder structure and skip connections.",
       progress: 65,
-      thumbnail: "visiontrans.avif"
+      thumbnail: ""
     }
     
      
@@ -74,7 +74,7 @@ export const ComputerVision = () => {
         "Vision_Transformers": "/visiontran",
         "Anomaly Detection":"/anomalydetection",
         "Image Segmentation":"/imagesegmentation",
-        "Image To Text":"/imagetotext",
+        "Text Extraction":"/imagetotext",
         "U-NET":"/unet",
         
      };

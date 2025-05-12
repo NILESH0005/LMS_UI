@@ -1,110 +1,226 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FeedbackForm from "../FeedBackForm";
 
 const Cifar = () => {
-  const [feedback, setFeedback] = useState([]);
-  
-  // Iris dataset zip file
-  const cifarFile = {
-      id: "1XDno2BqmkjK34AaK-2TVVfiQZwqLpb7s", // Replace with actual Google Drive ID
-      title: "CIFAR-10 Dataset",
-      description: "CIFAR-10 dataset in zip format",
-      type: "zip",
-      downloadUrl: `https://drive.google.com/uc?export=download&id=1XDno2BqmkjK34AaK-2TVVfiQZwqLpb7s` // Replace ID
-  };
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [feedback, setFeedback] = useState([]);
 
-  const handleFeedbackSubmit = (rating, comment) => {
-      const newFeedback = {
-          fileId: irisFile.id,
-          fileName: irisFile.title,
-          fileType: irisFile.type,
-          rating,
-          comment,
-          timestamp: new Date().toISOString()
-      };
-      const updatedFeedback = [...feedback, newFeedback];
-      localStorage.setItem("cifarFeedback", JSON.stringify(updatedFeedback));
-      setFeedback(updatedFeedback);
-      sendFeedbackToServer(newFeedback);
-  };
+    // Files array will be provided by you
+    const CifarFiles = [
+        {
+            id: "1Uj-xW0h2kyAQvAO92UVKQBYdNZMqrYa6",
+            title: "README",
+            type: "pdf",
+            description: "Guide to using all module resources and structure",
+            size: "1.2MB",
+            lastUpdated: "2024-01-15"
+          },
+          {
+            id: "1SPL5C6PSANGTKw06c3ix2ft3gMVe1JWU",
+            title: "Workbook",
+            type: "notebook",
+            description: "Jupyter Notebook that implements a Convolutional Neural Network (CNN) to classify images from the CIFAR-10 dataset. It includes data loading, preprocessing, model creation, training, evaluation, and visualization of results.",
+            size: "3.5MB",
+            lastUpdated: "2024-02-10",
+            nbviewerUrl: "https://nbviewer.org/github/20maitrti/LMS/blob/main/cnn_cifar10_dataset%20%20%283%29.ipynb"
+          },
+          {
+            id: "1SPL5C6PSANGTKw06c3ix2ft3gMVe1JWU",
+            title: "Dataset",
+            type: "zip",
+            description: "ZIP folder containing the CIFAR-10 dataset. The dataset includes 60,000 32x32 color images across 10 distinct classes (airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck) used for training and evaluating the CNN model.",
+            size: "12.8MB",
+            lastUpdated: "2023-12-05"
+          },
+          {
+            id: "assignment",
+            title: "Assessment",
+            type: "assessment",
+            description: "",
+            size: "850KB",
+            lastUpdated: "2024-03-01"
+          }
+          
+    ];
 
-  const handleDownload = () => {
-      // Create temporary anchor element to trigger download
-      const link = document.createElement('a');
-      link.href = cifarFile.downloadUrl;
-      link.setAttribute('download', 'iris_dataset.zip');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-  };
+    useEffect(() => {
+        if (CifarFiles.length > 0 && !selectedFile) {
+            setSelectedFile(CifarFiles[0]); // Default to first file
+        }
 
-  // Security measures
-  useState(() => {
-      const disableRightClick = (e) => e.preventDefault();
-      document.addEventListener('contextmenu', disableRightClick);
-      return () => document.removeEventListener('contextmenu', disableRightClick);
-  }, []);
+        // Security measures
+        const disableRightClick = (e) => e.preventDefault();
+        const disableDevTools = (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+                e.preventDefault();
+            }
+        };
 
-  return (
-      <div className="flex h-screen bg-background text-foreground">
-          {/* Navigation Sidebar */}
-          <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700">
-              <h2 className="text-xl font-bold mb-6">CIFAR-10 Dataset</h2>
-              <div className="p-3 rounded bg-gray-700 border-l-4 border-blue-500">
-                  <span className="font-medium">{cifarFile.title}</span>
-                  <span className="text-sm text-gray-300 mt-1 block">{cifarFile.description}</span>
-              </div>
-          </div>
+        document.addEventListener('contextmenu', disableRightClick);
+        document.addEventListener('keydown', disableDevTools);
 
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col p-6">
-              <div className="mb-6">
-                  <h1 className="text-3xl font-bold text-gray-800">
-                      {cifarFile.title}
-                  </h1>
-                  <p className="text-gray-600 mt-2">
-                      {cifarFile.description}
-                  </p>
-              </div>
-              
-              {/* Download Area */}
-              <div className="flex-1 flex flex-col items-center justify-center border rounded-xl shadow-lg bg-white p-8">
-                  <div className="text-center max-w-md">
-                      <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                          </svg>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">Iris Dataset Package</h3>
-                      <p className="text-gray-500 mb-6">This ZIP file contains the complete Iris flower dataset for machine learning applications.</p>
-                      <button
-                          onClick={handleDownload}
-                          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      >
-                          Download Dataset (ZIP)
-                      </button>
-                      <p className="text-sm text-gray-400 mt-3">File size: ~2.5MB (approx)</p>
-                  </div>
-              </div>
+        return () => {
+            document.removeEventListener('contextmenu', disableRightClick);
+            document.removeEventListener('keydown', disableDevTools);
+        };
+    }, []);
 
-              {/* Feedback section */}
-              <div className="mt-8 w-full max-w-3xl mx-auto">
-                  <FeedbackForm 
-                      fileId={cifarFile.id}
-                      fileName={cifarFile.title}
-                      fileType={cifarFile.type}
-                      onSubmit={handleFeedbackSubmit}
-                  />
-              </div>
-          </div>
-      </div>
-  );
+    const handleDownload = (file) => {
+        if (!file.downloadUrl) {
+            console.error("No download URL available for this file");
+            return;
+        }
+
+        const link = document.createElement('a');
+        link.href = file.downloadUrl;
+        link.setAttribute('download', `${file.title}.${file.type === 'notebook' ? 'ipynb' : file.type}`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log(`Downloaded: ${file.title}`);
+    };
+
+    
+
+    const FileDisplay = ({ file }) => {
+        // Previewable file types (pdf, images, videos)
+        if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'webm'].includes(file.type)) {
+            return (
+                <div className="w-full h-full border rounded-xl shadow-lg overflow-hidden bg-white">
+                    <iframe
+                        src={`https://drive.google.com/file/d/${file.id}/preview`}
+                        className="w-full min-h-[70vh]"
+                        allowFullScreen
+                        title={`${file.title} Preview`}
+                        sandbox="allow-same-origin allow-scripts"
+                    />
+                    <div className="p-4 border-t flex justify-end">
+                     
+                    </div>
+                </div>
+            );
+        }
+
+        // Non-previewable files (download only)
+        if (file.type === 'notebook') {
+            return (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 border rounded-t-xl shadow-lg overflow-hidden bg-white">
+                        <iframe
+                            src={file.nbviewerUrl}
+                            className="w-full h-full"
+                            style={{ minHeight: '60vh' }}
+                            title={`${file.title} Preview`}
+                            sandbox="allow-same-origin allow-scripts"
+                        />
+                    </div>
+                    <div className="p-4 border border-t-0 rounded-b-xl bg-gray-50 flex justify-center">
+                        <button
+                            onClick={() => handleDownload(file)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Download Jupyter Notebook (.ipynb)
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        return (
+            <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
+                <div className="text-center max-w-md">
+                    <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-indigo-100">
+                        <svg className="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                        </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
+                    <p className="text-gray-500 mb-4">{file.description}</p>
+                
+                    <button
+                        onClick={() => handleDownload(file)}
+                        className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                        Download {file.type === 'notebook' ? 'Jupyter Notebook (.ipynb)' : `${file.type.toUpperCase()} File`}
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="flex h-screen bg-gray-50 text-gray-800">
+            {/* Navigation Sidebar */}
+            <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
+                <h2 className="text-xl font-bold mb-6 px-2">CIFAR-10 Resources</h2>
+                <nav className="space-y-2">
+                    {CifarFiles.map(file => (
+                        <button
+                            key={file.id}
+                            onClick={() => setSelectedFile(file)}
+                            className={`w-full text-left p-3 rounded-lg transition-colors ${
+                                selectedFile?.id === file.id 
+                                    ? "bg-gray-700 border-l-4 border-blue-500" 
+                                    : "hover:bg-gray-700"
+                            }`}
+                        >
+                            <div className="flex items-center">
+                                 {file.type === 'pdf' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
+                                    </svg>
+                                )}
+                                {file.type === 'notebook' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                    </svg>
+                                )}
+                                {file.type === 'zip' && (
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                )}
+                                {file.type === 'assessment' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+                                    </svg>
+                                )}
+                                <span className="font-medium">{file.title}</span>
+                            </div>
+                            <p className="text-xs text-gray-300 mt-1 truncate">{file.description}</p>
+                        </button>
+                    ))}
+                </nav>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="p-6 pb-0">
+                    <h1 className="text-2xl font-bold text-gray-800">
+                        {selectedFile?.title || "Select a Resource"}
+                    </h1>
+                    <p className="text-gray-600 mt-1">
+                        {selectedFile?.description }
+                    </p>
+                </div>
+                
+                <div className="flex-1 overflow-auto p-6">
+                    {selectedFile ? (
+                        <div className="h-full">
+                            <FileDisplay file={selectedFile} />
+                            
+                            
+                        </div>
+                    ) : (
+                        <div className="h-full flex items-center justify-center text-gray-500">
+                            Please select a resource from the sidebar
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 };
 
-const sendFeedbackToServer = (feedback) => {
-  // Implement your feedback submission logic
-  console.log("Submitting CIFAR-10 dataset feedback:", feedback);
-  // Example: axios.post('/api/feedback/iris', feedback)
-};
-
-export default Cifar;
+export default Cifar; 

@@ -1,186 +1,186 @@
-import React, { useState } from "react";
-import FeedbackForm from "../FeedBackForm";
+import React, { useState, useEffect } from "react";
 
-const ResNet50 = () => {
-    const [selectedFileId, setSelectedFileId] = useState(null);
-    const [selectedFileName, setSelectedFileName] = useState("");
-    const [selectedFileType, setSelectedFileType] = useState("");
-    const [feedback, setFeedback] = useState([]);
+const Resnet50 = () => {
+    const [selectedFile, setSelectedFile] = useState(null);
 
-    // ResNet50 files
-    const resnetFiles = [
+    // Files array will be provided by you
+    const Resnet50Files = [
         {
-            id: 1,
-            title: "ResNet50 Documentation",
-            fileId: "1GWAmSutHzKjJvTVun9VLLrOjubaIwqOk",
+           
+            title: "Guide",
+            id: "1GWAmSutHzKjJvTVun9VLLrOjubaIwqOk",
             type: "pdf",
-            icon: "📄",
-            description: "Detailed documentation on ResNet50 architecture"
+            description: "An analytical overview of the ResNet50 architecture, introducing residual connections, identity mapping, and vanishing gradient solutions. Covers training tips, layer-by-layer breakdown, and use in image classification tasks."
         },
         {
-            id: 2,
-            title: "ResNet50 Implementation",
-            fileId: "1WQaIchi7RaepQL9dLSunE_383JA2v8JJ",
-            type: "ipynb",
-            icon: "📓",
-            description: "Practical implementation of ResNet50 in PyTorch/TensorFlow"
-        }
-        ,
+            
+            title: "Workbook",
+            id: "1WQaIchi7RaepQL9dLSunE_383JA2v8JJ",
+            type: "notebook",
+            description: "A Jupyter notebook that implements and explains ResNet50, a deep convolutional neural network known for its residual connections. Includes model architecture, transfer learning, and image classification examples.",
+             downloadUrl: "https://drive.google.com/uc?export=download&id=1WQaIchi7RaepQL9dLSunE_383JA2v8JJ"
+        },
         {
-            id: 3,
-            title: "Assignment",
-            icon: "📓"
+          
+            title: "Assessment",
+            type: "assessment",
+            description: "Test your knowledge about ResNet50"
         }
     ];
 
-    const handleFeedbackSubmit = (fileId, rating, comment) => {
-        const newFeedback = {
-            fileId,
-            fileName: selectedFileName,
-            fileType: selectedFileType,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("resnetFeedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        sendFeedbackToServer(newFeedback);
-    };
-
-    const handleDownload = (fileId, fileName, fileType) => {
-        const link = document.createElement('a');
-        link.href = `https://drive.google.com/uc?export=download&id=${fileId}`;
-        link.setAttribute('download', `${fileName.toLowerCase().replace(/\s+/g, '_')}.${fileType}`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    // Set first file as default on component mount
-    useState(() => {
-        if (resnetFiles.length > 0 && !selectedFileId) {
-            setSelectedFileId(resnetFiles[0].fileId);
-            setSelectedFileName(resnetFiles[0].title);
-            setSelectedFileType(resnetFiles[0].type);
+    useEffect(() => {
+        if (Resnet50Files.length > 0 && !selectedFile) {
+            setSelectedFile(Resnet50Files[0]); // Default to first file
         }
 
         // Security measures
         const disableRightClick = (e) => e.preventDefault();
-        const disableShortcuts = (e) => {
-            if (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.key === 'c')) e.preventDefault();
+        const disableDevTools = (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+                e.preventDefault();
+            }
         };
 
         document.addEventListener('contextmenu', disableRightClick);
-        document.addEventListener('keydown', disableShortcuts);
+        document.addEventListener('keydown', disableDevTools);
 
         return () => {
             document.removeEventListener('contextmenu', disableRightClick);
-            document.removeEventListener('keydown', disableShortcuts);
+            document.removeEventListener('keydown', disableDevTools);
         };
     }, []);
 
-    const renderFileContent = () => {
-        if (!selectedFileId) return null;
-
-        const currentFile = resnetFiles.find(f => f.fileId === selectedFileId);
-
-        switch(currentFile.type) {
-            case "pdf":
-                return (
-                    <iframe
-                        key={selectedFileId}
-                        src={`https://drive.google.com/file/d/${selectedFileId}/preview`}
-                        className="w-full h-full"
-                        allowFullScreen
-                        title={`${selectedFileName} Viewer`}
-                        sandbox="allow-scripts allow-same-origin"
-                    />
-                );
-            case "ipynb":
-                return (
-                    <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                        <div className="text-6xl mb-4">{currentFile.icon}</div>
-                        <h3 className="text-xl font-semibold mb-2">{currentFile.title}</h3>
-                        <p className="text-gray-500 mb-6">{currentFile.description}</p>
-                        <button
-                            onClick={() => handleDownload(currentFile.fileId, currentFile.title, "ipynb")}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            Download Notebook
-                        </button>
-                    </div>
-                );
-            default:
-                return null;
+    const handleDownload = (file) => {
+        if (!file.downloadUrl) {
+            console.error("No download URL available for this file");
+            return;
         }
+
+        const link = document.createElement('a');
+        link.href = file.downloadUrl;
+        link.setAttribute('download', `${file.title}.${file.type === 'notebook' ? 'ipynb' : file.type}`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log(`Downloaded: ${file.title}`);
+    };
+
+
+
+    const FileDisplay = ({ file }) => {
+        // Previewable file types (pdf, images, videos)
+        if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'webm'].includes(file.type)) {
+            return (
+                <div className="w-full h-full border rounded-xl shadow-lg overflow-hidden bg-white">
+                    <iframe
+                        src={`https://drive.google.com/file/d/${file.id}/preview`}
+                        className="w-full min-h-[70vh]"
+                        allowFullScreen
+                        title={`${file.title} Preview`}
+                        sandbox="allow-same-origin allow-scripts"
+                    />
+                    
+                </div>
+            );
+        }
+
+        // Non-previewable files (download only)
+        return (
+            <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
+                <div className="text-center max-w-md">
+                    <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-indigo-100">
+                        <svg className="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                        </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
+                    <p className="text-gray-500 mb-4">{file.description}</p>
+                    <button
+                        onClick={() => handleDownload(file)}
+                        className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                        Download {file.type === 'notebook' ? 'Jupyter Notebook (.ipynb)' : `${file.type.toUpperCase()} File`}
+                    </button>
+                </div>
+            </div>
+        );
     };
 
     return (
-        <div className="flex h-screen bg-background text-foreground">
+        <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
-            <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700">
-                <h2 className="text-xl font-bold mb-6">ResNet50 Resources</h2>
-                <ul className="space-y-3">
-                    {resnetFiles.map(file => (
-                        <li key={file.id}>
-                            <button
-                                onClick={() => {
-                                    setSelectedFileId(file.fileId);
-                                    setSelectedFileName(file.title);
-                                    setSelectedFileType(file.type);
-                                }}
-                                className={`flex items-center w-full p-3 rounded text-left hover:bg-gray-700 transition-colors ${
-                                    selectedFileId === file.fileId ? "bg-gray-700 border-l-4 border-blue-500" : ""
-                                }`}
-                            >
-                                <span className="text-xl mr-2">{file.icon}</span>
-                                <div className="flex flex-col">
-                                    <span className="font-medium">{file.title}</span>
-                                    <span className="text-sm text-gray-300 mt-1">{file.description}</span>
-                                </div>
-                            </button>
-                        </li>
+            <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
+                <h2 className="text-xl font-bold mb-6 px-2">Resnet50 Resources</h2>
+                <nav className="space-y-2">
+                    {Resnet50Files.map(file => (
+                        <button
+                            key={file.id}
+                            onClick={() => setSelectedFile(file)}
+                            className={`w-full text-left p-3 rounded-lg transition-colors ${
+                                selectedFile?.id === file.id 
+                                    ? "bg-gray-700 border-l-4 border-blue-500" 
+                                    : "hover:bg-gray-700"
+                            }`}
+                        >
+                            <div className="flex items-center">
+                                  {file.type === 'pdf' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
+                                    </svg>
+                                )}
+                                {file.type === 'notebook' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                    </svg>
+                                )}
+                                {file.type === 'zip' && (
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                )}
+                                {file.type === 'assessment' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+                                    </svg>
+                                )}
+                                <span className="font-medium">{file.title}</span>
+                            </div>
+                            <p className="text-xs text-gray-300 mt-1 truncate">{file.description}</p>
+                        </button>
                     ))}
-                </ul>
+                </nav>
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col p-6">
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800">
-                        {selectedFileName || "Select a Resource"}
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="p-6 pb-0">
+                    <h1 className="text-2xl font-bold text-gray-800">
+                        {selectedFile?.title || "Select a Resource"}
                     </h1>
-                    <p className="text-gray-600 mt-2">
-                        {resnetFiles.find(f => f.fileId === selectedFileId)?.description || ""}
+                    <p className="text-gray-600 mt-1">
+                        {selectedFile?.description || "Choose from the sidebar"}
                     </p>
                 </div>
                 
-                <div className="flex-1 w-full border rounded-xl shadow-lg relative overflow-hidden bg-white"
-                    onContextMenu={(e) => e.preventDefault()}>
-                    {/* Block Google Drive pop-out button */}
-                    <div className="absolute top-0 right-0 w-14 h-14 z-10" />
-                    
-                    {renderFileContent()}
-                </div>
-
-                <div className="mt-8 w-full max-w-3xl mx-auto">
-                    <FeedbackForm 
-                        fileId={selectedFileId}
-                        fileName={selectedFileName}
-                        fileType={selectedFileType}
-                        onSubmit={handleFeedbackSubmit}
-                    />
+                <div className="flex-1 overflow-auto p-6">
+                    {selectedFile ? (
+                        <div className="h-full">
+                            <FileDisplay file={selectedFile} />
+                            
+                        </div>
+                    ) : (
+                        <div className="h-full flex items-center justify-center text-gray-500">
+                            Please select a resource from the sidebar
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
     );
 };
 
-const sendFeedbackToServer = (feedback) => {
-    // Implement your feedback submission logic
-    console.log("Submitting ResNet50 feedback:", feedback);
-    // Example: axios.post('/api/feedback/resnet50', feedback)
-};
+export default Resnet50;
 
-export default ResNet50;
+

@@ -9,20 +9,26 @@ const U_NET = () => {
     const U_NETFiles = [
         {
             id: "1ihgjdms_V472wQ5GwENyPh3Y0CUyJPAQ",
-            title: "",
+            title: "Research Paper",
             type: "pdf",
-            description: "",
+            description: "Describes the U-Net architecture designed for biomedical image segmentation. It features a contracting path to capture context and a symmetric expanding path for precise localization. The guide emphasizes U-Net's efficiency with limited training data and its successful performance in cell segmentation challenges.",
             size: "2.3MB",
             lastUpdated: "2024-03-10"
         },
         {
             id: "15aYU1C5tmBeCrLElBtKPHwLicyckvGGh",
-            title: "",
+            title: "Workbook",
             type: "notebook",
-            description: " ",
+            description: "This notebook implements the U-Net architecture for semantic segmentation tasks, commonly used in biomedical image processing. It provides code for model building, training on labeled image datasets, and evaluating segmentation results. ",
             size: "3.1MB",
             lastUpdated: "2024-03-15",
             downloadUrl: "https://drive.google.com/uc?export=download&id=15aYU1C5tmBeCrLElBtKPHwLicyckvGGh"
+        },
+        {
+  
+            title: "Assessment",
+            type: "assessment"
+            
         }
     ];
 
@@ -110,10 +116,7 @@ const U_NET = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                   
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -129,7 +132,7 @@ const U_NET = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">U-Net Resources</h2>
                 <nav className="space-y-2">
                     {U_NETFiles.map(file => (
                         <button

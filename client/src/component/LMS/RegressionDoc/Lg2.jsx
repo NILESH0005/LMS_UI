@@ -7,59 +7,34 @@ const Lg2 = () => {
 
     // Files array will be provided by you
     const Lg2Files = [
-        {
-            id: "1BKFEXU2A6pRicr_ImWLG6rupeC8a7m58",
-            title: "equation.jpg",
-            type: "jpg",
-            description: "",
-            size: "",
-            lastUpdated: "",
-        },
-        {
-            id: "1vw3gnUtGYv44wh-5ubBBt_kyeX1iGwGq",
-            title: "General equation.jpg",
-            type: "jpg",
-            description: "",
-            size: "",
-            lastUpdated: "",
-        },
-        {
-            id: "1RaxiRYNNb1stK5IxqjsexO5hRuwIica0",
-            title: "home equation.jpg",
-            type: "jpg",
-            description: "",
-            size: "",
-            lastUpdated: "",
-        },
-       
-        {
-            id: "1A5RdbslH4YfAfc4vqg9mO22Fs-h1nowX",
-            title: "Homeprices.jpg",
-            type: "jpg",
-            description: "",
-            size: "",
-            lastUpdated: "",
-        },
+     
     
         // Non-previewable files (notebooks, CSVs)
         {
             id: "1kr9ViZopgeQCYNDMc6OtTdqOvpV57mKo",
-            title: "Implementation.ipynb",
+            title: "Workbook",
             type: "notebook",
             description: "",
             size: "",
             lastUpdated: "",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1kr9ViZopgeQCYNDMc6OtTdqOvpV57mKo"
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1kr9ViZopgeQCYNDMc6OtTdqOvpV57mKo",
+            nbviewerUrl: "https://nbviewer.org/github/20maitrti/LMS/blob/main/2_linear_regression_multivariate.ipynb"
         },
         {
             id: "1r8RTVkGO6VEuqL7eij_l3sxpIGSLXiZb",
-            title: "Dataset.csv",
+            title: "Dataset",
             type: "csv",
             description: "",
             size: "",
             lastUpdated: "",
             downloadUrl: "https://drive.google.com/uc?export=download&id=1r8RTVkGO6VEuqL7eij_l3sxpIGSLXiZb"
         },
+        {
+            id: "assignment",
+            title: "Assessment",
+            type: "assessment",
+           
+          }
     ];
 
     useEffect(() => {
@@ -100,22 +75,7 @@ const Lg2 = () => {
         console.log(`Downloaded: ${file.title}`);
     };
 
-    const handleFeedbackSubmit = (rating, comment) => {
-        const newFeedback = {
-            fileId: selectedFile.id,
-            fileName: selectedFile.title,
-            fileType: selectedFile.type,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("Lg2Feedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        
-        console.log("Feedback submitted:", newFeedback);
-    };
+   
 
     const FileDisplay = ({ file }) => {
         // Previewable file types (pdf, images, videos)
@@ -134,7 +94,30 @@ const Lg2 = () => {
                 </div>
             );
         }
-
+        if (file.type === 'notebook') {
+            return (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 border rounded-t-xl shadow-lg overflow-hidden bg-white">
+                        <iframe
+                            src={file.nbviewerUrl}
+                            className="w-full h-full"
+                            style={{ minHeight: '60vh' }}
+                            title={`${file.title} Preview`}
+                            sandbox="allow-same-origin allow-scripts"
+                        />
+                    </div>
+                    <div className="p-4 border border-t-0 rounded-b-xl bg-gray-50 flex justify-center">
+                        <button
+                            onClick={() => handleDownload(file)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Download Jupyter Notebook (.ipynb)
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        
         // Non-previewable files (download only)
         return (
             <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
@@ -146,10 +129,7 @@ const Lg2 = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                  
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -165,7 +145,7 @@ const Lg2 = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">Home Price Prediction - Multi Variable Resources</h2>
                 <nav className="space-y-2">
                     {Lg2Files.map(file => (
                         <button
@@ -178,15 +158,26 @@ const Lg2 = () => {
                             }`}
                         >
                             <div className="flex items-center">
-                                {['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4'].includes(file.type) ? (
+                            {file.type === 'pdf' && (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
                                     </svg>
-                                ) : (
+                                )}
+                                {file.type === 'notebook' && (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
                                     </svg>
                                 )}
+                                {file.type === 'csv' && (
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                )}
+                                {file.type === 'assessment' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+                                    </svg>)}
                                 <span className="font-medium">{file.title}</span>
                             </div>
                             <p className="text-xs text-gray-300 mt-1 truncate">{file.description}</p>
@@ -211,14 +202,7 @@ const Lg2 = () => {
                         <div className="h-full">
                             <FileDisplay file={selectedFile} />
                             
-                            <div className="mt-8 max-w-3xl mx-auto">
-                                <FeedbackForm 
-                                    fileId={selectedFile.id}
-                                    fileName={selectedFile.title}
-                                    fileType={selectedFile.type}
-                                    onSubmit={handleFeedbackSubmit}
-                                />
-                            </div>
+                         
                         </div>
                     ) : (
                         <div className="h-full flex items-center justify-center text-gray-500">

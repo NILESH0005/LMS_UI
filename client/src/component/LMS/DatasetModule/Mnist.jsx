@@ -1,200 +1,46 @@
-// import React, { useState } from "react";
-// import FeedbackForm from "../FeedBackForm";
-
-// const Mnist = () => {
-//     const [selectedFileId, setSelectedFileId] = useState(null);
-//     const [selectedFileName, setSelectedFileName] = useState("");
-//     const [selectedFileType, setSelectedFileType] = useState("");
-//     const [feedback, setFeedback] = useState([]);
-
-//     // MNIST files
-//     const mnistFiles = [
-//         {
-//             id: 1,
-//             title: "MNIST README (PDF Guide)",
-//             fileId: "1hGFbAZPE5n0A8k7emLkKlD-CVO0Smf3C", // Replace with actual PDF ID
-//             type: "pdf",
-//             description: "Documentation for working with the MNIST dataset"
-//         },
-//         {
-//             id: 2,
-//             title: "Use-MNIST (Jupyter Notebook)",
-//             fileId: "14ntQf8fpVMKEW0mWbqKf527PXJ_t1Vd3", // Replace with actual notebook ID
-//             type: "notebook",
-//             description: "Practical implementation using the MNIST dataset"
-//         },
-//         {
-//             id: 4, // New ZIP resource
-//             title: "MNIST Dataset (ZIP Archive)",
-//             fileId: "1I4wLyVqFf2WXlY_p7lhe4UMyDvoeTzRS", // Replace with actual ZIP ID
-//             type: "zip",
-//             description: "Compressed dataset files for offline use"
-//         },
-//         {
-//             id: 3,
-//             title: "Assignment",
-//             icon: "📓"
-//         }
-//     ];
-
-//     const handleFeedbackSubmit = (fileId, rating, comment) => {
-//         const newFeedback = {
-//             fileId,
-//             fileName: selectedFileName,
-//             fileType: selectedFileType,
-//             rating,
-//             comment,
-//             timestamp: new Date().toISOString()
-//         };
-//         const updatedFeedback = [...feedback, newFeedback];
-//         localStorage.setItem("mnistFeedback", JSON.stringify(updatedFeedback));
-//         setFeedback(updatedFeedback);
-//         sendFeedbackToServer(newFeedback);
-//     };
-
-//     // Set first file as default on component mount
-//     useState(() => {
-//         if (mnistFiles.length > 0 && !selectedFileId) {
-//             setSelectedFileId(mnistFiles[0].fileId);
-//             setSelectedFileName(mnistFiles[0].title);
-//             setSelectedFileType(mnistFiles[0].type);
-//         }
-
-//         // Security measures
-//         const disableRightClick = (e) => e.preventDefault();
-//         const disableShortcuts = (e) => {
-//             if (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.key === 'c')) e.preventDefault();
-//         };
-
-//         document.addEventListener('contextmenu', disableRightClick);
-//         document.addEventListener('keydown', disableShortcuts);
-
-//         return () => {
-//             document.removeEventListener('contextmenu', disableRightClick);
-//             document.removeEventListener('keydown', disableShortcuts);
-//         };
-//     }, []);
-
-//     return (
-//         <div className="flex h-screen bg-background text-foreground">
-//             {/* Navigation Sidebar */}
-//             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700">
-//                 <h2 className="text-xl font-bold mb-6">MNIST Resources</h2>
-//                 <ul className="space-y-3">
-//                     {mnistFiles.map(file => (
-//                         <li key={file.id}>
-//                             <button
-//                                 onClick={() => {
-//                                     setSelectedFileId(file.fileId);
-//                                     setSelectedFileName(file.title);
-//                                     setSelectedFileType(file.type);
-//                                 }}
-//                                 className={`flex flex-col w-full p-3 rounded text-left hover:bg-gray-700 transition-colors ${
-//                                     selectedFileId === file.fileId ? "bg-gray-700 border-l-4 border-blue-500" : ""
-//                                 }`}
-//                             >
-//                                 <span className="font-medium">{file.title}</span>
-//                                 <span className="text-sm text-gray-300 mt-1">{file.description}</span>
-//                             </button>
-//                         </li>
-//                     ))}
-//                 </ul>
-//             </div>
-
-//             {/* Main Content Area */}
-//             <div className="flex-1 flex flex-col p-6">
-//                 <div className="mb-6">
-//                     <h1 className="text-3xl font-bold text-gray-800">
-//                         {selectedFileName || "Select a Resource"}
-//                     </h1>
-//                     <p className="text-gray-600 mt-2">
-//                         {mnistFiles.find(f => f.fileId === selectedFileId)?.description || ""}
-//                     </p>
-//                 </div>
-                
-//                 {selectedFileId && (
-//                     <>
-//                         <div className="flex-1 w-full border rounded-xl shadow-lg relative overflow-hidden bg-white"
-//                             onContextMenu={(e) => e.preventDefault()}>
-//                             {/* Block Google Drive pop-out button */}
-//                             <div className="absolute top-0 right-0 w-14 h-14 z-10" />
-                            
-//                             <iframe
-//                                 key={selectedFileId}
-//                                 src={`https://drive.google.com/file/d/${selectedFileId}/preview`}
-//                                 className="w-full h-full"
-//                                 allowFullScreen
-//                                 title={`${selectedFileName} Viewer`}
-//                                 sandbox="allow-scripts allow-same-origin"
-//                             />
-//                         </div>
-
-//                         <div className="mt-8 w-full max-w-3xl mx-auto">
-//                             <FeedbackForm 
-//                                 fileId={selectedFileId}
-//                                 fileName={selectedFileName}
-//                                 fileType={selectedFileType}
-//                                 onSubmit={handleFeedbackSubmit}
-//                             />
-//                         </div>
-//                     </>
-//                 )}
-//             </div>
-//         </div>
-//     );
-// };
-
-// const sendFeedbackToServer = (feedback) => {
-//     // Implement your feedback submission logic
-//     console.log("Submitting MNIST feedback:", feedback);
-//     // Example: axios.post('/api/feedback/mnist', feedback)
-// };
-
-// export default Mnist;
 import React, { useState, useEffect } from "react";
-import FeedbackForm from "../FeedBackForm";
 
 const Mnist = () => {
     const [selectedFile, setSelectedFile] = useState(null);
-    const [feedback, setFeedback] = useState([]);
 
-    // File configurations
+ 
     const mnistFiles = [
         {
             id: "1oZe4uYUlbRxRE3Qb1FzrThR-Z25RObSj",
-            title: "MNIST README (PDF Guide)",
+            title: "README",
             type: "pdf",
-            description: "Complete documentation for MNIST dataset",
+            description: "Guide to using all MNIST module resources and structure",
             size: "1.2MB",
             lastUpdated: "2024-01-15"
-        },
-        {
+          },
+          {
             id: "14ntQf8fpVMKEW0mWbqKf527PXJ_t1Vd3",
-            title: "Use-MNIST (Jupyter Notebook)",
+            title: "Workbook",
             type: "notebook",
-            description: "Practical implementation with TensorFlow/Keras",
+            description: "Code to manually load and explore MNIST from gzip files using NumPy",
             size: "3.5MB",
-            lastUpdated: "2024-02-10"
-        },
-        {
+            lastUpdated: "2024-02-10",
+            nbviewerUrl: "https://nbviewer.org/github/YogeshTiwari10/LMS/blob/main/Data%20Sets/MNIST/Use-MNIST.ipynb"
+          },
+          {
             id: "1I4wLyVqFf2WXlY_p7lhe4UMyDvoeTzRS",
-            title: "MNIST Dataset (ZIP Archive)",
+            title: "Dataset",
             type: "zip",
-            description: "Compressed dataset files for offline use",
+            description: "Zip-compressed raw MNIST files for offline use",
             size: "12.8MB",
             lastUpdated: "2023-12-05"
-        },
-        {
+          },
+          {
             id: "assignment",
-            title: "MNIST Assignment",
-            type: "assignment",
-            description: "Hands-on practice tasks",
+            title: "Assessment",
+            type: "assessment",
+            description: "",
             size: "850KB",
             lastUpdated: "2024-03-01"
-        }
+          }
+          
     ];
 
-    // Set first file as default
     useEffect(() => {
         if (mnistFiles.length > 0 && !selectedFile) {
             setSelectedFile(mnistFiles[0]);
@@ -229,23 +75,7 @@ const Mnist = () => {
         console.log(`Downloaded: ${file.title}`);
     };
 
-    const handleFeedbackSubmit = (rating, comment) => {
-        const newFeedback = {
-            fileId: selectedFile.id,
-            fileName: selectedFile.title,
-            fileType: selectedFile.type,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("mnistFeedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        
-        // Send to backend (mock implementation)
-        console.log("Feedback submitted:", newFeedback);
-    };
+    
 
     const FileDisplay = ({ file }) => {
         if (file.type === 'pdf') {
@@ -269,7 +99,29 @@ const Mnist = () => {
                 </div>
             );
         }
-
+        if (file.type === 'notebook') {
+            return (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 border rounded-t-xl shadow-lg overflow-hidden bg-white">
+                        <iframe
+                            src={file.nbviewerUrl}
+                            className="w-full h-full"
+                            style={{ minHeight: '60vh' }}
+                            title={`${file.title} Preview`}
+                            sandbox="allow-same-origin allow-scripts"
+                        />
+                    </div>
+                    <div className="p-4 border border-t-0 rounded-b-xl bg-gray-50 flex justify-center">
+                        <button
+                            onClick={() => handleDownload(file)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Download Jupyter Notebook (.ipynb)
+                        </button>
+                    </div>
+                </div>
+            );
+        }
         return (
             <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
                 <div className="text-center max-w-md">
@@ -286,10 +138,7 @@ const Mnist = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6">
-                        <span className="text-sm text-gray-400">Size: {file.size}</span>
-                        <span className="text-sm text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                  
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -333,6 +182,11 @@ const Mnist = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                                     </svg>
                                 )}
+                                {file.type === 'assessment' && (
+        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+    )}
                                 <span className="font-medium">{file.title}</span>
                             </div>
                             <p className="text-xs text-gray-300 mt-1 truncate">{file.description}</p>
@@ -348,7 +202,7 @@ const Mnist = () => {
                         {selectedFile?.title || "Select a Resource"}
                     </h1>
                     <p className="text-gray-600 mt-1">
-                        {selectedFile?.description || "Choose from the sidebar"}
+                        {selectedFile?.description }
                     </p>
                 </div>
                 
@@ -357,14 +211,7 @@ const Mnist = () => {
                         <div className="h-full">
                             <FileDisplay file={selectedFile} />
                             
-                            <div className="mt-8 max-w-3xl mx-auto">
-                                <FeedbackForm 
-                                    fileId={selectedFile.id}
-                                    fileName={selectedFile.title}
-                                    fileType={selectedFile.type}
-                                    onSubmit={handleFeedbackSubmit}
-                                />
-                            </div>
+                            
                         </div>
                     ) : (
                         <div className="h-full flex items-center justify-center text-gray-500">

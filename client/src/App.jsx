@@ -46,7 +46,7 @@ import Pre_detr from './component/LMS/Pretrained_models/Pre_detr.jsx';
 import Pre_lstm from './component/LMS/Pretrained_models/Pre_lstm.jsx';
 import Pre_resnet from './component/LMS/Pretrained_models/Pre_resnet.jsx';
 import Genaiguide from './component/LMS/GenAimodels/Genaiguide.jsx';
-import Genaimodels from './component/LMS/GenAimodels/Genaimodels.jsx';
+
 import Tutorials from './component/LMS/DigitalLearningModule/Tutorials.jsx';
 import Resource from './component/LMS/DigitalLearningModule/Resource.jsx';
 import Vgg from './component/LMS/Annotationsubmodule/Vgg.jsx';
@@ -88,6 +88,23 @@ import GradientDescent from './component/LMS/AlgorithmModule/GradientDescent.jsx
 import LinearRegression from './component/LMS/AlgorithmModule/LinearRegression.jsx';
 import Svm from './component/LMS/AlgorithmModule/Svm.jsx';
 import Concepts from './component/LMS/Concepts.jsx';
+import Lg7 from './component/LMS/RegressionDoc/Lg7.jsx';
+import Transfer from './component/LMS/Object Modules/Transfer.jsx';
+import Gai1 from './component/LMS/GenAimodels/Gai1.jsx';
+import Gai2 from './component/LMS/GenAimodels/Gai2.jsx';
+import Gai3 from './component/LMS/GenAimodels/Gai3.jsx';
+import Gai4 from './component/LMS/GenAimodels/Gai4.jsx';
+import Gai5 from './component/LMS/GenAimodels/Gai5.jsx';
+import Gai6 from './component/LMS/GenAimodels/Gai6.jsx';
+import Gai7 from './component/LMS/GenAimodels/Gai7.jsx';
+import Gai8 from './component/LMS/GenAimodels/Gai8.jsx';
+import Cnn from './component/LMS/ConceptsAIML/Cnn.jsx';
+import Opencv from './component/LMS/ConceptsAIML/Opencv.jsx';
+import Rl from './component/LMS/ConceptsAIML/Rl.jsx';
+import Rnn from './component/LMS/ConceptsAIML/Rnn.jsx';
+import Clustering from './component/LMS/ConceptsAIML/Clustering.jsx';
+import Datapreprocessing from './component/LMS/ConceptsAIML/Datapreprocessing.jsx';
+
 
 
 
@@ -138,6 +155,7 @@ function App() {
             <Route path='/convnext' element={<Convnext />} />
             <Route path='/cnncifar' element={<Cnn_cifar />} />
             <Route path='/knn' element={<Knn />} />
+            <Route path='/transfer' element={<Transfer />} />
 
               {/* Annotation tools */}
             <Route path='/Annsage' element={<Aws />} />
@@ -169,6 +187,7 @@ function App() {
             <Route path='/lg4' element={<Lg4  />} />
             <Route path='/lg5' element={<Lg5 />} />
             <Route path='/lg6' element={<Lg6  />} />
+            <Route path='/lg7' element={<Lg7 />} />
             
             {/* Computer Vision Modules */}
             <Route path='/fasterrcnn' element={<Faster_rcnn />} />
@@ -208,10 +227,27 @@ function App() {
 
            {/* Generative AI Models */}
            <Route path='/genaiguide' element={<Genaiguide />} />
-           <Route path='/genaimodel' element={<Genaimodels />} />
+           <Route path='/gai1' element={<Gai1 />} />
+           <Route path='/gai2' element={<Gai2 />} />
+           <Route path='/gai3' element={<Gai3 />} />
+           <Route path='/gai4' element={<Gai4 />} />
+           <Route path='/gai5' element={<Gai5 />} />
+           <Route path='/gai6' element={<Gai6 />} />
+           <Route path='/gai7' element={<Gai7 />} />
+           <Route path='/gai8' element={<Gai8 />} />
+         
             {/* Digital Learning Models */}
             <Route path='/tutorials' element={<Tutorials />} />
            <Route path='/resources' element={<Resource />} />
+
+           {/* Concepts of AI ML and DL */}
+           <Route path='/concept2' element={<Cnn />} />
+           <Route path='/concept4' element={<Opencv />} />
+           <Route path='/concept5' element={<Rl />} />
+           <Route path='/concept6' element={<Rnn />} />
+           <Route path='/concept1' element={<Clustering />} />
+           <Route path='/concept3' element={<Datapreprocessing/>} />
+
           </Routes>
         </div>
       </div>

@@ -11,35 +11,28 @@ const Guide = () => {
         {
             id: 1,
             title: "Object Classification",
+            type: "pdf",
             fileId: "1lUBFm0ZyqvQZwnxrRTk9Lei-BwJJ5xdF", // Replace with actual PDF ID
             description: "Comprehensive guide on object classification techniques and methodologies"
         },
         {
             id: 2,
             title: "Support for Supervised & Unsupervised Learning",
+            type: "pdf",
             fileId: "1BTJ95cIA0JTVuvF-zzDoppR2wn3oNpgb", // Replace with actual PDF ID
             description: "Detailed documentation on supervised and unsupervised learning approaches"
         },
         {
-            id: 3,
-            title: "Assignment",
-            icon: "📓"
-        }
+            id: "assignment",
+            title: "Assessment",
+            type: "assessment",
+            description: "Tasks based on MNIST loading, visualization, and analysis",
+            size: "850KB",
+            lastUpdated: "2024-03-01"
+          }
     ];
 
-    const handleFeedbackSubmit = (fileId, rating, comment) => {
-        const newFeedback = {
-            fileId,
-            fileName: selectedFileName,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("guideFeedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        sendFeedbackToServer(newFeedback);
-    };
+  
 
     // Set first PDF as default on component mount
     useState(() => {
@@ -80,7 +73,31 @@ const Guide = () => {
                                     selectedFileId === file.fileId ? "bg-gray-700 border-l-4 border-blue-500" : ""
                                 }`}
                             >
+                                 <div className="flex items-center">
+                            {file.type === 'pdf' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
+                                    </svg>
+                                )}
+                                {file.type === 'notebook' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                    </svg>
+                                )}
+                                {file.type === 'link' && (
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                )}
+                                {file.type === 'assessment' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+                                    </svg>
+                                )}
                                 <span className="font-medium">{file.title}</span>
+                            </div>
+                                
                                 <span className="text-sm text-gray-300 mt-1">{file.description}</span>
                             </button>
                         </li>
@@ -115,13 +132,6 @@ const Guide = () => {
                             />
                         </div>
 
-                        <div className="mt-8 w-full max-w-3xl mx-auto">
-                            <FeedbackForm 
-                                fileId={selectedFileId}
-                                fileName={selectedFileName}
-                                onSubmit={handleFeedbackSubmit}
-                            />
-                        </div>
                     </>
                 )}
             </div>

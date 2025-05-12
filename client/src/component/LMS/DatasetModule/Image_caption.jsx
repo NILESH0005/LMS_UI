@@ -1,28 +1,22 @@
 import React, { useState, useEffect } from "react";
-import FeedbackForm from "../FeedBackForm";
+
 
 const Image_caption = () => {
     const [selectedFile, setSelectedFile] = useState(null);
-    const [feedback, setFeedback] = useState([]);
+   
 
     // Files array will be provided by you
     const Image_captionFiles = [
-        {
-            id: "1HaByvn6AxCSYm4L6eoKllTZb3EAqwGaQ",
-            title: "Image Caption Dataset Link",
-            type: "pdf",
-            description: "Documentation about the heart disease dataset",
-            size: "2.3MB",
-            lastUpdated: "2024-03-10"
-        },
+      
         {
             id: "1byvRkYeZUabDQmcvPzrxMmDbKaOdAtVT",
-            title: "image_captioning",
+            title: "Workbook",
             type: "notebook",
-            description: "Jupyter notebook for heart disease prediction",
+            description: "Notebook demonstrating image captioning using the BLIP model with the Kag100 dataset. Includes image preprocessing, model inference, and caption generation.",
             size: "3.1MB",
             lastUpdated: "2024-03-15",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1byvRkYeZUabDQmcvPzrxMmDbKaOdAtVT"
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1byvRkYeZUabDQmcvPzrxMmDbKaOdAtVT",
+            nbviewerUrl: "https://nbviewer.org/github/YogeshTiwari10/LMS/blob/main/Data%20Sets/Image%20Caption/image_captioning_blip.ipynb"
         },
         // Added new dataset link object
         {
@@ -32,7 +26,13 @@ const Image_caption = () => {
             description: "Kag100 Image Captioning Dataset on Hugging Face",
             externalUrl: "https://huggingface.co/datasets/jpawan33/kag100-image-captioning-dataset",
             lastUpdated: "2024-03-20"
-        }
+        },
+        {
+            id: "assignment",
+            title: "Assessment",
+            type: "assessment",
+          
+          }
     ];
 
     useEffect(() => {
@@ -77,22 +77,7 @@ const Image_caption = () => {
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
-    const handleFeedbackSubmit = (rating, comment) => {
-        const newFeedback = {
-            fileId: selectedFile.id,
-            fileName: selectedFile.title,
-            fileType: selectedFile.type,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("[componentName]Feedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        
-        console.log("Feedback submitted:", newFeedback);
-    };
+    
 
     const FileDisplay = ({ file }) => {
         // Handle external links
@@ -106,17 +91,20 @@ const Image_caption = () => {
                             </svg>
                         </div>
                         <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
-                        <p className="text-gray-500 mb-4">{file.description}</p>
-                        <div className="mb-6">
-                            <img 
-                                src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" 
-                                alt="Hugging Face Logo" 
-                                className="h-10 mx-auto mb-4"
-                            />
-                            <p className="text-sm text-gray-600">
-                                This dataset is hosted on Hugging Face Datasets. It contains image-caption pairs for training and evaluation.
-                            </p>
-                        </div>
+                        <p className="text-gray-500 mb-4">
+  Kag100 is a compact image captioning dataset with 100 diverse images, each paired with a meaningful text description. Ideal for testing or demonstrating image-to-text models.
+</p>
+<div className="mb-6">
+  <img 
+    src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" 
+    alt="Hugging Face Logo" 
+    className="h-10 mx-auto mb-4"
+  />
+  <p className="text-sm text-gray-600 text-center">
+    Hosted on Hugging Face, the Kag100 dataset enables experimentation with modern image captioning models such as BLIP, providing high-quality visual-text data in a lightweight format.
+  </p>
+</div>
+
                         <button
                             onClick={() => handleExternalLink(file.externalUrl)}
                             className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -140,20 +128,34 @@ const Image_caption = () => {
                         sandbox="allow-same-origin allow-scripts"
                     />
                     <div className="p-4 border-t flex justify-end">
-                        {/* <button 
-                            onClick={() => handleDownload({
-                                ...file,
-                                downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`
-                            })}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                        >
-                            Download {file.type.toUpperCase()}
-                        </button> */}
+                     
                     </div>
                 </div>
             );
         }
-
+        if (file.type === 'notebook') {
+            return (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 border rounded-t-xl shadow-lg overflow-hidden bg-white">
+                        <iframe
+                            src={file.nbviewerUrl}
+                            className="w-full h-full"
+                            style={{ minHeight: '60vh' }}
+                            title={`${file.title} Preview`}
+                            sandbox="allow-same-origin allow-scripts"
+                        />
+                    </div>
+                    <div className="p-4 border border-t-0 rounded-b-xl bg-gray-50 flex justify-center">
+                        <button
+                            onClick={() => handleDownload(file)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Download Jupyter Notebook (.ipynb)
+                        </button>
+                    </div>
+                </div>
+            );
+        }
         // Non-previewable files (download only)
         return (
             <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
@@ -165,10 +167,7 @@ const Image_caption = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                   
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -197,17 +196,25 @@ const Image_caption = () => {
                             }`}
                         >
                             <div className="flex items-center">
-                                {file.type === 'link' ? (
-                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
-                                    </svg>
-                                ) : ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4'].includes(file.type) ? (
+                            {file.type === 'pdf' && (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
                                     </svg>
-                                ) : (
+                                )}
+                                {file.type === 'notebook' && (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                    </svg>
+                                )}
+                                {file.type === 'link' && (
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                )}
+                                {file.type === 'assessment' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
                                     </svg>
                                 )}
                                 <span className="font-medium">{file.title}</span>
@@ -225,7 +232,7 @@ const Image_caption = () => {
                         {selectedFile?.title || "Select a Resource"}
                     </h1>
                     <p className="text-gray-600 mt-1">
-                        {selectedFile?.description || "Choose from the sidebar"}
+                        {selectedFile?.description }
                     </p>
                 </div>
                 
@@ -233,17 +240,7 @@ const Image_caption = () => {
                     {selectedFile ? (
                         <div className="h-full">
                             <FileDisplay file={selectedFile} />
-                            
-                            {selectedFile.type !== 'link' && (
-                                <div className="mt-8 max-w-3xl mx-auto">
-                                    <FeedbackForm 
-                                        fileId={selectedFile.id}
-                                        fileName={selectedFile.title}
-                                        fileType={selectedFile.type}
-                                        onSubmit={handleFeedbackSubmit}
-                                    />
-                                </div>
-                            )}
+                           
                         </div>
                     ) : (
                         <div className="h-full flex items-center justify-center text-gray-500">

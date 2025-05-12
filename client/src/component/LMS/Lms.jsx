@@ -94,7 +94,7 @@ export const Lms = () => {
       description: "Learn the core concepts behind AI, ML, and DL",
       category: "concepts",
       subcategory: "concepts",
-      image: "algorithms.avif",
+      image: "",
     }
   ];
 

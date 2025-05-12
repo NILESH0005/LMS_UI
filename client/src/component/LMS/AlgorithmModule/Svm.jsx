@@ -9,15 +9,15 @@ const Svm = () => {
     const SvmFiles = [
         {
             id: "19TBYreD1Kwa9qzJiJwspM2H1RyR6j578",
-            title: "",
+            title: "Published Paper",
             type: "pdf",
-            description: "",
+            description: "A detailed document covering Support Vector Machines (SVM), including the theory behind margin maximization, kernel functions, soft-margin classification, and optimization techniques such as quadratic programming.",
             size: "2.3MB",
             lastUpdated: "2024-03-10"
         },
         {
             id: "1Z2A61mLTmadiYl0S4C5TVShmiHSCAFVm",
-            title: "",
+            title: "Workbook",
             type: "notebook",
             description: " ",
             size: "3.1MB",
@@ -64,22 +64,7 @@ const Svm = () => {
         console.log(`Downloaded: ${file.title}`);
     };
 
-    const handleFeedbackSubmit = (rating, comment) => {
-        const newFeedback = {
-            fileId: selectedFile.id,
-            fileName: selectedFile.title,
-            fileType: selectedFile.type,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("SvmFeedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        
-        console.log("Feedback submitted:", newFeedback);
-    };
+
 
     const FileDisplay = ({ file }) => {
         // Previewable file types (pdf, images, videos)
@@ -94,15 +79,7 @@ const Svm = () => {
                         sandbox="allow-same-origin allow-scripts"
                     />
                     <div className="p-4 border-t flex justify-end">
-                        <button 
-                            onClick={() => handleDownload({
-                                ...file,
-                                downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`
-                            })}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                        >
-                            Download {file.type.toUpperCase()}
-                        </button>
+                        
                     </div>
                 </div>
             );
@@ -119,10 +96,7 @@ const Svm = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                  
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -138,7 +112,7 @@ const Svm = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">SVM Resources</h2>
                 <nav className="space-y-2">
                     {SvmFiles.map(file => (
                         <button
@@ -184,14 +158,7 @@ const Svm = () => {
                         <div className="h-full">
                             <FileDisplay file={selectedFile} />
                             
-                            <div className="mt-8 max-w-3xl mx-auto">
-                                <FeedbackForm 
-                                    fileId={selectedFile.id}
-                                    fileName={selectedFile.title}
-                                    fileType={selectedFile.type}
-                                    onSubmit={handleFeedbackSubmit}
-                                />
-                            </div>
+                           
                         </div>
                     ) : (
                         <div className="h-full flex items-center justify-center text-gray-500">

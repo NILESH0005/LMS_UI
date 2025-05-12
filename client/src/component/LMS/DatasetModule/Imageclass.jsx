@@ -1,228 +1,229 @@
-import React, { useState } from "react";
-import FeedbackForm from "../FeedBackForm";
+import React, { useState, useEffect } from "react";
+
 
 const Imageclass = () => {
-    const [selectedFileId, setSelectedFileId] = useState(null);
-    const [selectedFileName, setSelectedFileName] = useState("");
-    const [selectedFileType, setSelectedFileType] = useState("");
-    const [feedback, setFeedback] = useState([]);
+    const [selectedFile, setSelectedFile] = useState(null);
 
-    // Image Classification files
-    const imageClassFiles = [
+    // Files array will be provided by you
+    const ImageclassFiles = [
         {
-            id: 1,
-            title: "Example Code (Python)",
-            fileId: "1hcddND_B6H7MpWLTgw0jZzo-GmJxqmJu",
-            type: "python",
-            description: "Python code to load and process image data",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1hcddND_B6H7MpWLTgw0jZzo-GmJxqmJu"
-        },
-        {
-            id: 2,
-            title: "Test Input Data (CSV)",
-            fileId: "1FZ3dm1xAVMRkLk2E7CkAP47uHKA26PWz",
-            type: "csv",
-            description: "Test input data for image classification",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1FZ3dm1xAVMRkLk2E7CkAP47uHKA26PWz"
-        },
-        {
-            id: 3,
-            title: "Training Input Data (CSV)",
-            fileId: "1PY7OQ-Z6ABBrApYkJMeShphdNkzJNrLb",
-            type: "csv",
-            description: "Training input data for image classification",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1PY7OQ-Z6ABBrApYkJMeShphdNkzJNrLb"
-        },
-        {
-            id: 4,
-            title: "Test Labels (CSV)",
-            fileId: "1vVIOCNtJaaIzqs8kubkocwCEsF2lXV1w",
-            type: "csv",
-            description: "Test labels for image classification",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1vVIOCNtJaaIzqs8kubkocwCEsF2lXV1w"
-        },
-        {
-            id: 5,
-            title: "Training Labels (CSV)",
-            fileId: "1B-Kxzr8AFoqDfZONV22LRdFUrri-j8ok",
-            type: "csv",
-            description: "Training labels for image classification",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1B-Kxzr8AFoqDfZONV22LRdFUrri-j8ok"
-        },
-        {
-            id: 6,
-            title: "README Guide (PDF)",
-            fileId: "1rgHV8y8KjpwBNeX_RxAJBMQk2VXtmJff",
+            id: "1X0TrW396MIp67ol8o29HHn8w0IxUPHq5",
+            title: "README",
             type: "pdf",
-            description: "Documentation for image classification project"
-        },
+            description: "Guide to using all module resources ",
+            size: "1.2MB",
+            lastUpdated: "2024-01-15"
+          },
         {
-            id: 7,
-            title: "Assignment",
-            icon: "📓"
+            "id": "1pePj5cAyWLfUbzCRF_50M-_f_zzOSHky",
+            "title": "Workbook",
+            "type": "notebook",
+            "description": "Loads and previews the Cat vs. Dog dataset using NumPy for model training",
+            "size": "3.1MB",
+            "lastUpdated": "2024-03-15",
+            "downloadUrl": "https://drive.google.com/uc?export=download&id=1pePj5cAyWLfUbzCRF_50M-_f_zzOSHky",
+            nbviewerUrl: "https://nbviewer.org/github/YogeshTiwari10/LMS/blob/main/Data%20Sets/Image%20Classification%20CNN%20%28Cat-Dog%29/Classification_load_ds.ipynb"
+          },
+          {
+            "id": "1qokZPBryxW-ix2BgvpkPTfykyfE0BB7n",
+            "title": "Dataset",
+            "type": "zip",
+            "description": "CSV dataset with features and labels for Cat vs. Dog image classification.",
+            "downloadUrl": "https://drive.google.com/uc?export=download&id=1acm1UjEAsBOq2OOuIgFtK7qcm1p5A6dh"
+          },
+        {
+            "id": "assignment",
+            "title": "Assessment",
+            "type": "assessment",
+            "description": "",
+            "size": "1.2MB",
+            "lastUpdated": "2024-04-05"
         }
+     
     ];
 
-    const handleFeedbackSubmit = (fileId, rating, comment) => {
-        const newFeedback = {
-            fileId,
-            fileName: selectedFileName,
-            fileType: selectedFileType,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("imageClassFeedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        sendFeedbackToServer(newFeedback);
-    };
-
-    const handleDownload = (url, filename) => {
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', filename || '');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    // Set PDF as default on component mount
-    useState(() => {
-        if (imageClassFiles.length > 0 && !selectedFileId) {
-            const defaultFile = imageClassFiles.find(f => f.type === "pdf") || imageClassFiles[0];
-            setSelectedFileId(defaultFile.fileId);
-            setSelectedFileName(defaultFile.title);
-            setSelectedFileType(defaultFile.type);
+    useEffect(() => {
+        if (ImageclassFiles.length > 0 && !selectedFile) {
+            setSelectedFile(ImageclassFiles[0]); // Default to first file
         }
 
         // Security measures
         const disableRightClick = (e) => e.preventDefault();
-        const disableShortcuts = (e) => {
-            if (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.key === 'c')) e.preventDefault();
+        const disableDevTools = (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+                e.preventDefault();
+            }
         };
 
         document.addEventListener('contextmenu', disableRightClick);
-        document.addEventListener('keydown', disableShortcuts);
+        document.addEventListener('keydown', disableDevTools);
 
         return () => {
             document.removeEventListener('contextmenu', disableRightClick);
-            document.removeEventListener('keydown', disableShortcuts);
+            document.removeEventListener('keydown', disableDevTools);
         };
     }, []);
 
-    const renderFileContent = () => {
-        if (!selectedFileId) return null;
+    const handleDownload = (file) => {
+        if (!file.downloadUrl) {
+            console.error("No download URL available for this file");
+            return;
+        }
 
-        const currentFile = imageClassFiles.find(f => f.fileId === selectedFileId);
+        const link = document.createElement('a');
+        link.href = file.downloadUrl;
+        link.setAttribute('download', `${file.title}.${file.type === 'notebook' ? 'ipynb' : file.type}`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log(`Downloaded: ${file.title}`);
+    };
 
-        switch(currentFile.type) {
-            case "python":
-            case "csv":
-                return (
-                    <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                        <div className={`w-24 h-24 ${
-                            currentFile.type === "python" ? "bg-blue-100" : "bg-green-100"
-                        } rounded-full flex items-center justify-center mx-auto mb-4`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-12 w-12 ${
-                                currentFile.type === "python" ? "text-blue-600" : "text-green-600"
-                            }`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                d={currentFile.type === "python" ? 
-                                    "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" : 
-                                    "M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"} />
-                            </svg>
-                        </div>
-                        <h3 className="text-xl font-semibold mb-2">{currentFile.title}</h3>
-                        <p className="text-gray-500 mb-6">{currentFile.description}</p>
-                        <button
-                            onClick={() => handleDownload(currentFile.downloadUrl, currentFile.title.replace(/\s+/g, '_').toLowerCase() + (currentFile.type === "python" ? '.py' : '.csv'))}
-                            className={`px-6 py-3 ${
-                                currentFile.type === "python" ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"
-                            } text-white rounded-lg transition-colors`}
+    const FileDisplay = ({ file }) => {
+        // Previewable file types (pdf, images, videos)
+        if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'webm'].includes(file.type)) {
+            return (
+                <div className="w-full h-full border rounded-xl shadow-lg overflow-hidden bg-white">
+                    <iframe
+                        src={`https://drive.google.com/file/d/${file.id}/preview`}
+                        className="w-full min-h-[70vh]"
+                        allowFullScreen
+                        title={`${file.title} Preview`}
+                        sandbox="allow-same-origin allow-scripts"
+                    />
+                    <div className="p-4 border-t flex justify-end">
+                        <button 
+                            onClick={() => handleDownload({
+                                ...file,
+                                downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`
+                            })}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                         >
-                            Download {currentFile.type === "python" ? "Python File" : "CSV File"}
+                            Download {file.type.toUpperCase()}
                         </button>
                     </div>
-                );
-            case "pdf":
-                return (
-                    <iframe
-                        key={selectedFileId}
-                        src={`https://drive.google.com/file/d/${selectedFileId}/preview`}
-                        className="w-full h-full"
-                        allowFullScreen
-                        title={`${selectedFileName} Viewer`}
-                        sandbox="allow-scripts allow-same-origin"
-                    />
-                );
-            default:
-                return null;
+                </div>
+            );
         }
+        if (file.type === 'notebook') {
+            return (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 border rounded-t-xl shadow-lg overflow-hidden bg-white">
+                        <iframe
+                            src={file.nbviewerUrl}
+                            className="w-full h-full"
+                            style={{ minHeight: '60vh' }}
+                            title={`${file.title} Preview`}
+                            sandbox="allow-same-origin allow-scripts"
+                        />
+                    </div>
+                    <div className="p-4 border border-t-0 rounded-b-xl bg-gray-50 flex justify-center">
+                        <button
+                            onClick={() => handleDownload(file)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Download Jupyter Notebook (.ipynb)
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // Non-previewable files (download only)
+        return (
+            <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
+                <div className="text-center max-w-md">
+                    <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-indigo-100">
+                        <svg className="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                        </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
+                    <p className="text-gray-500 mb-4">{file.description}</p>
+                    <button
+                        onClick={() => handleDownload(file)}
+                        className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                        Download {file.type === 'notebook' ? 'Jupyter Notebook (.ipynb)' : `${file.type.toUpperCase()} File`}
+                    </button>
+                </div>
+            </div>
+        );
     };
 
     return (
-        <div className="flex h-screen bg-background text-foreground">
+        <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
-            <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700">
-                <h2 className="text-xl font-bold mb-6">Image Classification</h2>
-                <ul className="space-y-3 max-h-[calc(100vh-8rem)] overflow-y-auto">
-                    {imageClassFiles.map(file => (
-                        <li key={file.id}>
-                            <button
-                                onClick={() => {
-                                    setSelectedFileId(file.fileId);
-                                    setSelectedFileName(file.title);
-                                    setSelectedFileType(file.type);
-                                }}
-                                className={`flex flex-col w-full p-3 rounded text-left hover:bg-gray-700 transition-colors ${
-                                    selectedFileId === file.fileId ? "bg-gray-700 border-l-4 border-blue-500" : ""
-                                }`}
-                            >
+            <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
+                <h2 className="text-xl font-bold mb-6 px-2">Image Classification Resources</h2>
+                <nav className="space-y-2">
+                    {ImageclassFiles.map(file => (
+                        <button
+                            key={file.id}
+                            onClick={() => setSelectedFile(file)}
+                            className={`w-full text-left p-3 rounded-lg transition-colors ${
+                                selectedFile?.id === file.id 
+                                    ? "bg-gray-700 border-l-4 border-blue-500" 
+                                    : "hover:bg-gray-700"
+                            }`}
+                        >
+                            <div className="flex items-center">
+                            {file.type === 'pdf' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
+                                    </svg>
+                                )}
+                                {file.type === 'notebook' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                    </svg>
+                                )}
+                                {file.type === 'zip' && (
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                )}
+                                {file.type === 'assessment' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+                                    </svg>
+                                )}
                                 <span className="font-medium">{file.title}</span>
-                                <span className="text-sm text-gray-300 mt-1">{file.description}</span>
-                            </button>
-                        </li>
+                            </div>
+                            <p className="text-xs text-gray-300 mt-1 truncate">{file.description}</p>
+                        </button>
                     ))}
-                </ul>
+                </nav>
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col p-6">
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800">
-                        {selectedFileName || "Select a Resource"}
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="p-6 pb-0">
+                    <h1 className="text-2xl font-bold text-gray-800">
+                        {selectedFile?.title || "Select a Resource"}
                     </h1>
-                    <p className="text-gray-600 mt-2">
-                        {imageClassFiles.find(f => f.fileId === selectedFileId)?.description || ""}
+                    <p className="text-gray-600 mt-1">
+                        {selectedFile?.description }
                     </p>
                 </div>
                 
-                <div className="flex-1 w-full border rounded-xl shadow-lg relative overflow-hidden bg-white"
-                    onContextMenu={(e) => e.preventDefault()}>
-                    {/* Block Google Drive pop-out button */}
-                    <div className="absolute top-0 right-0 w-14 h-14 z-10" />
-                    
-                    {selectedFileId && renderFileContent()}
-                </div>
-
-                <div className="mt-8 w-full max-w-3xl mx-auto">
-                    <FeedbackForm 
-                        fileId={selectedFileId}
-                        fileName={selectedFileName}
-                        fileType={selectedFileType}
-                        onSubmit={handleFeedbackSubmit}
-                    />
+                <div className="flex-1 overflow-auto p-6">
+                    {selectedFile ? (
+                        <div className="h-full">
+                            <FileDisplay file={selectedFile} />
+                            
+                        </div>
+                    ) : (
+                        <div className="h-full flex items-center justify-center text-gray-500">
+                            Please select a resource from the sidebar
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
     );
-};
-
-const sendFeedbackToServer = (feedback) => {
-    // Implement your feedback submission logic
-    console.log("Submitting Image Classification feedback:", feedback);
-    // Example: axios.post('/api/feedback/image-classification', feedback)
 };
 
 export default Imageclass;

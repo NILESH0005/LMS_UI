@@ -9,60 +9,60 @@ export const ObjectClassification = () => {
     {
       id: 1,
       title: "Guides",
-      description: "Learn to categorize images into predefined classes using deep learning models like CNNs, covering architectures (ResNet, EfficientNet), datasets (ImageNet, CIFAR), and evaluation metrics (accuracy, confusion matrices).",
+      description: "Comprehensive tutorials on image classification with deep learning: explore CNN basics, common architectures, datasets, and model evaluation techniques.",
       progress: 70,
       thumbnail: "objectclas.jpg",
     },
-    // {
-    //   id: 2,
-    //   title: "Practical Implementation",
-    //   description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
-    //   progress: 65,
-    //   thumbnail: "Objectclas1.jpeg",
-    // },
     {
       id: 2,
       title: "CNN-CIFAR-10",
-      description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
+      description: "Build and train CNNs from scratch on the CIFAR-10 dataset using PyTorch/TensorFlow; includes data augmentation, architecture tuning, and visualization of model performance.",
       progress: 65,
       thumbnail: "Objectclas1.jpeg",
     },
     {
       id: 3,
       title: "GoogleNet",
-      description: "Learn to categorize images into predefined classes using deep learning models like CNNs, covering architectures (ResNet, EfficientNet), datasets (ImageNet, CIFAR), and evaluation metrics (accuracy, confusion matrices).",
+      description: "Dive into GoogleNet (Inception v1): understand inception modules, architectural innovations, and how to implement and train it on datasets like CIFAR or ImageNet.",
       progress: 70,
       thumbnail: "objectclas.jpeg",
     },
     {
       id: 4,
       title: "AlexNet",
-      description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
+      description: "Study the pioneering AlexNet architecture: learn about ReLU, dropout, overlapping pooling, and train it on standard image classification datasets using deep learning frameworks.",
       progress: 65,
       thumbnail: "Objectclas1.jpeg",
     },
     {
       id: 5,
       title: "ConvNeXt",
-      description: "Learn to categorize images into predefined classes using deep learning models like CNNs, covering architectures (ResNet, EfficientNet), datasets (ImageNet, CIFAR), and evaluation metrics (accuracy, confusion matrices).",
+      description: "Explore ConvNeXt, a modernized CNN inspired by Transformer design: understand its architecture, training procedures, and performance on datasets like ImageNet.",
       progress: 70,
       thumbnail: "objectclas.jpeg",
     },
     {
       id: 6,
       title: "Vgg16",
-      description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
+      description: "Implement and fine-tune VGG16 for image classification: grasp its deep yet simple design, and adapt it for various real-world datasets using transfer learning.",
       progress: 65,
       thumbnail: "Objectclas1.jpeg",
     },
     {
       id: 7,
       title: "KNN",
-      description: "Build and train classifiers in PyTorch/TensorFlow: Preprocess data, fine-tune pre-trained models (VGG, MobileNet), and deploy with ONNX or TFLite for real-world applications.",
+      description: "Learn the fundamentals of the K-Nearest Neighbors algorithm and how to apply it to image classification tasks as a baseline or lightweight model.",
       progress: 65,
-      thumbnail: "Objectclas1.avif",
+      thumbnail: "",
+    },
+    {
+      id: 8,
+      title: "Transfer Learning - Using CNN",
+      description: "Apply transfer learning with pre-trained CNNs like VGG, ResNet, and MobileNet: reuse feature extractors for custom tasks and optimize with minimal data.",
+      progress: 65,
+      thumbnail: "",
     }
-
+    
   ];
 
   const handleCardClick = (title) => {
@@ -74,7 +74,8 @@ export const ObjectClassification = () => {
       "Vgg16":"/vgg16",
       "ConvNeXt":"/convnext",
       "KNN":"/knn",
-      "CNN-CIFAR-10":"/cnncifar"
+      "CNN-CIFAR-10":"/cnncifar",
+      "Transfer Learning - Using CNN":"/transfer"
   
     };
 

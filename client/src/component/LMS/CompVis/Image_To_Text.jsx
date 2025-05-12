@@ -8,21 +8,35 @@ const Image_To_Text = () => {
     // Files array will be provided by you
     const Image_To_TextFiles = [
         {
-            id: "1evxlRWUNvKlimrEtxxduAjNFY_A4xD_K",
-            title: "",
+            id: "1nrCtKrKyypIqXqzazr_E_ohWDDmEqN79",
+            title: "README",
             type: "pdf",
-            description: "",
-            size: "2.3MB",
-            lastUpdated: "2024-03-10"
-        },
+            description: "Guide to using all module resources ",
+            size: "1.2MB",
+            lastUpdated: "2024-01-15"
+          },
         {
             id: "1OJGOr3T5dZ-pCELPEumJpiX2rnz5kfrZ",
-            title: "",
+            title: "Workbook",
             type: "notebook",
-            description: " ",
+            description: " This notebook demonstrates the use of EasyOCR, a ready-to-use Optical Character Recognition (OCR) library that supports multiple languages. It includes examples of reading text from images using pre-trained models.",
             size: "3.1MB",
             lastUpdated: "2024-03-15",
             downloadUrl: "https://drive.google.com/uc?export=download&id=1OJGOr3T5dZ-pCELPEumJpiX2rnz5kfrZ"
+        },
+        {
+            id: "dataset-link",
+            title: "Dataset Link",
+            type: "link",
+            description: "EasyOCR is a ready-to-use Optical Character Recognition (OCR) library built on PyTorch. It supports multiple languages and can extract text from images with high accuracy.",
+            externalUrl: "https://github.com/JaidedAI/EasyOCR",
+            lastUpdated: "2024-03-20"
+        },
+        {
+  
+            title: "Assessment",
+            type: "assessment"
+            
         }
     ];
 
@@ -63,7 +77,10 @@ const Image_To_Text = () => {
         
         console.log(`Downloaded: ${file.title}`);
     };
-
+    const handleExternalLink = (url) => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
+    
     const handleFeedbackSubmit = (rating, comment) => {
         const newFeedback = {
             fileId: selectedFile.id,
@@ -83,6 +100,41 @@ const Image_To_Text = () => {
 
     const FileDisplay = ({ file }) => {
         // Previewable file types (pdf, images, videos)
+        if (file.type === 'link') {
+            return (
+                <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
+                    <div className="text-center max-w-md">
+                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-indigo-100">
+                            <svg className="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
+                        <p className="text-gray-500 mb-4">
+  EasyOCR is an open-source Optical Character Recognition (OCR) library that supports over 80 languages and uses deep learning models to extract text from images.
+</p>
+<div className="mb-6">
+  <img 
+    src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" 
+    alt="OCR Icon" 
+    className="h-10 mx-auto mb-4"
+  />
+  <p className="text-sm text-gray-600 text-center">
+    Developed using PyTorch, EasyOCR offers pre-trained models and simple APIs, making it ideal for real-world text extraction tasks across multiple scripts.
+  </p>
+</div>
+
+
+                        <button
+                            onClick={() => handleExternalLink(file.externalUrl)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Open Dataset Page
+                        </button>
+                    </div>
+                </div>
+            );
+        }
         if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'webm'].includes(file.type)) {
             return (
                 <div className="w-full h-full border rounded-xl shadow-lg overflow-hidden bg-white">
@@ -110,10 +162,7 @@ const Image_To_Text = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                 
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -129,7 +178,7 @@ const Image_To_Text = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">Text Extraction Resources</h2>
                 <nav className="space-y-2">
                     {Image_To_TextFiles.map(file => (
                         <button

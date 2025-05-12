@@ -5,26 +5,83 @@ export const Generative = () => {
    const navigate = useNavigate();
  
    const models = [
-     {
-       id: 1,
-       title: "Guides",
-       description: "Explore generative AI fundamentals: Learn how LLMs (GPT, Claude, Gemini) and diffusion models (Stable Diffusion, DALL·E) create text, images, and code using transformer architectures and attention mechanisms.",
-       progress: 70,
-       thumbnail: "generativellm.jpg",
-     },
-     {
-       id: 2,
-       title: "Models",
-       description: "Generative AI models like GPT-4, Claude 3, Gemini, Llama 3, Stable Diffusion, and DALL·E revolutionize content creation through advanced text, image, and multimodal generation capabilities.",
-       progress: 65,
-       thumbnail: "generativellm1.jpg",
-     }
+    {
+      id: 1,
+      title: "Intro to Generative AI",
+      description: "Explore the foundations of generative AI: Understand how LLMs (like GPT and Claude) and diffusion models (like DALL·E, Stable Diffusion) generate text, code, and images using transformers and attention mechanisms.",
+      progress: 70,
+      thumbnail: "generativellm.jpg",
+    },
+    {
+      id: 2,
+      title: "CLIP Model Tuning",
+      description: "Learn how to fine-tune CLIP for aligning images and text using contrastive learning, enabling powerful multimodal search and image-captioning tasks.",
+      progress: 65,
+      thumbnail: "",
+    },
+    {
+      id: 3,
+      title: "LLaMA 2 Fine-Tuning",
+      description: "Fine-tune LLaMA 2 for custom NLP tasks using parameter-efficient techniques (LoRA, PEFT) and align outputs with instruction tuning for better task generalization.",
+      progress: 65,
+      thumbnail: "",
+    },
+    {
+      id: 4,
+      title: "Phi-1.5 Model Fine-Tuning",
+      description: "Customize Microsoft's Phi-1.5 small language model for downstream tasks, leveraging its efficiency for code generation, reasoning, and instruction-following.",
+      progress: 65,
+      thumbnail: "",
+    },
+    {
+      id: 5,
+      title: "Mistral 7B Fine-Tuning",
+      description: "Implement fine-tuning workflows for Mistral 7B, a high-performance open-weight model optimized for reasoning and summarization with efficient attention mechanisms.",
+      progress: 65,
+      thumbnail: "",
+    },
+    {
+      id: 6,
+      title: "Summarization with T5 & BART",
+      description: "Use encoder-decoder models like T5 and BART for abstractive text summarization; explore dataset preparation, training strategies, and evaluation with ROUGE metrics.",
+      progress: 65,
+      thumbnail: "",
+    },
+    {
+      id: 7,
+      title: "GPT-2 Fine-Tuning",
+      description: "Fine-tune GPT-2 for domain-specific text generation; understand tokenization, causal language modeling, and the impact of dataset size and context length.",
+      progress: 65,
+      thumbnail: "",
+    },
+    {
+      id: 8,
+      title: "Stable Diffusion - Text to Image",
+      description: "Generate high-quality images from text prompts using Stable Diffusion; learn prompt engineering, model inference, and customization for creative tasks.",
+      progress: 65,
+      thumbnail: "",
+    },
+    {
+      id: 9,
+      title: "TinyLlama Fine-Tuning",
+      description: "Experiment with TinyLlama, a compact open LLM ideal for resource-constrained environments; fine-tune for chat, classification, and summarization tasks.",
+      progress: 65,
+      thumbnail: "",
+    }
+    
    ];
  
    const handleCardClick = (title) => {
      const routes = {
-       "Guides": "/genaiguide",
-       "Models": "/genaimodel",
+       "Intro to Generative AI": "/genaiguide",
+       "CLIP Model Tuning": "/gai1",
+       "LLaMA 2 Fine-Tuning": "/gai2",
+       "Phi-1.5 Model Fine-Tuning": "/gai3",
+       "Mistral 7B Fine-Tuning": "/gai4",
+       "Summarization with T5 & BART": "/gai5",
+       "GPT-2 Fine-Tuning": "/gai6",
+       "Stable Diffusion - Text to Image": "/gai7",
+       "TinyLlama Fine-Tuning": "/gai8",
    
      };
  

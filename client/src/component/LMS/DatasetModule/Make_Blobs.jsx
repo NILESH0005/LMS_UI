@@ -8,40 +8,44 @@ const Make_Blobs = () => {
     // File configurations
     const blobFiles = [
         {
-            id: "14e72jkJJRjkqLjnWp33KVu4oLbSd0nnH",
-            title: "Blobs Dataset (CSV)",
-            type: "csv",
-            description: "Synthetic dataset for clustering algorithms",
-            size: "1.8MB",
-            lastUpdated: "2024-03-15",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=14e72jkJJRjkqLjnWp33KVu4oLbSd0nnH"
-        },
-        {
-            id: "1RWfd6X-njKfxzcScR3PotRjolL2lmJtb",
-            title: "K-Means Clustering (Notebook)",
-            type: "notebook",
-            description: "Implementation of K-Means clustering in Python",
-            size: "2.3MB",
-            lastUpdated: "2024-02-28",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1RWfd6X-njKfxzcScR3PotRjolL2lmJtb"
-        },
-        {
-            id: "1C9nkXZG83C9AuxAF98MShWo2xvNvnrOh",
-            title: "Unsupervised Learning (PDF Guide)",
-            type: "pdf",
-            description: "README on unsupervised learning techniques",
-            size: "3.1MB",
-            lastUpdated: "2024-01-10"
-        },
-        {
-            id: "assignment",
-            title: "Clustering Assignment",
-            type: "assignment",
-            description: "Hands-on clustering exercises",
-            size: "1.2MB",
-            lastUpdated: "2024-04-05"
-        }
-    ];
+            "id": "1sTA3DhWyKmKQxP2SlW5PtM4JAVWG9wzh",
+            "title": "README",
+            "type": "pdf",
+            "description": "Guide to using all Module resources.",
+            "size": "3.1MB",
+            "lastUpdated": "2024-01-10"
+          },
+          {
+            "id": "1RWfd6X-njKfxzcScR3PotRjolL2lmJtb",
+            "title": "Workbook",
+            "type": "notebook",
+            "description": "Jupyter Notebook demonstrating step-by-step K-Means clustering using Make Blobs data.",
+            "size": "2.3MB",
+            "lastUpdated": "2024-02-28",
+            "downloadUrl": "https://drive.google.com/uc?export=download&id=1RWfd6X-njKfxzcScR3PotRjolL2lmJtb",
+            nbviewerUrl: "https://nbviewer.org/github/YogeshTiwari10/LMS/blob/main/Data%20Sets/Make-Blobs/K_Means_Clustering_with_Python.ipynb"
+          },
+            {
+              "id": "14e72jkJJRjkqLjnWp33KVu4oLbSd0nnH",
+              "title": "Dataset",
+              "type": "csv",
+              "description": "Make Blobs dataset with synthetic data points for K-Means clustering.",
+              "size": "1.8MB",
+              "lastUpdated": "2024-03-15",
+              "downloadUrl": "https://drive.google.com/uc?export=download&id=14e72jkJJRjkqLjnWp33KVu4oLbSd0nnH"
+            },
+            
+           
+            {
+              "id": "assignment",
+              "title": "Assessment",
+              "type": "assessment",
+              "description": "",
+              "size": "1.2MB",
+              "lastUpdated": "2024-04-05"
+            }
+          ];
+          
 
     // Set default file on component mount
     useEffect(() => {
@@ -82,23 +86,6 @@ const Make_Blobs = () => {
         console.log(`Downloaded: ${file.title}`);
     };
 
-    const handleFeedbackSubmit = (rating, comment) => {
-        const newFeedback = {
-            fileId: selectedFile.id,
-            fileName: selectedFile.title,
-            fileType: selectedFile.type,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("blobsFeedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        
-        console.log("Feedback submitted:", newFeedback);
-    };
-
     const FileDisplay = ({ file }) => {
         if (file.type === 'pdf') {
             return (
@@ -116,6 +103,29 @@ const Make_Blobs = () => {
                             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                         >
                             Download PDF
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        if (file.type === 'notebook') {
+            return (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 border rounded-t-xl shadow-lg overflow-hidden bg-white">
+                        <iframe
+                            src={file.nbviewerUrl}
+                            className="w-full h-full"
+                            style={{ minHeight: '60vh' }}
+                            title={`${file.title} Preview`}
+                            sandbox="allow-same-origin allow-scripts"
+                        />
+                    </div>
+                    <div className="p-4 border border-t-0 rounded-b-xl bg-gray-50 flex justify-center">
+                        <button
+                            onClick={() => handleDownload(file)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Download Jupyter Notebook (.ipynb)
                         </button>
                     </div>
                 </div>
@@ -141,19 +151,14 @@ const Make_Blobs = () => {
                                 <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                             </svg>
                         )}
-                        {file.type === 'assignment' && (
-                            <svg className="w-10 h-10 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-                            </svg>
+                        {file.type === 'assessment' && (
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                        </svg>
                         )}
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
                     <button
                         onClick={() => handleDownload(file)}
                         disabled={!file.downloadUrl}
@@ -204,11 +209,11 @@ const Make_Blobs = () => {
                                     </svg>
                                 )}
                                 {file.type === 'csv' && (
-                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd"/>
-                                    </svg>
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
                                 )}
-                                {file.type === 'assignment' && (
+                                {file.type === 'assessment' && (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                                         <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
@@ -229,7 +234,7 @@ const Make_Blobs = () => {
                         {selectedFile?.title || "Select a Resource"}
                     </h1>
                     <p className="text-gray-600 mt-1">
-                        {selectedFile?.description || "Choose from the sidebar"}
+                        {selectedFile?.description }
                     </p>
                 </div>
                 
@@ -238,14 +243,7 @@ const Make_Blobs = () => {
                         <div className="h-full">
                             <FileDisplay file={selectedFile} />
                             
-                            <div className="mt-8 max-w-3xl mx-auto">
-                                <FeedbackForm 
-                                    fileId={selectedFile.id}
-                                    fileName={selectedFile.title}
-                                    fileType={selectedFile.type}
-                                    onSubmit={handleFeedbackSubmit}
-                                />
-                            </div>
+                           
                         </div>
                     ) : (
                         <div className="h-full flex items-center justify-center text-gray-500">

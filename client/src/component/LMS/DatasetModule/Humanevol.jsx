@@ -8,17 +8,26 @@ const Humanevol = () => {
 
     const humanEvolFiles = [
         {
+            id: "1Gsv58Cnk4xJ6XgLEK5aVMpoe9b0m0ZDa",
+            title: "README",
+            type: "pdf",
+            description: "Project documentation and instructions",
+            size: "2.1MB",
+            lastUpdated: "2024-03-15"
+        },
+        {
             id: "1q6z37kH0KUPdHM07_woU6o-kNBJiR-DG",
-            title: "DCGAN Implementation (Notebook)",
+            title: "Workbook",
             type: "notebook",
             description: "Jupyter notebook for human evolution process using DCGAN",
             size: "4.2MB",
             lastUpdated: "2024-03-20",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1q6z37kH0KUPdHM07_woU6o-kNBJiR-DG"
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1q6z37kH0KUPdHM07_woU6o-kNBJiR-DG",
+            nbviewerUrl: "https://nbviewer.org/github/YogeshTiwari10/LMS/blob/main/Data%20Sets/Human%20Evolution%20Vid%20Dataset/human-evolution-process-dcgan.ipynb"
         },
         {
             id: "1cNvPv98Rjr4ONB91Sbz7HDndLzvk4TFR",
-            title: "Evolution Video (MP4)",
+            title: "Dataset",
             type: "video",
             description: "Video demonstration of human evolution process",
             size: "15.7MB",
@@ -26,13 +35,14 @@ const Humanevol = () => {
             downloadUrl: "https://drive.google.com/uc?export=download&id=1cNvPv98Rjr4ONB91Sbz7HDndLzvk4TFR"
         },
         {
-            id: "1JmOJSE4Q8gGD1WnXzrQ1tyfcA0nFnXgs",
-            title: "README Documentation (PDF)",
-            type: "pdf",
-            description: "Project documentation and instructions",
-            size: "2.1MB",
-            lastUpdated: "2024-03-15"
-        },
+            id: "assignment",
+            title: "Assessment",
+            type: "assessment",
+            description: "",
+            size: "1.2MB",
+            lastUpdated: "2024-04-05"
+        }
+        
         
        
     ];
@@ -89,24 +99,6 @@ const Humanevol = () => {
         
         console.log(`Downloaded: ${file.title}`);
     };
-
-    const handleFeedbackSubmit = (rating, comment) => {
-        const newFeedback = {
-            fileId: selectedFile.id,
-            fileName: selectedFile.title,
-            fileType: selectedFile.type,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("humanEvolFeedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        
-        console.log("Feedback submitted:", newFeedback);
-    };
-
     const FileDisplay = ({ file }) => {
         if (file.type === 'pdf') {
             return (
@@ -119,15 +111,6 @@ const Humanevol = () => {
                         sandbox="allow-same-origin allow-scripts"
                     />
                     <div className="p-4 border-t flex justify-end">
-                        {/* <button 
-                            onClick={() => handleDownload({
-                                ...file,
-                                downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`
-                            })}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                        >
-                            Download PDF
-                        </button> */}
                     </div>
                 </div>
             );
@@ -149,13 +132,36 @@ const Humanevol = () => {
                         </div>
                         <div className="p-4 bg-gray-800 flex justify-between items-center">
                             <span className="text-white font-medium">{file.title}</span>
-                            {/* <button 
+                            <button 
                                 onClick={() => handleDownload(file)}
                                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                             >
                                 Download Video
-                            </button> */}
+                            </button>
                         </div>
+                    </div>
+                </div>
+            );
+        }
+        if (file.type === 'notebook') {
+            return (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 border rounded-t-xl shadow-lg overflow-hidden bg-white">
+                        <iframe
+                            src={file.nbviewerUrl}
+                            className="w-full h-full"
+                            style={{ minHeight: '60vh' }}
+                            title={`${file.title} Preview`}
+                            sandbox="allow-same-origin allow-scripts"
+                        />
+                    </div>
+                    <div className="p-4 border border-t-0 rounded-b-xl bg-gray-50 flex justify-center">
+                        <button
+                            onClick={() => handleDownload(file)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Download Jupyter Notebook (.ipynb)
+                        </button>
                     </div>
                 </div>
             );
@@ -182,10 +188,7 @@ const Humanevol = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                        
                     <button
                         onClick={() => handleDownload({
                             ...file,
@@ -210,7 +213,7 @@ const Humanevol = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">Human Evolution Project</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">Human Evolution Resources</h2>
                 <nav className="space-y-2">
                     {humanEvolFiles.map(file => (
                         <button
@@ -238,12 +241,13 @@ const Humanevol = () => {
                                         <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
                                     </svg>
                                 )}
-                                {file.type === 'assignment' && (
+                                  {file.type === 'assessment' && (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                                         <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
                                     </svg>
                                 )}
+                                
                                 <span className="font-medium">{file.title}</span>
                             </div>
                             <p className="text-xs text-gray-300 mt-1 truncate">{file.description}</p>
@@ -259,7 +263,7 @@ const Humanevol = () => {
                         {selectedFile?.title || "Select a Resource"}
                     </h1>
                     <p className="text-gray-600 mt-1">
-                        {selectedFile?.description || "Choose from the sidebar"}
+                        {selectedFile?.description }
                     </p>
                 </div>
                 
@@ -267,15 +271,7 @@ const Humanevol = () => {
                     {selectedFile ? (
                         <div className="h-full">
                             <FileDisplay file={selectedFile} />
-                            
-                            <div className="mt-8 max-w-3xl mx-auto">
-                                <FeedbackForm 
-                                    fileId={selectedFile.id}
-                                    fileName={selectedFile.title}
-                                    fileType={selectedFile.type}
-                                    onSubmit={handleFeedbackSubmit}
-                                />
-                            </div>
+                        
                         </div>
                     ) : (
                         <div className="h-full flex items-center justify-center text-gray-500">

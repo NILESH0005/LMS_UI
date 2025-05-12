@@ -5,27 +5,63 @@ export const Concepts = () => {
    const navigate = useNavigate();
  
    const models = [
-     {
-       id: 1,
-       title: "Guides",
-       description: "Explore Concepts AI fundamentals: Learn how LLMs (GPT, Claude, Gemini) and diffusion models (Stable Diffusion, DALL·E) create text, images, and code using transformer architectures and attention mechanisms.",
-       progress: 70,
-       thumbnail: "Conceptsllm.jpg",
-     },
-     {
-       id: 2,
-       title: "Models",
-       description: "Concepts AI models like GPT-4, Claude 3, Gemini, Llama 3, Stable Diffusion, and DALL·E revolutionize content creation through advanced text, image, and multimodal generation capabilities.",
-       progress: 65,
-       thumbnail: "Conceptsllm1.jpg",
-     }
+  
+      {
+        "id": 1,
+        "title": "Clustering",
+        "description": "Learn the fundamentals of clustering algorithms like K-Means, DBSCAN, and Hierarchical Clustering, and how they group unlabeled data based on similarity.",
+        "progress": 70,
+        "thumbnail": ""
+      },
+      {
+        "id": 2,
+        "title": "CNN",
+        "description": "Understand Convolutional Neural Networks (CNNs) and their use in image classification, object detection, and computer vision tasks through convolution, pooling, and feature extraction.",
+        "progress": 65,
+        "thumbnail": ""
+      },
+      {
+        "id": 3,
+        "title": "Data Preprocessing",
+        "description": "Master essential techniques like normalization, encoding, missing value handling, and feature scaling to prepare raw data for machine learning models.",
+        "progress": 70,
+        "thumbnail": ""
+      },
+      {
+        "id": 4,
+        "title": "OpenCV",
+        "description": "Explore OpenCV, a powerful computer vision library for real-time image and video processing, object tracking, facial recognition, and more.",
+        "progress": 65,
+        "thumbnail": ""
+      },
+      {
+        "id": 5,
+        "title": "Reinforcement Learning",
+        "description": "Dive into reinforcement learning concepts like agents, environments, rewards, Q-learning, and policy gradients to build intelligent decision-making systems.",
+        "progress": 70,
+        "thumbnail": ""
+      },
+      {
+        "id": 6,
+        "title": "Recurrent Neural Network (RNN)",
+        "description": "Understand how RNNs handle sequential data like text and time series using memory of previous inputs, and explore architectures like LSTM and GRU.",
+        "progress": 65,
+        "thumbnail": ""
+      }
+        
    ];
  
    const handleCardClick = (title) => {
      const routes = {
-       "Guides": "/genaiguide",
-       "Models": "/genaimodel",
-   
+       "Clustering": "/concept1",
+       "CNN": "/concept2",
+      "Data Preprocessing":"/concept3",
+      "OpenCV":"/concept4",
+      "Reinforcement Learning":"/concept5",
+      "Recurrent Neural Network (RNN)":"/concept6"
+
+
+
      };
  
      const route = routes[title];

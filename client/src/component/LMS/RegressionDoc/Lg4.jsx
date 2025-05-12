@@ -8,13 +8,20 @@ const Lg4 = () => {
     const Lg4Files = [
         {
             id: "1nV2GLrqlO75Jh1USTtS1FM24VhqDDdhF",
-            title: "Implementation.ipynb",
+            title: "Workbook",
             type: "notebook",
             description: "",
             size: "",
             lastUpdated: "",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1nV2GLrqlO75Jh1USTtS1FM24VhqDDdhF"
-        }
+            downloadUrl: "https://drive.google.com/uc?export=download&id=1nV2GLrqlO75Jh1USTtS1FM24VhqDDdhF",
+            nbviewerUrl: "https://nbviewer.org/github/20maitrti/LMS/blob/main/8_logistic_regression_multiclass.ipynb"
+        },
+        {
+            id: "assignment",
+            title: "Assessment",
+            type: "assessment",
+           
+          }
     ];
 
     useEffect(() => {
@@ -39,6 +46,9 @@ const Lg4 = () => {
         };
     }, []);
 
+    
+
+   
     const handleDownload = (file) => {
         if (!file.downloadUrl) {
             console.error("No download URL available for this file");
@@ -55,22 +65,6 @@ const Lg4 = () => {
         console.log(`Downloaded: ${file.title}`);
     };
 
-    const handleFeedbackSubmit = (rating, comment) => {
-        const newFeedback = {
-            fileId: selectedFile.id,
-            fileName: selectedFile.title,
-            fileType: selectedFile.type,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("Lg4Feedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        
-        console.log("Feedback submitted:", newFeedback);
-    };
 
     const FileDisplay = ({ file }) => {
         // Previewable file types (pdf, images, videos)
@@ -98,7 +92,30 @@ const Lg4 = () => {
                 </div>
             );
         }
-
+        if (file.type === 'notebook') {
+            return (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 border rounded-t-xl shadow-lg overflow-hidden bg-white">
+                        <iframe
+                            src={file.nbviewerUrl}
+                            className="w-full h-full"
+                            style={{ minHeight: '60vh' }}
+                            title={`${file.title} Preview`}
+                            sandbox="allow-same-origin allow-scripts"
+                        />
+                    </div>
+                    <div className="p-4 border border-t-0 rounded-b-xl bg-gray-50 flex justify-center">
+                        <button
+                            onClick={() => handleDownload(file)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Download Jupyter Notebook (.ipynb)
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        
         // Non-previewable files (download only)
         return (
             <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
@@ -110,10 +127,7 @@ const Lg4 = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                    
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -129,7 +143,7 @@ const Lg4 = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">Multiclass Classification with Logistic Regression Resources</h2>
                 <nav className="space-y-2">
                     {Lg4Files.map(file => (
                         <button
@@ -175,14 +189,7 @@ const Lg4 = () => {
                         <div className="h-full">
                             <FileDisplay file={selectedFile} />
                             
-                            <div className="mt-8 max-w-3xl mx-auto">
-                                <FeedbackForm 
-                                    fileId={selectedFile.id}
-                                    fileName={selectedFile.title}
-                                    fileType={selectedFile.type}
-                                    onSubmit={handleFeedbackSubmit}
-                                />
-                            </div>
+                           
                         </div>
                     ) : (
                         <div className="h-full flex items-center justify-center text-gray-500">

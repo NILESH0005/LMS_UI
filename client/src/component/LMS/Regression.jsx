@@ -6,72 +6,76 @@ export const Regression = () => {
  const navigate = useNavigate();
  
    const models = [
-     {
-       id: 1,
-       title: "Guides",
-       description: "Master the theory: Learn how regression models map relationships between variables to predict continuous outcomes, from assumptions to interpretation.",
-       progress: 70,
-       thumbnail: "Regression.avif",
-     },
-     {
+    {
+      id: 1,
+      title: "Guides",
+      description: "Master the theory: Learn how regression models map relationships between variables to predict continuous outcomes, from assumptions to interpretation.",
+      progress: 70,
+      thumbnail: "Regression.avif",
+    },
+    {
       id: 2,
-      title: "Home Price Prediction-Single Varable",
-      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      title: "Home Price Prediction - Single Variable",
+      description: "Build a simple linear regression model to predict house prices using only one key feature—ideal for understanding the fundamentals of regression modeling.",
       progress: 65,
       thumbnail: "Regression2.png",
     },
     {
       id: 3,
-      title: "Home Price Prediction-Multi Varable",
-      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      title: "Home Price Prediction - Multi Variable",
+      description: "Expand your regression skills by incorporating multiple features (e.g., size, location, and age) to predict housing prices with improved accuracy.",
       progress: 65,
       thumbnail: "Regression2.png",
     },
     {
       id: 4,
       title: "Binary Logistic Regression: Predicting Life Insurance Purchase Based on Age",
-      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      description: "Use logistic regression to predict whether a customer is likely to buy life insurance based solely on their age—a classic binary classification problem.",
       progress: 65,
       thumbnail: "Regression2.png",
     },
     {
       id: 5,
       title: "Multiclass Classification with Logistic Regression",
-      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      description: "Apply logistic regression to problems with more than two categories—learn how to predict multiple classes using one-vs-rest or softmax approaches.",
       progress: 65,
       thumbnail: "Regression2.png",
     },
     {
       id: 6,
       title: "Salary Prediction using Linear Regression",
-      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      description: "Predict employee salary based on features like experience, education, and role using linear regression models with real-world salary datasets.",
       progress: 65,
       thumbnail: "Regression2.png",
     },
     {
       id: 7,
       title: "Employee Retention Prediction",
-      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      description: "Use classification techniques to forecast whether an employee is likely to stay or leave the company, based on features like satisfaction and performance.",
       progress: 65,
       thumbnail: "Regression2.png",
     },
     {
       id: 8,
-      title: "Linear Regression",
-      description: "Code it live: Implement regression models using scikit-learn (LinearRegression, SGDRegressor) on real datasets, with end-to-end evaluation (MSE/R²) and visualization.",
+      title: "Car Price Prediction",
+      description: "Build a regression model to estimate car prices based on attributes such as brand, mileage, engine size, and more—ideal for automotive analytics.",
       progress: 65,
-      thumbnail: "Regression2.png",
+      thumbnail: "",
     }
+    
    ];
  
    const handleCardClick = (title) => {
      const routes = {
        "Guides": "/reg_guide",
-       "Home Price Prediction-Single Varable":"/lg1 ",
-       "Home Price Prediction-Multi Varable":"/lg2 ",
+       "Home Price Prediction - Single Variable":"/lg1 ",
+       "Home Price Prediction - Multi Variable":"/lg2 ",
        "Binary Logistic Regression: Predicting Life Insurance Purchase Based on Age":"/lg3",
        "Multiclass Classification with Logistic Regression":"/lg4",
-       "Salary Prediction using Linear Regression":"/lg6"
+       "Salary Prediction using Linear Regression":"/lg5",
+       "Employee Retention Prediction":"/lg6",
+       "Car Price Prediction":"/lg7"
+
      };
  
      const route = routes[title];

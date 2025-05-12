@@ -61,35 +61,35 @@ export const DatasetModules = () => {
       title: "ESC-50",
       description: "Dataset of 50 environmental sound classes for audio classification.",
       progress: 90,
-      thumbnail: "cifar.png",
+      thumbnail: "",
     },
     {
       id: 9,
       title: "Heart Disease",
       description: "Medical dataset for predicting risk of heart disease.",
       progress: 90,
-      thumbnail: "cifar.png",
+      thumbnail: "",
     },
     {
       id: 10,
       title: "Image Caption",
       description: "Dataset with images and corresponding captions for training models.",
       progress: 90,
-      thumbnail: "cifar.png",
+      thumbnail: "",
     },
     {
       id: 11,
       title: "IMDB",
       description: "Movie review dataset used for sentiment analysis.",
       progress: 90,
-      thumbnail: "cifar.png",
+      thumbnail: "",
     },
     {
       id: 12,
       title: "Rotten Tomatoes",
       description: "Text dataset for sentiment classification of movie reviews.",
       progress: 90,
-      thumbnail: "cifar.png",
+      thumbnail: "",
     }
     
   ];

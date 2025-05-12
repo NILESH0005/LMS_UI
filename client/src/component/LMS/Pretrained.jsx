@@ -5,62 +5,65 @@ export const Pretrained = () => {
 const navigate = useNavigate();
 
   const models = [
-    {
-      id: 1,
-      title: "DeepSpeech",
-      description: "An end-to-end automatic speech recognition (ASR) system using RNNs that converts audio to text, with pre-trained models available for English and other languages.",
-      progress: 70,
-      thumbnail: "deepspeech1.avif",
-    },
-    {
-      id: 2,
-      title: "DETR",
-      description: "An object detection model combining CNNs with transformers, offering end-to-end training with pre-trained models for COCO dataset detection without anchor boxes.",
-      progress: 65,
-      thumbnail: "Detr.avif",
-    },
-    {
-      id: 3,
-      title: "LSTM",
-      description: " specialized RNN architecture for sequence modeling that handles long-term dependencies, with pre-trained models widely used in time-series forecasting and NLP tasks like text generation.",
-      progress: 65,
-      thumbnail: "lstm.png",
-    },
-    {
-      id: 4,
-      title: "Resnet50",
-      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
-      progress: 65,
-      thumbnail: "Resnet50.avif",
-    },
-    {
-      id: 5,
-      title: "BLIP",
-      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
-      progress: 65,
-      thumbnail: "Resnet50.avif",
-    },
-    {
-      id: 6,
-      title: "TS",
-      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
-      progress: 65,
-      thumbnail: "Resnet50.avif",
-    },
-    {
-      id: 7,
-      title: "TAPAS",
-      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
-      progress: 65,
-      thumbnail: "Resnet50.avif",
-    },
-    {
-      id: 8,
-      title: "DenseNet",
-      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
-      progress: 65,
-      thumbnail: "Resnet50.avif",
-    }
+    
+      {
+        "id": 1,
+        "title": "DeepSpeech",
+        "description": "An end-to-end automatic speech recognition (ASR) system developed by Mozilla that uses RNNs to convert spoken audio into text, with pre-trained models available in multiple languages.",
+        "progress": 70,
+        "thumbnail": "deepspeech1.avif"
+      },
+      {
+        "id": 2,
+        "title": "DETR",
+        "description": "DEtection TRansformer (DETR) is an object detection model that integrates CNNs with transformers for end-to-end detection without the need for anchor boxes, trained on COCO and other datasets.",
+        "progress": 65,
+        "thumbnail": "Detr.avif"
+      },
+      {
+        "id": 3,
+        "title": "LSTM",
+        "description": "Long Short-Term Memory (LSTM) is a type of recurrent neural network capable of learning long-term dependencies, widely used in time-series forecasting, speech recognition, and natural language processing.",
+        "progress": 65,
+        "thumbnail": "lstm.png"
+      },
+      {
+        "id": 4,
+        "title": "Resnet",
+        "description": "ResNet (Residual Network) is a deep convolutional neural network with skip connections that allow training of very deep architectures like ResNet-50, achieving high performance on image classification tasks.",
+        "progress": 65,
+        "thumbnail": "Resnet50.avif"
+      },
+      {
+        "id": 5,
+        "title": "BLIP",
+        "description": "Bootstrapped Language-Image Pretraining (BLIP) is a multimodal model that combines vision and language for tasks like image captioning and visual question answering, using a transformer-based architecture.",
+        "progress": 65,
+        "thumbnail": ""
+      },
+      {
+        "id": 6,
+        "title": "T5",
+        "description": "T5 (Text-to-Text Transfer Transformer) is a unified NLP framework by Google that casts all text-based language problems into a text-to-text format, enabling tasks like translation, summarization, and question answering using a single model..",
+        "progress": 65,
+        "thumbnail": ""
+      },
+      {
+        "id": 7,
+        "title": "TAPAS",
+        "description": "TAPAS (Tabular Pretraining for Answering Semi-structured tables) is a BERT-based model designed to answer questions from tables directly without needing table-to-text conversion.",
+        "progress": 65,
+        "thumbnail": ""
+      },
+      {
+        "id": 8,
+        "title": "DenseNet",
+        "description": "DenseNet (Densely Connected Convolutional Networks) is a CNN architecture where each layer is connected to every other layer in a feed-forward fashion, improving feature reuse and efficiency.",
+        "progress": 65,
+        "thumbnail": ""
+      }
+    
+    
   ];
 
   const handleCardClick = (title) => {
@@ -68,9 +71,9 @@ const navigate = useNavigate();
       "DeepSpeech": "/predeepspeech",
       "DETR": "/predetr",
       "LSTM": "/prelstm",
-      "Resnet50": "/preresnet",
+      "Resnet": "/preresnet",
       "BLIP":"/preblip",
-      "TS":"/prets",
+      "T5":"/prets",
       "TAPAS":"/pretapas",
       "DenseNet":"/predensenet"
   

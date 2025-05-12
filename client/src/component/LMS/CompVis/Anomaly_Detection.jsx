@@ -9,21 +9,27 @@ const Anomaly_Detection = () => {
     const Anomaly_DetectionFiles = [
         {
                   id: "1boxp5E5h3MO9LmKivPXnKB6fqB0xw50F",
-                  title: "",
+                  title: "Research Paper",
                   type: "pdf",
-                  description: "",
+                  description: "A comprehensive research guide exploring classical, variational, and regularized auto-encoder architectures for unsupervised anomaly detection. It systematically evaluates 11 architectures on MNIST and Fashion-MNIST, highlighting reconstruction accuracy, latent space visualization, and reproducibility challenges.",
                   size: "2.3MB",
                   lastUpdated: "2024-03-10"
               },
               {
                   id: "1_TCD8S8TpdWn28tCpinkLorviUio7ln9",
-                  title: "",
+                  title: "Workbook",
                   type: "notebook",
-                  description: " ",
+                  description: "Hands-on Jupyter Notebook implementing unsupervised anomaly detection using Auto-Encoders on the MNIST dataset. Includes model training, reconstruction error analysis, and visualization of latent space representations.",
                   size: "3.1MB",
                   lastUpdated: "2024-03-15",
                   downloadUrl: "https://drive.google.com/uc?export=download&id=1_TCD8S8TpdWn28tCpinkLorviUio7ln9"
-              }
+              },
+              {
+  
+                title: "Assessment",
+                type: "assessment"
+                
+            }
     ];
 
     useEffect(() => {
@@ -110,10 +116,7 @@ const Anomaly_Detection = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                  
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -129,7 +132,7 @@ const Anomaly_Detection = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">Anomaly Detection Resources</h2>
                 <nav className="space-y-2">
                     {Anomaly_DetectionFiles.map(file => (
                         <button

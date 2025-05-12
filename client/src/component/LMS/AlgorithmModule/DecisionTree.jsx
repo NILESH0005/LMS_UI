@@ -9,17 +9,17 @@ const DecisionTree = () => {
     const DecisionTreeFiles = [
         {
             id: "1j96XvUMBjtMbeqXH2M4pgG9fLrV0AUgp",
-            title: "",
+            title: "Published Paper",
             type: "pdf",
-            description: "",
+            description: "A scholarly guide on the Decision Tree classification algorithm, covering types of decision trees (e.g., ID3, C4.5, CART), entropy and information gain, real-world applications across domains, and a literature review of recent research. It includes comparisons of decision tree techniques and datasets used in evaluations.",
             size: "2.3MB",
             lastUpdated: "2024-03-10"
         },
         {
             id: "1wxbKOXv9UY7EWXgj1sEU9jeX-HdBi0R3",
-            title: "",
+            title: "Workbook",
             type: "notebook",
-            description: " ",
+            description: "A Jupyter notebook containing code and explanations for implementing a Decision Tree Classifier, including data preprocessing, model training, and evaluation. ",
             size: "3.1MB",
             lastUpdated: "2024-03-15",
             downloadUrl: "https://drive.google.com/uc?export=download&id=1wxbKOXv9UY7EWXgj1sEU9jeX-HdBi0R3"
@@ -64,22 +64,6 @@ const DecisionTree = () => {
         console.log(`Downloaded: ${file.title}`);
     };
 
-    const handleFeedbackSubmit = (rating, comment) => {
-        const newFeedback = {
-            fileId: selectedFile.id,
-            fileName: selectedFile.title,
-            fileType: selectedFile.type,
-            rating,
-            comment,
-            timestamp: new Date().toISOString()
-        };
-        
-        const updatedFeedback = [...feedback, newFeedback];
-        localStorage.setItem("DecisionTreeFeedback", JSON.stringify(updatedFeedback));
-        setFeedback(updatedFeedback);
-        
-        console.log("Feedback submitted:", newFeedback);
-    };
 
     const FileDisplay = ({ file }) => {
         // Previewable file types (pdf, images, videos)
@@ -94,15 +78,7 @@ const DecisionTree = () => {
                         sandbox="allow-same-origin allow-scripts"
                     />
                     <div className="p-4 border-t flex justify-end">
-                        <button 
-                            onClick={() => handleDownload({
-                                ...file,
-                                downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`
-                            })}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                        >
-                            Download {file.type.toUpperCase()}
-                        </button>
+                       
                     </div>
                 </div>
             );
@@ -119,10 +95,7 @@ const DecisionTree = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
+                    
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -138,7 +111,7 @@ const DecisionTree = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">Decision Tree Resources</h2>
                 <nav className="space-y-2">
                     {DecisionTreeFiles.map(file => (
                         <button
@@ -184,14 +157,7 @@ const DecisionTree = () => {
                         <div className="h-full">
                             <FileDisplay file={selectedFile} />
                             
-                            <div className="mt-8 max-w-3xl mx-auto">
-                                <FeedbackForm 
-                                    fileId={selectedFile.id}
-                                    fileName={selectedFile.title}
-                                    fileType={selectedFile.type}
-                                    onSubmit={handleFeedbackSubmit}
-                                />
-                            </div>
+                           
                         </div>
                     ) : (
                         <div className="h-full flex items-center justify-center text-gray-500">

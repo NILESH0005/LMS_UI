@@ -9,7 +9,7 @@ const Pre_ts = () => {
     const Pre_tsFiles = [
       {
         id: "1k2oFsIZuvQL8MkrniRekgMhUhBByCs3N",
-        title: "",
+        title: "Research Paper",
         type: "pdf",
         description: "",
         size: "2.3MB",
@@ -17,7 +17,7 @@ const Pre_ts = () => {
     },
     {
         id: "1XWeAgV5TiyD8CE2MNtK2-fet7cY-IfEr",
-        title: "",
+        title: "Workbook",
         type: "notebook",
         description: " ",
         size: "3.1MB",
@@ -93,17 +93,7 @@ const Pre_ts = () => {
                         title={`${file.title} Preview`}
                         sandbox="allow-same-origin allow-scripts"
                     />
-                    <div className="p-4 border-t flex justify-end">
-                        <button 
-                            onClick={() => handleDownload({
-                                ...file,
-                                downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`
-                            })}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                        >
-                            Download {file.type.toUpperCase()}
-                        </button>
-                    </div>
+                  
                 </div>
             );
         }
@@ -138,7 +128,7 @@ const Pre_ts = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">T5 Resources</h2>
                 <nav className="space-y-2">
                     {Pre_tsFiles.map(file => (
                         <button

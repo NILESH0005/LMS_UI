@@ -37,31 +37,32 @@ export const Algorithms = () => {
     {
       id: 5,
       title: "Decision Tree Classifier",
-      description: "An end-to-end automatic speech recognition (ASR) system using RNNs that converts audio to text, with pre-trained models available for English and other languages.",
+      description: "A tree-based supervised learning algorithm used for both classification and regression tasks. It splits the data based on feature values to form decision rules that predict outcomes.",
       progress: 35,
-      thumbnail: "deepspeech1.png",
+      thumbnail: ""
     },
     {
       id: 6,
       title: "Gradient Descent",
-      description: "An object detection model combining CNNs with transformers, offering end-to-end training with pre-trained models for COCO dataset detection without anchor boxes.",
+      description: "An optimization algorithm used to minimize loss functions in machine learning models by iteratively adjusting weights in the direction of the steepest descent.",
       progress: 45,
-      thumbnail: "Detr.png",
+      thumbnail: "g"
     },
     {
       id: 7,
       title: "Linear Regression",
-      description: " specialized RNN architecture for sequence modeling that handles long-term dependencies, with pre-trained models widely used in time-series forecasting and NLP tasks like text generation.",
+      description: "A statistical method for modeling the relationship between a dependent variable and one or more independent variables using a straight-line fit.",
       progress: 65,
-      thumbnail: "lstm.png",
+      thumbnail: ""
     },
     {
       id: 8,
       title: "SVM",
-      description: "A 50-layer deep convolutional neural network with residual connections, featuring pre-trained models on ImageNet that excel in image classification and transfer learning.",
+      description: "Support Vector Machine is a supervised learning algorithm used for classification and regression. It finds the optimal hyperplane that best separates different classes in the feature space.",
       progress: 75,
-      thumbnail: "Resnet50.png",
+      thumbnail: ""
     }
+    
   ];
 
   const handleCardClick = (title) => {

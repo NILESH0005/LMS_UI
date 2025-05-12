@@ -8,28 +8,37 @@ const Iris = () => {
     // Files array will be provided by you
     const IrisFiles = [
         {
-            id: "1acm1UjEAsBOq2OOuIgFtK7qcm1p5A6dh",
-            title: "Iris Dataset",
-            description: "Complete Iris flower dataset in zip format",
-            type: "zip",
-            downloadUrl: `https://drive.google.com/uc?export=download&id=1acm1UjEAsBOq2OOuIgFtK7qcm1p5A6dh` 
-        },
+            id: "1JrbVVNpugiI26SSC8anopm8mNlJAG1ZB",
+            title: "README",
+            type: "pdf",
+            description: "Guide to using all module resources ",
+            size: "1.2MB",
+            lastUpdated: "2024-01-15"
+          },
         {
-            id: "1ldz8A_PrDo-NXEgsFGWUv70gvqGYVgY9",
-            title: "iris_petal_sepal.png",
-            type: "png",
-            description: "",
-            size: "2.3MB",
-            lastUpdated: "2024-03-10"
-        },
+            "id": "1Xrdac-a7mb3RPkN5pqXb8bDpTqLNa7eb",
+            "title": "Workbook",
+            "type": "notebook",
+            "description": "KNN classification on the Iris dataset using scikit-learn with data visualization, preprocessing, and evaluation.",
+            "size": "3.1MB",
+            "lastUpdated": "2024-03-15",
+            "downloadUrl": "https://drive.google.com/uc?export=download&id=1t1e21xVL5soiFikZRLhYNgcJgYa5EoTp",
+            nbviewerUrl: "https://nbviewer.org/github/YogeshTiwari10/LMS/blob/main/Data%20Sets/IRIS/knn_classification%20.ipynb"
+          },
+          {
+            "id": "1acm1UjEAsBOq2OOuIgFtK7qcm1p5A6dh",
+            "title": "Dataset",
+            "type": "zip",
+            "description": "Iris flower dataset in ZIP format containing labeled data for supervised classification tasks.",
+            "downloadUrl": "https://drive.google.com/uc?export=download&id=1acm1UjEAsBOq2OOuIgFtK7qcm1p5A6dh"
+          },
         {
-            id: "1t1e21xVL5soiFikZRLhYNgcJgYa5EoTp",
-            title: "knn_classification.ipynb",
-            type: "notebook",
-            description: " ",
-            size: "3.1MB",
-            lastUpdated: "2024-03-15",
-            downloadUrl: "https://drive.google.com/uc?export=download&id=1t1e21xVL5soiFikZRLhYNgcJgYa5EoTp"
+            "id": "assignment",
+            "title": "Assessment",
+            "type": "assessment",
+            "description": "",
+            "size": "1.2MB",
+            "lastUpdated": "2024-04-05"
         }
      
     ];
@@ -106,7 +115,29 @@ const Iris = () => {
                 </div>
             );
         }
-
+        if (file.type === 'notebook') {
+            return (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 border rounded-t-xl shadow-lg overflow-hidden bg-white">
+                        <iframe
+                            src={file.nbviewerUrl}
+                            className="w-full h-full"
+                            style={{ minHeight: '60vh' }}
+                            title={`${file.title} Preview`}
+                            sandbox="allow-same-origin allow-scripts"
+                        />
+                    </div>
+                    <div className="p-4 border border-t-0 rounded-b-xl bg-gray-50 flex justify-center">
+                        <button
+                            onClick={() => handleDownload(file)}
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Download Jupyter Notebook (.ipynb)
+                        </button>
+                    </div>
+                </div>
+            );
+        }
         // Non-previewable files (download only)
         return (
             <div className="flex flex-col items-center justify-center h-full border rounded-xl shadow-lg bg-white p-8">
@@ -118,10 +149,6 @@ const Iris = () => {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{file.title}</h3>
                     <p className="text-gray-500 mb-4">{file.description}</p>
-                    <div className="flex justify-between items-center mb-6 text-sm">
-                        <span className="text-gray-400">Size: {file.size}</span>
-                        <span className="text-gray-400">Updated: {file.lastUpdated}</span>
-                    </div>
                     <button
                         onClick={() => handleDownload(file)}
                         className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -137,7 +164,7 @@ const Iris = () => {
         <div className="flex h-screen bg-gray-50 text-gray-800">
             {/* Navigation Sidebar */}
             <div className="w-64 bg-gray-800 text-white p-4 border-r border-gray-700 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-6 px-2">[Component Name] Resources</h2>
+                <h2 className="text-xl font-bold mb-6 px-2">IRIS Resources</h2>
                 <nav className="space-y-2">
                     {IrisFiles.map(file => (
                         <button
@@ -150,13 +177,25 @@ const Iris = () => {
                             }`}
                         >
                             <div className="flex items-center">
-                                {['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4'].includes(file.type) ? (
+                            {file.type === 'pdf' && (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
                                     </svg>
-                                ) : (
+                                )}
+                                {file.type === 'notebook' && (
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M13 4.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM9.5 15.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM19 10a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                    </svg>
+                                )}
+                                {file.type === 'zip' && (
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                )}
+                                {file.type === 'assessment' && (
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
                                     </svg>
                                 )}
                                 <span className="font-medium">{file.title}</span>
@@ -174,7 +213,7 @@ const Iris = () => {
                         {selectedFile?.title || "Select a Resource"}
                     </h1>
                     <p className="text-gray-600 mt-1">
-                        {selectedFile?.description || "Choose from the sidebar"}
+                        {selectedFile?.description }
                     </p>
                 </div>
                 
